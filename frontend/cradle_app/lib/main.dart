@@ -10,7 +10,7 @@ void main() {
 }
 
 class CradleApp extends StatelessWidget {
-  const CradleApp({Key? key}) : super(key: key);
+  const CradleApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,6 @@ class CradleApp extends StatelessWidget {
         title: 'Cradle',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system, // Dynamically matches OS settings
         initialRoute: AppRoutes.splash,
         onGenerateRoute: RouteGenerator.generateRoute,
         debugShowCheckedModeBanner: false,
@@ -30,5 +29,3 @@ class CradleApp extends StatelessWidget {
     );
   }
 }
-
-

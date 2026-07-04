@@ -22,8 +22,7 @@ class RouteGenerator {
       case AppRoutes.login:
         return MaterialPageRoute(builder: (_) => const LoginPage());
       case AppRoutes.otp:
-        final phone = settings.arguments as String? ?? '';
-        return MaterialPageRoute(builder: (_) => OtpVerificationPage(phone: phone));
+        return MaterialPageRoute(builder: (_) => const OtpVerificationPage());
       case AppRoutes.personalInfo:
         return MaterialPageRoute(builder: (_) => const PersonalInfoPage());
       case AppRoutes.dashboard:
@@ -45,18 +44,11 @@ class RouteGenerator {
       case AppRoutes.settings:
         return MaterialPageRoute(builder: (_) => const SettingsPage());
       default:
-        return _errorRoute();
+        return MaterialPageRoute(
+          builder: (_) => const Scaffold(
+            body: Center(child: Text('Route Error')),
+          ),
+        );
     }
   }
-
-  static Route<dynamic> _errorRoute() {
-    return MaterialPageRoute(
-      builder: (_) => Scaffold(
-        appBar: AppBar(title: const Text('Error')),
-        body: const Center(child: Text('Route not found')),
-      ),
-    );
-  }
 }
-
-
