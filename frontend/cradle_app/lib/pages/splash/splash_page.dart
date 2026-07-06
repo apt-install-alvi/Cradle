@@ -20,7 +20,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2500),
+      duration: const Duration(milliseconds: 5500),
     );
 
     // Initial scale and fade in for the central splash logo
@@ -122,7 +122,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(70),
                               child: Image.asset(
-                                'lib/core/theme/splash.png',
+                                 'assets/images/splash.png',
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   // Fallback in case asset is not fully declared in pubspec.yaml
