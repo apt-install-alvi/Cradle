@@ -225,7 +225,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                       children: [
                         _buildProfileHeader(),
                         const SizedBox(height: 24),
-                        // _buildPersonalDetailsCard(),
+                        _buildPersonalDetailsCard(),
                         // const SizedBox(height: 20),
                         // _buildMedicalHistoryCard(),
                         const SizedBox(height: 28),
@@ -288,6 +288,79 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         ),
         const SizedBox(height: 4),
         Text(_userEmail, style: const TextStyle(fontSize: 13, color: subText)),
+      ],
+    );
+  }
+// --- All other helper methods (_sectionCard, _buildTextField, etc.) remain exactly the same ---
+
+  Widget _sectionCard({required String title, required IconData icon, required List<Widget> children}) {
+    return Card(
+      elevation: 3,
+      shadowColor: Colors.black.withOpacity(0.08),
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(children: [Icon(icon, color: primaryPink), const SizedBox(width: 8), Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: darkText))]),
+            const Divider(height: 24),
+            ...children,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({required TextEditingController controller, required String label, required IconData icon, TextInputType keyboardType = TextInputType.text, int maxLines = 1, String? hint, String? Function(String?)? validator}) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      validator: validator,
+      style: const TextStyle(color: darkText),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        prefixIcon: Icon(icon, color: primaryPink),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: primaryPink, width: 1.5)),
+      ),
+    );
+  }
+
+  Widget _buildBloodGroupDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedBloodGroup,
+      decoration: InputDecoration(labelText: 'Blood Group', prefixIcon: const Icon(Icons.bloodtype_outlined, color: primaryPink), filled: true, fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none), enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200))),
+      items: _bloodGroups.map((group) => DropdownMenuItem(value: group, child: Text(group))).toList(),
+      onChanged: (value) => setState(() => _selectedBloodGroup = value),
+      validator: (value) => value == null ? 'Required' : null,
+    );
+  }
+
+  Widget _buildPersonalDetailsCard() {
+    return _sectionCard(
+      title: 'Personal Details',
+      icon: Icons.badge_outlined,
+      children: [
+        _buildTextField(controller: _fullNameController, label: 'Full Name', icon: Icons.person_outline, validator: (v) => (v == null || v.isEmpty) ? 'Required' : null),
+        const SizedBox(height: 16),
+        _buildBloodGroupDropdown(),
+        const SizedBox(height: 16),
+        Row(children: [
+          Expanded(child: _buildTextField(controller: _ageController, label: 'Age', icon: Icons.cake_outlined, keyboardType: TextInputType.number)),
+          const SizedBox(width: 12),
+          Expanded(child: _buildTextField(controller: _weightController, label: 'Weight (kg)', icon: Icons.monitor_weight_outlined, keyboardType: TextInputType.number)),
+        ]),
+        const SizedBox(height: 16),
+        _buildTextField(controller: _heightController, label: 'Height (cm)', icon: Icons.height, keyboardType: TextInputType.number),
+        const SizedBox(height: 16),
+        _buildTextField(controller: _emergencyContactController, label: 'Emergency Contact', icon: Icons.phone_outlined, keyboardType: TextInputType.phone),
       ],
     );
   }
