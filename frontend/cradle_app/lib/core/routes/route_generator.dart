@@ -16,6 +16,7 @@ import 'app_routes.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
+    debugPrint("Requested route: ${settings.name}");
     switch (settings.name) {
       case AppRoutes.splash:
         return MaterialPageRoute(builder: (_) => const SplashPage());
@@ -43,12 +44,18 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const NotificationsPage());
       case AppRoutes.settings:
         return MaterialPageRoute(builder: (_) => const SettingsPage());
-      default:
-        return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Route Error')),
-          ),
-        );
+default:
+  return MaterialPageRoute(
+    builder: (_) => Scaffold(
+      body: Center(
+        child: Text(
+          'Route oasa\n\nRequested route:\n${settings.name}',
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 22),
+        ),
+      ),
+    ),
+  );
     }
   }
 }

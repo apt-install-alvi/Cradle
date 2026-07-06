@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../core/routes/app_routes.dart';
 
 class OtpVerificationPage extends StatefulWidget {
-  final String phoneNumber;
-  final String name;
-
-  const OtpVerificationPage({
-    super.key,
-    required this.phoneNumber,
-    required this.name,
-  });
+  const OtpVerificationPage({super.key});
 
   @override
   State<OtpVerificationPage> createState() => _OtpVerificationPageState();
@@ -37,7 +31,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         // Correct OTP - Navigate to Dashboard
         Navigator.pushNamedAndRemoveUntil(
           context,
-          '/dashboard',
+          AppRoutes.dashboard,
           (route) => false,
         );
       } else {
@@ -53,6 +47,10 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     const Color primaryColor = Color(0xFFF7F2F6);
     const Color secondaryColor = Color(0xFFEE93B4);
     const Color textColor = Color(0xFF4A3E48);
+
+    // Extract arguments from route settings
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
+    final phoneNumber = args?['phoneNumber'] ?? '';
 
     return Scaffold(
       backgroundColor: primaryColor,
@@ -75,7 +73,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: secondaryColor.withOpacity(0.2),
+                          color: secondaryColor.withValues(alpha: 0.2),
                           blurRadius: 20,
                           spreadRadius: 5,
                         ),
@@ -88,7 +86,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
-                            color: secondaryColor.withOpacity(0.1),
+                            color: secondaryColor.withValues(alpha: 0.1),
                             child: const Icon(
                               Icons.child_care,
                               size: 55,
@@ -137,10 +135,10 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'আপনার ${widget.phoneNumber} নম্বরে পাঠানো কোডটি লিখুন',
+                          'আপনার $phoneNumber নম্বরে পাঠানো কোডটি লিখুন',
                           style: TextStyle(
                             fontSize: 13,
-                            color: textColor.withOpacity(0.7),
+                            color: textColor.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -170,7 +168,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       ),
                       hintText: '১২৩৪৫৬',
                       hintStyle: TextStyle(
-                        color: textColor.withOpacity(0.3),
+                        color: textColor.withValues(alpha: 0.3),
                         fontSize: 20,
                         letterSpacing: 8.0,
                       ),
@@ -178,7 +176,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: secondaryColor.withOpacity(0.2), width: 1.5),
+                        borderSide: BorderSide(color: secondaryColor.withValues(alpha: 0.2), width: 1.5),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
