@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 6),
                   const Text(
-                    'আপনার সোনামণির সুরক্ষিত যত্ন',
+                    'একজন মায়ের সুরক্ষিত যত্ন',
                     style: TextStyle(
                       fontSize: 14,
                       color: textColor,
@@ -107,31 +107,31 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 50),
                   
-                  // Registration Header (Bangla Text)
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'নিবন্ধন করুন',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'এগিয়ে যেতে আপনার তথ্য প্রদান করুন',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: textColor.withValues(alpha: 0.7),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+ // Registration Header (Center Aligned)
+Center(
+  child: Column(
+    children: [
+      const Text(
+        'নিবন্ধন করুন',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: textColor,
+        ),
+      ),
+      const SizedBox(height: 6),
+      Text(
+        'এগিয়ে যেতে আপনার তথ্য প্রদান করুন',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 13,
+          color: textColor.withValues(alpha: 0.7),
+        ),
+      ),
+    ],
+  ),
+),
                   const SizedBox(height: 32),
 
                   // Name Field (Bangla Label & Hint)
