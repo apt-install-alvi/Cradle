@@ -223,8 +223,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // _buildProfileHeader(),
-                        // const SizedBox(height: 24),
+                        _buildProfileHeader(),
+                        const SizedBox(height: 24),
                         // _buildPersonalDetailsCard(),
                         // const SizedBox(height: 20),
                         // _buildMedicalHistoryCard(),
@@ -242,6 +242,56 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       ),
     );
   }
+  // ============================================================
+  // UPDATED SECTION: Profile Header with Photo Change Option
+  // ============================================================
+  Widget _buildProfileHeader() {
+    return Column(
+      children: [
+        Stack(
+          children: [
+            CircleAvatar(
+              radius: 44,
+              backgroundColor: primaryPink.withOpacity(0.15),
+              backgroundImage: _pickedImage != null
+                  ? (kIsWeb
+                  ? NetworkImage(_pickedImage!.path)
+                  : FileImage(File(_pickedImage!.path)) as ImageProvider)
+                  : null,
+              child: _pickedImage == null
+                  ? const Icon(Icons.person, size: 48, color: primaryPink)
+                  : null,
+            ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: _pickImage, // Calls the gallery
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: const BoxDecoration(
+                    color: primaryPink,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        const Text('Welcome back,', style: TextStyle(fontSize: 14, color: subText)),
+        const SizedBox(height: 2),
+        Text(
+          _fullNameController.text.isNotEmpty ? _fullNameController.text : 'Mother',
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: darkText),
+        ),
+        const SizedBox(height: 4),
+        Text(_userEmail, style: const TextStyle(fontSize: 13, color: subText)),
+      ],
+    );
+  }
+
   Widget _readOnlyInfoBox({required IconData icon, required String label, required String value}) {
     return Container(
       padding: const EdgeInsets.all(12),
