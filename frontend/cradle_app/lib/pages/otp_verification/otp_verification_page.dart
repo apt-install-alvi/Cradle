@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/routes/app_routes.dart';
 
 class OtpVerificationPage extends StatefulWidget {
@@ -44,7 +45,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   @override
   Widget build(BuildContext context) {
     const Color primaryColor = Color(0xFFF7F2F6);
-    const Color secondaryColor = Color(0xFFEE93B4);
+    const Color secondaryColor = Color(0xFFAB0A65);
     const Color textColor = Color(0xFF4A3E48);
 
     // Extract arguments from route settings
@@ -79,20 +80,20 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       ],
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(55),
-                      child: Image.asset(
-                        'assets/images/splash.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: secondaryColor.withValues(alpha: 0.1),
-                            child: const Icon(
-                              Icons.child_care,
-                              size: 55,
-                              color: secondaryColor,
-                            ),
-                          );
-                        },
+                      // borderRadius: BorderRadius.circular(55),
+                      child: SvgPicture.asset(
+                        'assets/images/Logo.svg',
+                        fit: BoxFit.contain,
+                        // errorBuilder: (context, error, stackTrace) {
+                        //   return Container(
+                        //     color: secondaryColor.withValues(alpha: 0.1),
+                        //     child: const Icon(
+                        //       Icons.child_care,
+                        //       size: 55,
+                        //       color: secondaryColor,
+                        //     ),
+                        //   );
+                        // },
                       ),
                     ),
                   ),

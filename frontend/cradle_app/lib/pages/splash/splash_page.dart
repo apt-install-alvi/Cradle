@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/routes/app_routes.dart';
 
 class SplashPage extends StatefulWidget {
@@ -112,9 +113,8 @@ _textScale = Tween<double>(
 
   @override
   Widget build(BuildContext context) {
-    // Theme colors as requested by user
     const Color primaryColor = Color(0xFFF7F2F6); // Main background
-    const Color secondaryColor = Color(0xFFEE93B4); // Icons, texts, etc.
+    const Color secondaryColor = Color(0xFFAB0A65); // Icons, texts, etc.
 
     return Scaffold(
       backgroundColor: primaryColor,
@@ -137,34 +137,34 @@ FadeTransition(
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: secondaryColor.withOpacity(0.2),
+            color: secondaryColor.withValues(alpha: 0.2),
             blurRadius: 30,
             spreadRadius: 8,
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(70),
-        child: Image.asset(
-          'assets/images/splash.png',
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              color: secondaryColor.withOpacity(0.1),
-              child: const Icon(
-                Icons.child_care,
-                size: 70,
-                color: secondaryColor,
-              ),
-            );
-          },
+        // borderRadius: BorderRadius.circular(70),
+        child: SvgPicture.asset(
+          'assets/images/Logo.svg',
+          fit: BoxFit.contain,
+          // errorBuilder: (context, error, stackTrace) {
+          //   return Container(
+          //     color: secondaryColor.withValues(alpha: 0.1),
+          //     child: const Icon(
+          //       Icons.child_care,
+          //       size: 70,
+          //       color: secondaryColor,
+          //     ),
+          //   );
+          // },
         ),
       ),
     ),
   ),
 ),
                     
-                  const SizedBox(height: 24),
+const SizedBox(height: 24),
                   
 // 2. Animated App Name "Cradle"
 FadeTransition(
