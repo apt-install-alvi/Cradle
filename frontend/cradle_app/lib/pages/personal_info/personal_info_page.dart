@@ -102,8 +102,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       _userEmail = _testEmail;
-      _fullNameController.text = authProvider.userName.isNotEmpty 
-          ? authProvider.userName 
+      _fullNameController.text = authProvider.userName.isNotEmpty
+          ? authProvider.userName
           : 'মা';
       _emergencyContactController.text = _testEmergencyContact;
     } catch (e) {
@@ -212,6 +212,21 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         backgroundColor: primaryPink,
         foregroundColor: Colors.white,
         elevation: 0,
+        // --- ADDED LOGOUT BUTTON HERE ---
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'লগ আউট',
+            onPressed: () {
+              // Clear session and return to login
+              Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.login,
+                      (route) => false
+              );
+            },
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: primaryPink))
