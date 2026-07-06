@@ -104,10 +104,10 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       _userEmail = _testEmail;
       _fullNameController.text = authProvider.userName.isNotEmpty 
           ? authProvider.userName 
-          : 'Mother';
+          : 'মা';
       _emergencyContactController.text = _testEmergencyContact;
     } catch (e) {
-      _showSnackBar('Failed to load profile: $e', isError: true);
+      _showSnackBar('প্রোফাইল লোড করতে ব্যর্থ হয়েছে: $e', isError: true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -131,7 +131,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       initialDate: _lmpDate ?? now,
       firstDate: DateTime(now.year - 2),
       lastDate: now,
-      helpText: 'Select Last Menstrual Period',
+      helpText: 'শেষ মাসিকের সময়কাল নির্বাচন করুন',
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -149,15 +149,15 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   Future<void> saveProfile() async {
     if (!_formKey.currentState!.validate()) {
-      _showSnackBar('Please fill all required fields correctly.', isError: true);
+      _showSnackBar('অনুগ্রহ করে সকল প্রয়োজনীয় ক্ষেত্র সঠিকভাবে পূরণ করুন ।', isError: true);
       return;
     }
     if (_selectedBloodGroup == null) {
-      _showSnackBar('Please select your blood group.', isError: true);
+      _showSnackBar('অনুগ্রহ করে আপনার রক্তের গ্রুপ নির্বাচন করুন ।', isError: true);
       return;
     }
     if (_lmpDate == null) {
-      _showSnackBar('Please select your Last Menstrual Period (LMP).', isError: true);
+      _showSnackBar('অনুগ্রহ করে আপনার শেষ মাসিকের সময় (LMP) নির্বাচন করুন । ', isError: true);
       return;
     }
 
@@ -182,9 +182,9 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
       await Future.delayed(const Duration(milliseconds: 600));
       debugPrint('TEST MODE — profile data saved: $profileData');
-      _showSnackBar('Profile saved successfully! (test mode)');
+      _showSnackBar('প্রোফাইল সফলভাবে সংরক্ষিত!');
     } catch (e) {
-      _showSnackBar('Failed to save profile: $e', isError: true);
+      _showSnackBar('প্রোফাইল সংরক্ষণ করতে ব্যর্থ হয়েছে: $e', isError: true);
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -207,7 +207,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     return Scaffold(
       backgroundColor: lightPink.withOpacity(0.4),
       appBar: AppBar(
-        title: const Text('Personal Information', style: TextStyle(fontWeight: FontWeight.w600)),
+        title: const Text('ব্যক্তিগত তথ্য', style: TextStyle(fontWeight: FontWeight.w600)),
         centerTitle: true,
         backgroundColor: primaryPink,
         foregroundColor: Colors.white,
@@ -287,10 +287,10 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           ],
         ),
         const SizedBox(height: 12),
-        const Text('Welcome back,', style: TextStyle(fontSize: 14, color: subText)),
+        const Text('আবার স্বাগতম,', style: TextStyle(fontSize: 14, color: subText)),
         const SizedBox(height: 2),
         Text(
-          _fullNameController.text.isNotEmpty ? _fullNameController.text : 'Mother',
+          _fullNameController.text.isNotEmpty ? _fullNameController.text : 'মা',
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: darkText),
         ),
         const SizedBox(height: 4),
@@ -344,7 +344,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   Widget _buildBloodGroupDropdown() {
     return DropdownButtonFormField<String>(
       value: _selectedBloodGroup,
-      decoration: InputDecoration(labelText: 'Blood Group', prefixIcon: const Icon(Icons.bloodtype_outlined, color: primaryPink), filled: true, fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none), enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200))),
+      decoration: InputDecoration(labelText: 'রক্তের গ্রুপ', prefixIcon: const Icon(Icons.bloodtype_outlined, color: primaryPink), filled: true, fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none), enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200))),
       items: _bloodGroups.map((group) => DropdownMenuItem(value: group, child: Text(group))).toList(),
       onChanged: (value) => setState(() => _selectedBloodGroup = value),
       validator: (value) => value == null ? 'Required' : null,
@@ -353,48 +353,48 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   Widget _buildPersonalDetailsCard() {
     return _sectionCard(
-      title: 'Personal Details',
+      title: 'ব্যক্তিগত বিবরণ',
       icon: Icons.badge_outlined,
       children: [
-        _buildTextField(controller: _fullNameController, label: 'Full Name', icon: Icons.person_outline, validator: (v) => (v == null || v.isEmpty) ? 'Required' : null),
+        _buildTextField(controller: _fullNameController, label: 'পুরো নাম', icon: Icons.person_outline, validator: (v) => (v == null || v.isEmpty) ? 'প্রয়োজন' : null),
         const SizedBox(height: 16),
         _buildBloodGroupDropdown(),
         const SizedBox(height: 16),
         Row(children: [
-          Expanded(child: _buildTextField(controller: _ageController, label: 'Age', icon: Icons.cake_outlined, keyboardType: TextInputType.number)),
+          Expanded(child: _buildTextField(controller: _ageController, label: 'বয়স', icon: Icons.cake_outlined, keyboardType: TextInputType.number)),
           const SizedBox(width: 12),
-          Expanded(child: _buildTextField(controller: _weightController, label: 'Weight (kg)', icon: Icons.monitor_weight_outlined, keyboardType: TextInputType.number)),
+          Expanded(child: _buildTextField(controller: _weightController, label: 'ওজন (কেজি)', icon: Icons.monitor_weight_outlined, keyboardType: TextInputType.number)),
         ]),
         const SizedBox(height: 16),
-        _buildTextField(controller: _heightController, label: 'Height (cm)', icon: Icons.height, keyboardType: TextInputType.number),
+        _buildTextField(controller: _heightController, label: 'উচ্চতা (সেমি)', icon: Icons.height, keyboardType: TextInputType.number),
         const SizedBox(height: 16),
-        _buildTextField(controller: _emergencyContactController, label: 'Emergency Contact', icon: Icons.phone_outlined, keyboardType: TextInputType.phone),
+        _buildTextField(controller: _emergencyContactController, label: 'জরুরী যোগাযোগ', icon: Icons.phone_outlined, keyboardType: TextInputType.phone),
       ],
     );
   }
 
   Widget _buildMedicalHistoryCard() {
     return _sectionCard(
-      title: 'Medical History',
+      title: 'মেডিকেল ইতিহাস',
       icon: Icons.medical_information_outlined,
       children: [
         InkWell(
           onTap: _pickLmpDate,
           child: InputDecorator(
-            decoration: InputDecoration(labelText: 'LMP Date', prefixIcon: const Icon(Icons.calendar_today, color: primaryPink), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-            child: Text(_lmpDate != null ? DateFormat('dd MMM yyyy').format(_lmpDate!) : 'Select Date'),
+            decoration: InputDecoration(labelText: 'LMP তারিখ', prefixIcon: const Icon(Icons.calendar_today, color: primaryPink), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+            child: Text(_lmpDate != null ? DateFormat('dd MMM yyyy').format(_lmpDate!) : 'নির্বাচিত তারিখ'),
           ),
         ),
         const SizedBox(height: 16),
         Row(children: [
-          Expanded(child: _readOnlyInfoBox(icon: Icons.pregnant_woman, label: 'Week', value: _pregnancyWeek != null ? 'Week $_pregnancyWeek' : '--')),
+          Expanded(child: _readOnlyInfoBox(icon: Icons.pregnant_woman, label: 'সপ্তাহ', value: _pregnancyWeek != null ? 'সপ্তাহ $_pregnancyWeek' : '--')),
           const SizedBox(width: 12),
-          Expanded(child: _readOnlyInfoBox(icon: Icons.event, label: 'Due Date', value: _estimatedDueDate != null ? DateFormat('dd MMM yyyy').format(_estimatedDueDate!) : '--')),
+          Expanded(child: _readOnlyInfoBox(icon: Icons.event, label: 'বাকি তারিখ', value: _estimatedDueDate != null ? DateFormat('dd MMM yyyy').format(_estimatedDueDate!) : '--')),
         ]),
         const SizedBox(height: 16),
-        _buildTextField(controller: _allergiesController, label: 'Allergies', icon: Icons.warning_amber, maxLines: 2),
+        _buildTextField(controller: _allergiesController, label: 'এলার্জি', icon: Icons.warning_amber, maxLines: 2),
         const SizedBox(height: 16),
-        _buildTextField(controller: _longTermDiseasesController, label: 'Diseases', icon: Icons.local_hospital, maxLines: 2),
+        _buildTextField(controller: _longTermDiseasesController, label: 'রোগ', icon: Icons.local_hospital, maxLines: 2),
       ],
     );
   }
@@ -413,9 +413,9 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   Widget _buildActionButtons() {
     return Row(
       children: [
-        Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel'))),
+        Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(context), child: const Text('বাতিল করুন'))),
         const SizedBox(width: 16),
-        Expanded(flex: 2, child: ElevatedButton(onPressed: saveProfile, style: ElevatedButton.styleFrom(backgroundColor: primaryPink), child: const Text('Save Information', style: TextStyle(color: Colors.white)))),
+        Expanded(flex: 2, child: ElevatedButton(onPressed: saveProfile, style: ElevatedButton.styleFrom(backgroundColor: primaryPink), child: const Text('তথ্য সংরক্ষণ করুন', style: TextStyle(color: Colors.white)))),
       ],
     );
   }
