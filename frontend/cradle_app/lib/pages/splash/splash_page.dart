@@ -11,8 +11,9 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   late AnimationController _controller;
   late Animation<double> _imageOpacity;
   late Animation<double> _imageScale;
-  late Animation<double> _textOpacity;
-  late Animation<Offset> _textSlide;
+late Animation<double> _textOpacity;
+late Animation<Offset> _textSlide;
+late Animation<double> _textScale;
 
   @override
   void initState() {
@@ -38,23 +39,48 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
       ),
     );
 
-    // Fade in and slide up for the "Cradle" text name
-    _textOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.4, 0.9, curve: Curves.easeInOut),
-      ),
-    );
+// Smooth text animation
+_textOpacity = Tween<double>(
+  begin: 0,
+  end: 1,
+).animate(
+  CurvedAnimation(
+    parent: _controller,
+    curve: const Interval(
+      0.25,
+      0.85,
+      curve: Curves.easeOutCubic,
+    ),
+  ),
+);
 
-    _textSlide = Tween<Offset>(
-      begin: const Offset(0.0, 0.25),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.4, 0.9, curve: Curves.easeOutQuad),
-      ),
-    );
+_textSlide = Tween<Offset>(
+  begin: const Offset(0, 0.08),
+  end: Offset.zero,
+).animate(
+  CurvedAnimation(
+    parent: _controller,
+    curve: const Interval(
+      0.25,
+      0.85,
+      curve: Curves.easeOutCubic,
+    ),
+  ),
+);
+
+_textScale = Tween<double>(
+  begin: 0.96,
+  end: 1.0,
+).animate(
+  CurvedAnimation(
+    parent: _controller,
+    curve: const Interval(
+      0.25,
+      0.85,
+      curve: Curves.easeOutCubic,
+    ),
+  ),
+);
 
     _controller.forward().then((_) {
       _checkLoginState();
@@ -144,27 +170,25 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                   ),
                   const SizedBox(height: 24),
                   
-                  // 2. Animated App Name "Cradle"
-                  AnimatedBuilder(
-                    animation: _controller,
-                    builder: (context, child) {
-                      return FractionalTranslation(
-                        translation: _textSlide.value,
-                        child: Opacity(
-                          opacity: _textOpacity.value,
-                          child: const Text(
-                            'Cradle',
-                            style: TextStyle(
-                              fontSize: 38,
-                              fontWeight: FontWeight.w800,
-                              color: secondaryColor,
-                              letterSpacing: 3.0,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+// 2. Animated App Name "Cradle"
+FadeTransition(
+  opacity: _textOpacity,
+  child: SlideTransition(
+    position: _textSlide,
+    child: ScaleTransition(
+      scale: _textScale,
+      child: const Text(
+        'Cradle',
+        style: TextStyle(
+          fontSize: 38,
+          fontWeight: FontWeight.w800,
+          color: secondaryColor,
+          letterSpacing: 3,
+        ),
+      ),
+    ),
+  ),
+),
                 ],
               ),
             ),
