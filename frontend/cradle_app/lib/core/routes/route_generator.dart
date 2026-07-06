@@ -27,7 +27,7 @@ class RouteGenerator {
       case AppRoutes.personalInfo:
         return MaterialPageRoute(builder: (_) => const PersonalInfoPage());
       case AppRoutes.dashboard:
-        return MaterialPageRoute(builder: (_) => const DashboardPage());
+        return MaterialPageRoute(builder: (_) => const DashboardScreen());
       case AppRoutes.symptomInput:
         return MaterialPageRoute(builder: (_) => const SymptomInputPage());
       case AppRoutes.riskAssessment:
