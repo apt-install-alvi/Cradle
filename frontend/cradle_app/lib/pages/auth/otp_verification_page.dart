@@ -1,37 +1,50 @@
 import 'package:flutter/material.dart';
-import 'otp_verification_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class OtpVerificationPage extends StatefulWidget {
+  final String phoneNumber;
+  final String name;
+
+  const OtpVerificationPage({
+    super.key,
+    required this.phoneNumber,
+    required this.name,
+  });
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<OtpVerificationPage> createState() => _OtpVerificationPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _OtpVerificationPageState extends State<OtpVerificationPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _phoneController = TextEditingController();
+  final _otpController = TextEditingController();
+  String? _errorMessage;
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
+    _otpController.dispose();
     super.dispose();
   }
 
-  void _submitForm() {
+  void _verifyOtp() {
+    setState(() {
+      _errorMessage = null;
+    });
+
     if (_formKey.currentState!.validate()) {
-      // Navigate to OTP verification page
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => OtpVerificationPage(
-            phoneNumber: _phoneController.text.trim(),
-            name: _nameController.text.trim(),
-          ),
-        ),
-      );
+      final enteredOtp = _otpController.text.trim();
+      // Dummy verification (OTP: 123456)
+      if (enteredOtp == '123456') {
+        // Correct OTP - Navigate to Dashboard
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/dashboard',
+          (route) => false,
+        );
+      } else {
+        setState(() {
+          _errorMessage = 'ভুল ওটিপি কোড! অনুগ্রহ করে ১২৩৪৫৬ ব্যবহার করুন।';
+        });
+      }
     }
   }
 
@@ -54,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 30),
-                  // Logo from Splash Screen
+                  // Logo at the same position
                   Container(
                     width: 110,
                     height: 110,
@@ -108,23 +121,23 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 50),
                   
-                  // Registration Header (Bangla Text)
+                  // OTP Header
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'নিবন্ধন করুন',
+                          'ওটিপি যাচাইকরণ',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: textColor,
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 8),
                         Text(
-                          'এগিয়ে যেতে আপনার তথ্য প্রদান করুন',
+                          'আপনার ${widget.phoneNumber} নম্বরে পাঠানো কোডটি লিখুন',
                           style: TextStyle(
                             fontSize: 13,
                             color: textColor.withOpacity(0.7),
@@ -135,17 +148,32 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Name Field (Bangla Label & Hint)
+                  // OTP Input Field
                   TextFormField(
-                    controller: _nameController,
-                    keyboardType: TextInputType.name,
-                    style: const TextStyle(color: textColor, fontSize: 16),
+                    controller: _otpController,
+                    keyboardType: TextInputType.number,
+                    maxLength: 6,
+                    style: const TextStyle(
+                      color: textColor,
+                      fontSize: 22,
+                      letterSpacing: 8.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                     decoration: InputDecoration(
-                      labelText: 'নাম',
-                      labelStyle: const TextStyle(color: secondaryColor, fontSize: 14),
-                      hintText: 'আপনার সম্পূর্ণ নাম লিখুন',
-                      hintStyle: TextStyle(color: textColor.withOpacity(0.4), fontSize: 14),
-                      prefixIcon: const Icon(Icons.person_outline, color: secondaryColor),
+                      counterText: '',
+                      labelText: 'ওটিপি কোড',
+                      labelStyle: const TextStyle(
+                        color: secondaryColor,
+                        fontSize: 14,
+                        letterSpacing: 0.0,
+                      ),
+                      hintText: '১২৩৪৫৬',
+                      hintStyle: TextStyle(
+                        color: textColor.withOpacity(0.3),
+                        fontSize: 20,
+                        letterSpacing: 8.0,
+                      ),
                       filled: true,
                       fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
@@ -168,55 +196,28 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'দয়া করে আপনার নাম লিখুন';
+                        return 'দয়া করে ওটিপি কোডটি লিখুন';
+                      }
+                      if (value.trim().length != 6) {
+                        return 'ওটিপি কোডটি ৬ ডিজিটের হতে হবে';
                       }
                       return null;
                     },
                   ),
-                  const SizedBox(height: 20),
-
-                  // Phone Field (Bangla Label & Hint)
-                  TextFormField(
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    style: const TextStyle(color: textColor, fontSize: 16),
-                    decoration: InputDecoration(
-                      labelText: 'মোবাইল নম্বর',
-                      labelStyle: const TextStyle(color: secondaryColor, fontSize: 14),
-                      hintText: '১১ ডিজিটের মোবাইল নম্বর',
-                      hintStyle: TextStyle(color: textColor.withOpacity(0.4), fontSize: 14),
-                      prefixIcon: const Icon(Icons.phone_outlined, color: secondaryColor),
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: secondaryColor.withOpacity(0.2), width: 1.5),
+                  
+                  if (_errorMessage != null) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      _errorMessage!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: secondaryColor, width: 2.0),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: Colors.redAccent, width: 2.0),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
                     ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'দয়া করে আপনার মোবাইল নম্বর লিখুন';
-                      }
-                      final phoneRegExp = RegExp(r'^(?:\+88|88)?(01[3-9]\d{8})$');
-                      if (!phoneRegExp.hasMatch(value.trim())) {
-                        return 'দয়া করে একটি সঠিক মোবাইল নম্বর লিখুন';
-                      }
-                      return null;
-                    },
-                  ),
+                  ],
+                  
                   const SizedBox(height: 40),
 
                   // Done Button
@@ -224,7 +225,7 @@ class _LoginPageState extends State<LoginPage> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: _submitForm,
+                      onPressed: _verifyOtp,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: secondaryColor,
                         foregroundColor: Colors.white,
@@ -234,7 +235,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       child: const Text(
-                        'এগিয়ে যান',
+                        'সম্পন্ন করুন',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -242,7 +243,30 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
+                  
+                  // Resend Code Button
+                  TextButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'ওটিপি পুনরায় পাঠানো হয়েছে (১২৩৪৫৬)',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          backgroundColor: secondaryColor,
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'আবার কোড পাঠান',
+                      style: TextStyle(
+                        color: secondaryColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
