@@ -226,8 +226,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                         _buildProfileHeader(),
                         const SizedBox(height: 24),
                         _buildPersonalDetailsCard(),
-                        // const SizedBox(height: 20),
-                        // _buildMedicalHistoryCard(),
+                        const SizedBox(height: 20),
+                        _buildMedicalHistoryCard(),
                         const SizedBox(height: 28),
                         _buildActionButtons(),
                         const SizedBox(height: 20),
@@ -242,6 +242,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       ),
     );
   }
+
   // ============================================================
   // UPDATED SECTION: Profile Header with Photo Change Option
   // ============================================================
@@ -291,7 +292,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       ],
     );
   }
-// --- All other helper methods (_sectionCard, _buildTextField, etc.) remain exactly the same ---
+
+  // --- All other helper methods (_sectionCard, _buildTextField, etc.) remain exactly the same ---
 
   Widget _sectionCard({required String title, required IconData icon, required List<Widget> children}) {
     return Card(
@@ -361,6 +363,32 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         _buildTextField(controller: _heightController, label: 'Height (cm)', icon: Icons.height, keyboardType: TextInputType.number),
         const SizedBox(height: 16),
         _buildTextField(controller: _emergencyContactController, label: 'Emergency Contact', icon: Icons.phone_outlined, keyboardType: TextInputType.phone),
+      ],
+    );
+  }
+
+  Widget _buildMedicalHistoryCard() {
+    return _sectionCard(
+      title: 'Medical History',
+      icon: Icons.medical_information_outlined,
+      children: [
+        InkWell(
+          onTap: _pickLmpDate,
+          child: InputDecorator(
+            decoration: InputDecoration(labelText: 'LMP Date', prefixIcon: const Icon(Icons.calendar_today, color: primaryPink), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+            child: Text(_lmpDate != null ? DateFormat('dd MMM yyyy').format(_lmpDate!) : 'Select Date'),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(children: [
+          Expanded(child: _readOnlyInfoBox(icon: Icons.pregnant_woman, label: 'Week', value: _pregnancyWeek != null ? 'Week $_pregnancyWeek' : '--')),
+          const SizedBox(width: 12),
+          Expanded(child: _readOnlyInfoBox(icon: Icons.event, label: 'Due Date', value: _estimatedDueDate != null ? DateFormat('dd MMM yyyy').format(_estimatedDueDate!) : '--')),
+        ]),
+        const SizedBox(height: 16),
+        _buildTextField(controller: _allergiesController, label: 'Allergies', icon: Icons.warning_amber, maxLines: 2),
+        const SizedBox(height: 16),
+        _buildTextField(controller: _longTermDiseasesController, label: 'Diseases', icon: Icons.local_hospital, maxLines: 2),
       ],
     );
   }
