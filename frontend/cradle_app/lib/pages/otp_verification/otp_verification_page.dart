@@ -29,10 +29,9 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
       // Dummy verification (OTP: 123456)
       if (enteredOtp == '123456') {
         // Correct OTP - Navigate to Dashboard
-        Navigator.pushNamedAndRemoveUntil(
+        Navigator.pushNamed(
           context,
           AppRoutes.dashboard,
-          (route) => false,
         );
       } else {
         setState(() {
