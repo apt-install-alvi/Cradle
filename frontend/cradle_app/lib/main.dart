@@ -22,7 +22,7 @@ class CradleApp extends StatelessWidget {
         title: 'Cradle',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        initialRoute: AppRoutes.splash,
+        initialRoute: AppRoutes.personalInfo,
         onGenerateRoute: RouteGenerator.generateRoute,
         debugShowCheckedModeBanner: false,
       ),

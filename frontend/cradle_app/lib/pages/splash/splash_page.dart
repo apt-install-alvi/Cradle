@@ -14,14 +14,14 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   late AnimationController _controller;
   late Animation<double> _imageOpacity;
   late Animation<double> _imageScale;
-late Animation<double> _textOpacity;
-late Animation<Offset> _textSlide;
-late Animation<double> _textScale;
+  late Animation<double> _textOpacity;
+  late Animation<Offset> _textSlide;
+  late Animation<double> _textScale;
 
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 5500),
@@ -43,47 +43,47 @@ late Animation<double> _textScale;
     );
 
 // Smooth text animation
-_textOpacity = Tween<double>(
-  begin: 0,
-  end: 1,
-).animate(
-  CurvedAnimation(
-    parent: _controller,
-    curve: const Interval(
-      0.25,
-      0.85,
-      curve: Curves.easeOutCubic,
-    ),
-  ),
-);
+    _textOpacity = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(
+          0.25,
+          0.85,
+          curve: Curves.easeOutCubic,
+        ),
+      ),
+    );
 
-_textSlide = Tween<Offset>(
-  begin: const Offset(0, 0.08),
-  end: Offset.zero,
-).animate(
-  CurvedAnimation(
-    parent: _controller,
-    curve: const Interval(
-      0.25,
-      0.85,
-      curve: Curves.easeOutCubic,
-    ),
-  ),
-);
+    _textSlide = Tween<Offset>(
+      begin: const Offset(0, 0.08),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(
+          0.25,
+          0.85,
+          curve: Curves.easeOutCubic,
+        ),
+      ),
+    );
 
-_textScale = Tween<double>(
-  begin: 0.96,
-  end: 1.0,
-).animate(
-  CurvedAnimation(
-    parent: _controller,
-    curve: const Interval(
-      0.25,
-      0.85,
-      curve: Curves.easeOutCubic,
-    ),
-  ),
-);
+    _textScale = Tween<double>(
+      begin: 0.96,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(
+          0.25,
+          0.85,
+          curve: Curves.easeOutCubic,
+        ),
+      ),
+    );
 
     _controller.forward().then((_) {
       _checkLoginState();
@@ -103,7 +103,7 @@ _textScale = Tween<double>(
 
     // Check login/session state
     // Replace the boolean value below with actual auth check integration (e.g. FirebaseAuth status or SharedPreferences token check)
-    const bool isLoggedIn = false; 
+    const bool isLoggedIn = false;
 
     if (isLoggedIn) {
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
@@ -195,7 +195,7 @@ FadeTransition(
                 ],
               ),
             ),
-            
+
             // 3. Subtle Animated Progress indicator at the bottom
             Positioned(
               bottom: 48,
@@ -226,5 +226,4 @@ FadeTransition(
     );
   }
 }
-
 
