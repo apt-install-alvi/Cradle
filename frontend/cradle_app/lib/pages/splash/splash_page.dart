@@ -146,7 +146,7 @@ _textScale = Tween<double>(
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(70),
                               child: Image.asset(
-                                 'assets/images/splash.png',
+                                'assets/images/splash.png',
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   // Fallback in case asset is not fully declared in pubspec.yaml
