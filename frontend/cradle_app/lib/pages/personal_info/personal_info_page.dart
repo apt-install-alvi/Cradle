@@ -3,6 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart'; // NEW
 import 'dart:io'; // NEW (for File)
 import 'package:flutter/foundation.dart' show kIsWeb; // NEW (for Web check)
+import 'package:provider/provider.dart'; // NEW
+import '../../providers/auth_provider.dart'; // NEW
+import '../../core/routes/app_routes.dart'; // NEW
 
 // ----------------------------------------------------------------
 // TEST MODE: Firebase is not wired up yet.
@@ -37,9 +40,9 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   static const Color darkText = Color(0xFF33293A);
   static const Color subText = Color(0xFF8A7E8D);
 
-  static const String _testFullName = 'Ariful';
-  static const String _testEmail = 'ariful@example.com';
-  static const String _testEmergencyContact = '019369365656';
+  // static const String _testFullName = 'Ariful';
+  static const String _testEmail = 'xyz@example.com';
+  static const String _testEmergencyContact = '01xxxxxxxxx';
 
   final _formKey = GlobalKey<FormState>();
 
@@ -83,7 +86,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     _longTermDiseasesController.dispose();
     super.dispose();
   }
-
+//
   // --- NEW PHOTO PICKING METHOD ---
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -97,8 +100,11 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   Future<void> loadProfile() async {
     setState(() => _isLoading = true);
     try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
       _userEmail = _testEmail;
-      _fullNameController.text = _testFullName;
+      _fullNameController.text = authProvider.userName.isNotEmpty 
+          ? authProvider.userName 
+          : 'Mother';
       _emergencyContactController.text = _testEmergencyContact;
     } catch (e) {
       _showSnackBar('Failed to load profile: $e', isError: true);

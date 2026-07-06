@@ -16,7 +16,22 @@ import 'app_routes.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
+// For debugging: helpful to see what route is being requested
+debugPrint('Navigating to route: ${settings.name}');
+
+// Some platforms might pass the route with or without a leading slash.
+// We normalize it here to match our AppRoutes constants.
+String? routeName = settings.name;
+if (routeName != null && routeName != '/') {
+if (routeName.endsWith('/')) {
+routeName = routeName.substring(0, routeName.length - 1);
+}
+if (!routeName.startsWith('/')) {
+routeName = '/$routeName';
+}
+}
+
+switch (routeName) {
       case AppRoutes.splash:
         return MaterialPageRoute(builder: (_) => const SplashPage());
       case AppRoutes.login:
@@ -45,8 +60,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const SettingsPage());
       default:
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Route Error')),
+          builder: (_) =>  Scaffold(
+            body: Center(child: Text('Route Error:$routeName')),
           ),
         );
     }
