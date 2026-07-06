@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'otp_verification_page.dart';
+import '../../core/routes/app_routes.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,15 +22,14 @@ class _LoginPageState extends State<LoginPage> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      // Navigate to OTP verification page
-      Navigator.push(
+      // Navigate to OTP verification page using named route with arguments
+      Navigator.pushNamed(
         context,
-        MaterialPageRoute(
-          builder: (context) => OtpVerificationPage(
-            phoneNumber: _phoneController.text.trim(),
-            name: _nameController.text.trim(),
-          ),
-        ),
+        AppRoutes.otp,
+        arguments: {
+          'phoneNumber': _phoneController.text.trim(),
+          'name': _nameController.text.trim(),
+        },
       );
     }
   }
@@ -62,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: secondaryColor.withOpacity(0.2),
+                          color: secondaryColor.withValues(alpha: 0.2),
                           blurRadius: 20,
                           spreadRadius: 5,
                         ),
@@ -75,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
-                            color: secondaryColor.withOpacity(0.1),
+                            color: secondaryColor.withValues(alpha: 0.1),
                             child: const Icon(
                               Icons.child_care,
                               size: 55,
@@ -127,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                           'এগিয়ে যেতে আপনার তথ্য প্রদান করুন',
                           style: TextStyle(
                             fontSize: 13,
-                            color: textColor.withOpacity(0.7),
+                            color: textColor.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -144,13 +143,13 @@ class _LoginPageState extends State<LoginPage> {
                       labelText: 'নাম',
                       labelStyle: const TextStyle(color: secondaryColor, fontSize: 14),
                       hintText: 'আপনার সম্পূর্ণ নাম লিখুন',
-                      hintStyle: TextStyle(color: textColor.withOpacity(0.4), fontSize: 14),
+                      hintStyle: TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 14),
                       prefixIcon: const Icon(Icons.person_outline, color: secondaryColor),
                       filled: true,
                       fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: secondaryColor.withOpacity(0.2), width: 1.5),
+                        borderSide: BorderSide(color: secondaryColor.withValues(alpha: 0.2), width: 1.5),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -184,13 +183,13 @@ class _LoginPageState extends State<LoginPage> {
                       labelText: 'মোবাইল নম্বর',
                       labelStyle: const TextStyle(color: secondaryColor, fontSize: 14),
                       hintText: '১১ ডিজিটের মোবাইল নম্বর',
-                      hintStyle: TextStyle(color: textColor.withOpacity(0.4), fontSize: 14),
+                      hintStyle: TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 14),
                       prefixIcon: const Icon(Icons.phone_outlined, color: secondaryColor),
                       filled: true,
                       fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: secondaryColor.withOpacity(0.2), width: 1.5),
+                        borderSide: BorderSide(color: secondaryColor.withValues(alpha: 0.2), width: 1.5),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
