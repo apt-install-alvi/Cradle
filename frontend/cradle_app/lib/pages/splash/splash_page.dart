@@ -125,12 +125,10 @@ _textScale = Tween<double>(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // 1. Animated Logo
-                  AnimatedBuilder(
-                    animation: _controller,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _imageScale.value,
-                        child: Opacity(
+ FadeTransition(
+  opacity: _imageOpacity,
+  child: ScaleTransition(
+    scale: _imageScale,
                           opacity: _imageOpacity.value,
                           child: Container(
                             width: 140,
@@ -163,11 +161,8 @@ _textScale = Tween<double>(
                                 },
                               ),
                             ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+    
+                    
                   const SizedBox(height: 24),
                   
 // 2. Animated App Name "Cradle"
