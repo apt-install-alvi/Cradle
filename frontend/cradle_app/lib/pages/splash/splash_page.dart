@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/routes/app_routes.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -103,9 +104,9 @@ _textScale = Tween<double>(
     const bool isLoggedIn = false; 
 
     if (isLoggedIn) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
+      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     } else {
-      Navigator.pushReplacementNamed(context, '/register');
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
     }
   }
 
@@ -125,44 +126,44 @@ _textScale = Tween<double>(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // 1. Animated Logo
- FadeTransition(
-  opacity: _imageOpacity,
-  child: ScaleTransition(
-    scale: _imageScale,
-                          opacity: _imageOpacity.value,
-                          child: Container(
-                            width: 140,
-                            height: 140,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: secondaryColor.withOpacity(0.2),
-                                  blurRadius: 30,
-                                  spreadRadius: 8,
+                  FadeTransition(
+                    opacity: _imageOpacity,
+                    child: ScaleTransition(
+                      scale: _imageScale,
+                      child: Container(
+                        width: 140,
+                        height: 140,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: secondaryColor.withOpacity(0.2),
+                              blurRadius: 30,
+                              spreadRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(70),
+                          child: Image.asset(
+                            'assets/images/splash.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              // Fallback in case asset is not fully declared in pubspec.yaml
+                              return Container(
+                                color: secondaryColor.withOpacity(0.1),
+                                child: const Icon(
+                                  Icons.child_care,
+                                  size: 70,
+                                  color: secondaryColor,
                                 ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(70),
-                              child: Image.asset(
-                                 'assets/images/splash.png',
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  // Fallback in case asset is not fully declared in pubspec.yaml
-                                  return Container(
-                                    color: secondaryColor.withOpacity(0.1),
-                                    child: const Icon(
-                                      Icons.child_care,
-                                      size: 70,
-                                      color: secondaryColor,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-    
-                    
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   
 // 2. Animated App Name "Cradle"
