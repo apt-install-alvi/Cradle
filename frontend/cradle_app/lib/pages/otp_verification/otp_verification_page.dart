@@ -110,7 +110,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   ),
                   const SizedBox(height: 6),
                   const Text(
-                    'আপনার সোনামণির সুরক্ষিত যত্ন',
+                    'একজন মায়ের সুরক্ষিত যত্ন',
                     style: TextStyle(
                       fontSize: 14,
                       color: textColor,
@@ -120,30 +120,31 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   const SizedBox(height: 50),
                   
                   // OTP Header
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'ওটিপি যাচাইকরণ',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'আপনার $phoneNumber নম্বরে পাঠানো কোডটি লিখুন',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: textColor.withValues(alpha: 0.7),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+    // OTP Verification Header (Center Aligned)
+Center(
+  child: Column(
+    children: [
+      const Text(
+        'ওটিপি যাচাইকরণ',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: textColor,
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        'আপনার $phoneNumber নম্বরে পাঠানো কোডটি লিখুন',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 13,
+          color: textColor.withValues(alpha: 0.7),
+        ),
+      ),
+    ],
+  ),
+),
                   const SizedBox(height: 32),
 
                   // OTP Input Field
