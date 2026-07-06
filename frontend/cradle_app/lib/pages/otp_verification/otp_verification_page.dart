@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/routes/app_routes.dart';
 
 class OtpVerificationPage extends StatefulWidget {
@@ -99,9 +100,9 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   ),
                   const SizedBox(height: 12),
                   // "Cradle" Name
-                  const Text(
+                  Text(
                     'Cradle',
-                    style: TextStyle(
+                    style: GoogleFonts.geom(
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
                       color: secondaryColor,

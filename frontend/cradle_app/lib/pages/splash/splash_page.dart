@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/routes/app_routes.dart';
 
 class SplashPage extends StatefulWidget {
@@ -173,14 +174,20 @@ FadeTransition(
     position: _textSlide,
     child: ScaleTransition(
       scale: _textScale,
-      child: const Text(
+      child: Text(
         'Cradle',
-        style: TextStyle(
-          fontSize: 38,
-          fontWeight: FontWeight.w800,
-          color: secondaryColor,
-          letterSpacing: 3,
-        ),
+        style: GoogleFonts.geom(
+        fontSize: 38,
+        fontWeight: FontWeight.w800,
+        color: secondaryColor,
+        letterSpacing: 3,
+      ),
+        // TextStyle(
+        //   fontSize: 38,
+        //   fontWeight: FontWeight.w800,
+        //   color: secondaryColor,
+        //   letterSpacing: 3,
+        // ),
       ),
     ),
   ),
