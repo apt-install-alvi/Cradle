@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart'; // NEW
 import 'dart:io'; // NEW (for File)
 import 'package:flutter/foundation.dart' show kIsWeb; // NEW (for Web check)
-
+//
 // ----------------------------------------------------------------
 // TEST MODE: Firebase is not wired up yet.
 // When you're ready to connect Firebase, uncomment the two imports
