@@ -137,7 +137,7 @@ FadeTransition(
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: secondaryColor.withOpacity(0.2),
+            color: secondaryColor.withValues(alpha: 0.2),
             blurRadius: 30,
             spreadRadius: 8,
           ),
@@ -150,7 +150,7 @@ FadeTransition(
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
             return Container(
-              color: secondaryColor.withOpacity(0.1),
+              color: secondaryColor.withValues(alpha: 0.1),
               child: const Icon(
                 Icons.child_care,
                 size: 70,
