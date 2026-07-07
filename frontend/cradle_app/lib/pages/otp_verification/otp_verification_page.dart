@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../../core/routes/app_routes.dart';
 import '../../providers/auth_provider.dart';
+import '../../core/routes/app_routes.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   const OtpVerificationPage({super.key});
@@ -53,7 +55,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   @override
   Widget build(BuildContext context) {
     const Color primaryColor = Color(0xFFF7F2F6);
-    const Color secondaryColor = Color(0xFFEE93B4);
+    const Color secondaryColor = Color(0xFFAB0A65);
     const Color textColor = Color(0xFF4A3E48);
 
     // Extract arguments from route settings
@@ -88,28 +90,28 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       ],
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(55),
-                      child: Image.asset(
-                        'assets/images/splash.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: secondaryColor.withValues(alpha: 0.1),
-                            child: const Icon(
-                              Icons.child_care,
-                              size: 55,
-                              color: secondaryColor,
-                            ),
-                          );
-                        },
+                      // borderRadius: BorderRadius.circular(55),
+                      child: SvgPicture.asset(
+                        'assets/images/Logo.svg',
+                        fit: BoxFit.contain,
+                        // errorBuilder: (context, error, stackTrace) {
+                        //   return Container(
+                        //     color: secondaryColor.withValues(alpha: 0.1),
+                        //     child: const Icon(
+                        //       Icons.child_care,
+                        //       size: 55,
+                        //       color: secondaryColor,
+                        //     ),
+                        //   );
+                        // },
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
                   // "Cradle" Name
-                  const Text(
+                  Text(
                     'Cradle',
-                    style: TextStyle(
+                    style: GoogleFonts.geom(
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
                       color: secondaryColor,
