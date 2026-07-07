@@ -87,14 +87,14 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   }
 //
   // --- NEW PHOTO PICKING METHOD ---
-  Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _pickedImage = image;
-      });
-    }
-  }
+  // Future<void> _pickImage() async {
+  //   final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+  //   if (image != null) {
+  //     setState(() {
+  //       _pickedImage = image;
+  //     });
+  //   }
+  // }
 
   Future<void> loadProfile() async {
     setState(() => _isLoading = true);
@@ -287,7 +287,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
               bottom: 0,
               right: 0,
               child: GestureDetector(
-                onTap: _pickImage, // Calls the gallery
+                // onTap: _pickImage, // Calls the gallery
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: const BoxDecoration(

@@ -36,7 +36,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         final name = args?['name'] ?? 'Mother';
 
         // Save name to AuthProvider
-        Provider.of<AuthProvider>(context, listen: false).setUserName(name);
+        // Provider.of<AuthProvider>(context, listen: false).setUserName(name);
 
         // Correct OTP - Navigate to Dashboard
         Navigator.pushNamed(
