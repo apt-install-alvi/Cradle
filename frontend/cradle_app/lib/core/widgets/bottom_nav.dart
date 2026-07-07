@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../routes/app_routes.dart';
 
 class DashboardBottomNav extends StatelessWidget {
   const DashboardBottomNav({
@@ -64,7 +65,7 @@ class DashboardBottomNav extends StatelessWidget {
               icon: "assets/icons/profile.svg",
               label: "Profile",
               index: 3,
-              route: "/profile",
+              route: AppRoutes.personalInfo,
             ),
           ],
         ),

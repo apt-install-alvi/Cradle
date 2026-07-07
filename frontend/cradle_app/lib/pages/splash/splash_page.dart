@@ -103,8 +103,9 @@ _textScale = Tween<double>(
 
     // Check login/session state
     // Replace the boolean value below with actual auth check integration (e.g. FirebaseAuth status or SharedPreferences token check)
-    const bool isLoggedIn = false; 
+    bool isLoggedIn = false; 
 
+    // ignore: dead_code
     if (isLoggedIn) {
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     } else {

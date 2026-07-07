@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../core/routes/app_routes.dart';
 
 class OtpVerificationPage extends StatefulWidget {
@@ -30,6 +32,13 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
       final enteredOtp = _otpController.text.trim();
       // Dummy verification (OTP: 123456)
       if (enteredOtp == '123456') {
+        // Extract arguments
+        final args = ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
+        final name = args?['name'] ?? 'Mother';
+
+        // Save name to AuthProvider
+        Provider.of<AuthProvider>(context, listen: false).setUserName(name);
+
         // Correct OTP - Navigate to Dashboard
         Navigator.pushNamed(
           context,
