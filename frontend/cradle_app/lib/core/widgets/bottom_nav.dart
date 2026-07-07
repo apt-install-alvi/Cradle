@@ -64,7 +64,7 @@ class DashboardBottomNav extends StatelessWidget {
               icon: "assets/icons/profile.svg",
               label: "Profile",
               index: 3,
-              route: "/profile",
+              route: "/personal-info",
             ),
           ],
         ),

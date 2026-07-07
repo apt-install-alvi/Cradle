@@ -34,10 +34,10 @@ class PersonalInfoPage extends StatefulWidget {
 }
 
 class _PersonalInfoPageState extends State<PersonalInfoPage> {
-  static const Color primaryPink = Color(0xFFE96487);
+  static const Color primaryPink = Color(0xFFAB0A65);
   static const Color lightPink = Color(0xFFFDECF1);
   static const Color darkText = Color(0xFF33293A);
-  static const Color subText = Color(0xFF8A7E8D);
+  static const Color subText = Color(0xFF5A535B);
 
   // static const String _testFullName = 'Ariful';
   static const String _testEmail = 'xyz@example.com';
@@ -87,14 +87,14 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   }
 //
   // --- NEW PHOTO PICKING METHOD ---
-  // Future<void> _pickImage() async {
-  //   final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-  //   if (image != null) {
-  //     setState(() {
-  //       _pickedImage = image;
-  //     });
-  //   }
-  // }
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _pickedImage = image;
+      });
+    }
+  }
 
   Future<void> loadProfile() async {
     setState(() => _isLoading = true);
@@ -204,7 +204,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: lightPink.withOpacity(0.4),
+      backgroundColor: lightPink.withValues(alpha: 0.4),
       appBar: AppBar(
         title: const Text('ব্যক্তিগত তথ্য', style: TextStyle(fontWeight: FontWeight.w600)),
         centerTitle: true,
@@ -273,7 +273,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           children: [
             CircleAvatar(
               radius: 44,
-              backgroundColor: primaryPink.withOpacity(0.15),
+              backgroundColor: primaryPink.withValues(alpha: 0.15),
               backgroundImage: _pickedImage != null
                   ? (kIsWeb
                   ? NetworkImage(_pickedImage!.path)
@@ -287,7 +287,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
               bottom: 0,
               right: 0,
               child: GestureDetector(
-                // onTap: _pickImage, // Calls the gallery
+                onTap: _pickImage, // Calls the gallery
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: const BoxDecoration(
@@ -318,7 +318,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   Widget _sectionCard({required String title, required IconData icon, required List<Widget> children}) {
     return Card(
       elevation: 3,
-      shadowColor: Colors.black.withOpacity(0.08),
+      shadowColor: Colors.black.withValues(alpha: 0.08),
       color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: Padding(
@@ -357,7 +357,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   Widget _buildBloodGroupDropdown() {
     return DropdownButtonFormField<String>(
-      value: _selectedBloodGroup,
+      initialValue: _selectedBloodGroup,
       decoration: InputDecoration(labelText: 'রক্তের গ্রুপ', prefixIcon: const Icon(Icons.bloodtype_outlined, color: primaryPink), filled: true, fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none), enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200))),
       items: _bloodGroups.map((group) => DropdownMenuItem(value: group, child: Text(group))).toList(),
       onChanged: (value) => setState(() => _selectedBloodGroup = value),
@@ -427,7 +427,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   Widget _buildActionButtons() {
     return Row(
       children: [
-        Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(context), child: const Text('বাতিল করুন'))),
+        Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(context), child: const Text(
+          'বাতিল করুন'))),
         const SizedBox(width: 16),
         Expanded(flex: 2, child: ElevatedButton(onPressed: saveProfile, style: ElevatedButton.styleFrom(backgroundColor: primaryPink), child: const Text('তথ্য সংরক্ষণ করুন', style: TextStyle(color: Colors.white)))),
       ],

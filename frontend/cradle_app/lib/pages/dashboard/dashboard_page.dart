@@ -1,3 +1,4 @@
+import 'package:cradle_app/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -56,7 +57,7 @@ class DashboardScreen extends StatelessWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(16),
                       onTap: () {
-                        // TODO: Navigate to settings
+                        Navigator.pushReplacementNamed(context, AppRoutes.settings);
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(10),

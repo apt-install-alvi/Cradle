@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/routes/app_routes.dart';
-import '../../providers/auth_provider.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   const OtpVerificationPage({super.key});
