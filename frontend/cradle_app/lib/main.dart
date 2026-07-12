@@ -4,6 +4,7 @@ import 'core/routes/app_routes.dart';
 import 'core/routes/route_generator.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
+import 'providers/language_provider.dart';
 
 void main() {
   runApp(const CradleApp());
@@ -17,6 +18,7 @@ class CradleApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ],
       child: MaterialApp(
         title: 'Cradle',
@@ -29,3 +31,4 @@ class CradleApp extends StatelessWidget {
     );
   }
 }
+

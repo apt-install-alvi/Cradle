@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/language_provider.dart';
 import '../../core/routes/app_routes.dart';
 
 class OtpVerificationPage extends StatefulWidget {
@@ -45,8 +46,11 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           AppRoutes.dashboard,
         );
       } else {
+        final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
         setState(() {
-          _errorMessage = 'ভুল ওটিপি কোড! অনুগ্রহ করে ১২৩৪৫৬ ব্যবহার করুন।';
+          _errorMessage = isBangla
+              ? 'ভুল ওটিপি কোড! অনুগ্রহ করে ১২৩৪৫৬ ব্যবহার করুন।'
+              : 'Invalid OTP code! Please use 123456.';
         });
       }
     }
@@ -62,6 +66,24 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
     final phoneNumber = args?['phoneNumber'] ?? '';
 
+    final languageProvider = context.watch<LanguageProvider>();
+    final bool isBangla = languageProvider.isBangla;
+
+    final String subtitle = isBangla ? 'একজন মায়ের সুরক্ষিত যত্ন' : "A Mother's Secure Care";
+    final String otpHeader = isBangla ? 'ওটিপি যাচাইকরণ' : 'OTP Verification';
+    final String otpSub = isBangla
+        ? 'আপনার $phoneNumber নম্বরে পাঠানো কোডটি লিখুন'
+        : 'Enter the code sent to your number $phoneNumber';
+    final String otpLabel = isBangla ? 'ওটিপি কোড' : 'OTP Code';
+    final String otpHint = isBangla ? '১২৩৪৫৬' : '123456';
+    final String otpError = isBangla ? 'দয়া করে ওটিপি কোডটি লিখুন' : 'Please enter the OTP code';
+    final String otpLengthError = isBangla ? 'ওটিপি কোডটি ৬ ডিজিটের হতে হবে' : 'OTP code must be 6 digits';
+    final String submitBtn = isBangla ? 'সম্পন্ন করুন' : 'Verify & Proceed';
+    final String resendBtn = isBangla ? 'আবার কোড পাঠান' : 'Resend Code';
+    final String resendMessage = isBangla
+        ? 'ওটিপি পুনরায় পাঠানো হয়েছে (১২৩৪৫৬)'
+        : 'OTP has been resent (123456)';
+
     return Scaffold(
       backgroundColor: primaryColor,
       body: SafeArea(
@@ -74,7 +96,59 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 30),
+                  // Language Toggle Switch at top right
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(25),
+                        border: Border.all(color: secondaryColor.withValues(alpha: 0.2)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          GestureDetector(
+                            onTap: () => context.read<LanguageProvider>().setLanguage(false),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: !isBangla ? secondaryColor : Colors.transparent,
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: Text(
+                                'English',
+                                style: TextStyle(
+                                  color: !isBangla ? Colors.white : textColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => context.read<LanguageProvider>().setLanguage(true),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: isBangla ? secondaryColor : Colors.transparent,
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: Text(
+                                'বাংলা',
+                                style: TextStyle(
+                                  color: isBangla ? Colors.white : textColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
                   // Logo at the same position
                   Container(
                     width: 110,
@@ -90,20 +164,9 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       ],
                     ),
                     child: ClipRRect(
-                      // borderRadius: BorderRadius.circular(55),
                       child: SvgPicture.asset(
                         'assets/images/Logo.svg',
                         fit: BoxFit.contain,
-                        // errorBuilder: (context, error, stackTrace) {
-                        //   return Container(
-                        //     color: secondaryColor.withValues(alpha: 0.1),
-                        //     child: const Icon(
-                        //       Icons.child_care,
-                        //       size: 55,
-                        //       color: secondaryColor,
-                        //     ),
-                        //   );
-                        // },
                       ),
                     ),
                   ),
@@ -111,7 +174,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   // "Cradle" Name
                   Text(
                     'Cradle',
-                    style: GoogleFonts.geom(
+                    style: GoogleFonts.geo(
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
                       color: secondaryColor,
@@ -119,9 +182,9 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
-                    'একজন মায়ের সুরক্ষিত যত্ন',
-                    style: TextStyle(
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: textColor,
                       fontWeight: FontWeight.w500,
@@ -129,32 +192,31 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   ),
                   const SizedBox(height: 50),
                   
-                  // OTP Header
-    // OTP Verification Header (Center Aligned)
-Center(
-  child: Column(
-    children: [
-      const Text(
-        'ওটিপি যাচাইকরণ',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: textColor,
-        ),
-      ),
-      const SizedBox(height: 8),
-      Text(
-        'আপনার $phoneNumber নম্বরে পাঠানো কোডটি লিখুন',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 13,
-          color: textColor.withValues(alpha: 0.7),
-        ),
-      ),
-    ],
-  ),
-),
+                  // OTP Verification Header (Center Aligned)
+                  Center(
+                    child: Column(
+                      children: [
+                        Text(
+                          otpHeader,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          otpSub,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: textColor.withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 32),
 
                   // OTP Input Field
@@ -171,13 +233,13 @@ Center(
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
                       counterText: '',
-                      labelText: 'ওটিপি কোড',
+                      labelText: otpLabel,
                       labelStyle: const TextStyle(
                         color: secondaryColor,
                         fontSize: 14,
                         letterSpacing: 0.0,
                       ),
-                      hintText: '১২৩৪৫৬',
+                      hintText: otpHint,
                       hintStyle: TextStyle(
                         color: textColor.withValues(alpha: 0.3),
                         fontSize: 20,
@@ -205,10 +267,10 @@ Center(
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'দয়া করে ওটিপি কোডটি লিখুন';
+                        return otpError;
                       }
                       if (value.trim().length != 6) {
-                        return 'ওটিপি কোডটি ৬ ডিজিটের হতে হবে';
+                        return otpLengthError;
                       }
                       return null;
                     },
@@ -243,9 +305,9 @@ Center(
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: const Text(
-                        'সম্পন্ন করুন',
-                        style: TextStyle(
+                      child: Text(
+                        submitBtn,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -258,18 +320,18 @@ Center(
                   TextButton(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text(
-                            'ওটিপি পুনরায় পাঠানো হয়েছে (১২৩৪৫৬)',
-                            style: TextStyle(fontSize: 14),
+                            resendMessage,
+                            style: const TextStyle(fontSize: 14),
                           ),
                           backgroundColor: secondaryColor,
                         ),
                       );
                     },
-                    child: const Text(
-                      'আবার কোড পাঠান',
-                      style: TextStyle(
+                    child: Text(
+                      resendBtn,
+                      style: const TextStyle(
                         color: secondaryColor,
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

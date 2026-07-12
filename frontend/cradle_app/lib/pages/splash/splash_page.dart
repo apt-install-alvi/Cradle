@@ -177,7 +177,7 @@ FadeTransition(
       scale: _textScale,
       child: Text(
         'Cradle',
-        style: GoogleFonts.geom(
+        style: GoogleFonts.geo(
         fontSize: 38,
         fontWeight: FontWeight.w800,
         color: secondaryColor,

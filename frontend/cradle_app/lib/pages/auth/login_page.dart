@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../core/routes/app_routes.dart';
+import '../../providers/language_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -42,6 +44,21 @@ class _LoginPageState extends State<LoginPage> {
     const Color secondaryColor = Color(0xFFAB0A65);
     const Color textColor = Color(0xFF4A3E48);
 
+    final languageProvider = context.watch<LanguageProvider>();
+    final bool isBangla = languageProvider.isBangla;
+
+    final String subtitle = isBangla ? 'একজন মায়ের সুরক্ষিত যত্ন' : "A Mother's Secure Care";
+    final String registerHeader = isBangla ? 'নিবন্ধন করুন' : 'Register';
+    final String registerSub = isBangla ? 'এগিয়ে যেতে আপনার তথ্য প্রদান করুন' : 'Provide your details to proceed';
+    final String nameLabel = isBangla ? 'নাম' : 'Name';
+    final String nameHint = isBangla ? 'আপনার সম্পূর্ণ নাম লিখুন' : 'Enter your full name';
+    final String nameError = isBangla ? 'দয়া করে আপনার নাম লিখুন' : 'Please enter your name';
+    final String phoneLabel = isBangla ? 'মোবাইল নম্বর' : 'Mobile Number';
+    final String phoneHint = isBangla ? '১১ ডিজিটের মোবাইল নম্বর' : '11-digit mobile number';
+    final String phoneError = isBangla ? 'দয়া করে আপনার মোবাইল নম্বর লিখুন' : 'Please enter your mobile number';
+    final String phoneInvalidError = isBangla ? 'দয়া করে একটি সঠিক মোবাইল নম্বর লিখুন' : 'Please enter a valid mobile number';
+    final String submitBtn = isBangla ? 'এগিয়ে যান' : 'Proceed';
+
     return Scaffold(
       backgroundColor: primaryColor,
       body: SafeArea(
@@ -54,7 +71,59 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 30),
+                  // Language Toggle Switch at top right
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(25),
+                        border: Border.all(color: secondaryColor.withValues(alpha: 0.2)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          GestureDetector(
+                            onTap: () => context.read<LanguageProvider>().setLanguage(false),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: !isBangla ? secondaryColor : Colors.transparent,
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: Text(
+                                'English',
+                                style: TextStyle(
+                                  color: !isBangla ? Colors.white : textColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => context.read<LanguageProvider>().setLanguage(true),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: isBangla ? secondaryColor : Colors.transparent,
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: Text(
+                                'বাংলা',
+                                style: TextStyle(
+                                  color: isBangla ? Colors.white : textColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
                   // Logo from Splash Screen
                   Container(
                     width: 110,
@@ -73,16 +142,6 @@ class _LoginPageState extends State<LoginPage> {
                       child: SvgPicture.asset(
                         'assets/images/Logo.svg',
                         fit: BoxFit.contain,
-                        // errorBuilder: (context, error, stackTrace) {
-                        //   return Container(
-                        //     color: secondaryColor.withValues(alpha: 0.1),
-                        //     child: const Icon(
-                        //       Icons.child_care,
-                        //       size: 55,
-                        //       color: secondaryColor,
-                        //     ),
-                        //   );
-                        // },
                       ),
                     ),
                   ),
@@ -90,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                   // "Cradle" Name
                   Text(
                     'Cradle',
-                    style: GoogleFonts.geom(
+                    style: GoogleFonts.geo(
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
                       color: secondaryColor,
@@ -98,9 +157,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
-                    'একজন মায়ের সুরক্ষিত যত্ন',
-                    style: TextStyle(
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: textColor,
                       fontWeight: FontWeight.w500,
@@ -108,42 +167,42 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 50),
                   
- // Registration Header (Center Aligned)
-Center(
-  child: Column(
-    children: [
-      const Text(
-        'নিবন্ধন করুন',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: textColor,
-        ),
-      ),
-      const SizedBox(height: 6),
-      Text(
-        'এগিয়ে যেতে আপনার তথ্য প্রদান করুন',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 13,
-          color: textColor.withValues(alpha: 0.7),
-        ),
-      ),
-    ],
-  ),
-),
+                  // Registration Header (Center Aligned)
+                  Center(
+                    child: Column(
+                      children: [
+                        Text(
+                          registerHeader,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          registerSub,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: textColor.withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 32),
 
-                  // Name Field (Bangla Label & Hint)
+                  // Name Field
                   TextFormField(
                     controller: _nameController,
                     keyboardType: TextInputType.name,
                     style: const TextStyle(color: textColor, fontSize: 16),
                     decoration: InputDecoration(
-                      labelText: 'নাম',
+                      labelText: nameLabel,
                       labelStyle: const TextStyle(color: secondaryColor, fontSize: 14),
-                      hintText: 'আপনার সম্পূর্ণ নাম লিখুন',
+                      hintText: nameHint,
                       hintStyle: TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 14),
                       prefixIcon: const Icon(Icons.person_outline, color: secondaryColor),
                       filled: true,
@@ -168,22 +227,22 @@ Center(
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'দয়া করে আপনার নাম লিখুন';
+                        return nameError;
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 20),
 
-                  // Phone Field (Bangla Label & Hint)
+                  // Phone Field
                   TextFormField(
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
                     style: const TextStyle(color: textColor, fontSize: 16),
                     decoration: InputDecoration(
-                      labelText: 'মোবাইল নম্বর',
+                      labelText: phoneLabel,
                       labelStyle: const TextStyle(color: secondaryColor, fontSize: 14),
-                      hintText: '১১ ডিজিটের মোবাইল নম্বর',
+                      hintText: phoneHint,
                       hintStyle: TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 14),
                       prefixIcon: const Icon(Icons.phone_outlined, color: secondaryColor),
                       filled: true,
@@ -208,11 +267,11 @@ Center(
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'দয়া করে আপনার মোবাইল নম্বর লিখুন';
+                        return phoneError;
                       }
                       final phoneRegExp = RegExp(r'^(?:\+88|88)?(01[3-9]\d{8})$');
                       if (!phoneRegExp.hasMatch(value.trim())) {
-                        return 'দয়া করে একটি সঠিক মোবাইল নম্বর লিখুন';
+                        return phoneInvalidError;
                       }
                       return null;
                     },
@@ -233,9 +292,9 @@ Center(
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: const Text(
-                        'এগিয়ে যান',
-                        style: TextStyle(
+                      child: Text(
+                        submitBtn,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
