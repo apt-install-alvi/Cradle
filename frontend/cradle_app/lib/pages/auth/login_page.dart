@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               child: Text(
                                 'English',
-                                style: TextStyle(
+                                style: GoogleFonts.gentiumBookPlus(
                                   color: !isBangla ? Colors.white : textColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
@@ -149,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                   // "Cradle" Name
                   Text(
                     'Cradle',
-                    style: GoogleFonts.geo(
+                    style: GoogleFonts.geom(
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
                       color: secondaryColor,
@@ -159,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 6),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: GoogleFonts.geom(
                       fontSize: 14,
                       color: textColor,
                       fontWeight: FontWeight.w500,
@@ -174,20 +174,32 @@ class _LoginPageState extends State<LoginPage> {
                         Text(
                           registerHeader,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                          ),
+                          style: isBangla
+                              ? const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
+                                )
+                              : GoogleFonts.gentiumBookPlus(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
+                                ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           registerSub,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: textColor.withValues(alpha: 0.7),
-                          ),
+                          style: isBangla
+                              ? TextStyle(
+                                  fontSize: 13,
+                                  color: textColor.withValues(alpha: 0.7),
+                                )
+                              : GoogleFonts.gentiumBookPlus(
+                                  fontSize: 13,
+                                  color: textColor.withValues(alpha: 0.7),
+                                  fontWeight: FontWeight.bold,
+                                ),
                         ),
                       ],
                     ),
@@ -198,12 +210,30 @@ class _LoginPageState extends State<LoginPage> {
                   TextFormField(
                     controller: _nameController,
                     keyboardType: TextInputType.name,
-                    style: const TextStyle(color: textColor, fontSize: 16),
+                    style: isBangla
+                        ? const TextStyle(color: textColor, fontSize: 16)
+                        : GoogleFonts.gentiumBookPlus(
+                            color: textColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                     decoration: InputDecoration(
                       labelText: nameLabel,
-                      labelStyle: const TextStyle(color: secondaryColor, fontSize: 14),
+                      labelStyle: isBangla
+                          ? const TextStyle(color: secondaryColor, fontSize: 14)
+                          : GoogleFonts.gentiumBookPlus(
+                              color: secondaryColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                       hintText: nameHint,
-                      hintStyle: TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 14),
+                      hintStyle: isBangla
+                          ? TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 14)
+                          : GoogleFonts.gentiumBookPlus(
+                              color: textColor.withValues(alpha: 0.4),
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                       prefixIcon: const Icon(Icons.person_outline, color: secondaryColor),
                       filled: true,
                       fillColor: Colors.white,
@@ -238,12 +268,30 @@ class _LoginPageState extends State<LoginPage> {
                   TextFormField(
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
-                    style: const TextStyle(color: textColor, fontSize: 16),
+                    style: isBangla
+                        ? const TextStyle(color: textColor, fontSize: 16)
+                        : GoogleFonts.gentiumBookPlus(
+                            color: textColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                     decoration: InputDecoration(
                       labelText: phoneLabel,
-                      labelStyle: const TextStyle(color: secondaryColor, fontSize: 14),
+                      labelStyle: isBangla
+                          ? const TextStyle(color: secondaryColor, fontSize: 14)
+                          : GoogleFonts.gentiumBookPlus(
+                              color: secondaryColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                       hintText: phoneHint,
-                      hintStyle: TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 14),
+                      hintStyle: isBangla
+                          ? TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 14)
+                          : GoogleFonts.gentiumBookPlus(
+                              color: textColor.withValues(alpha: 0.4),
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                       prefixIcon: const Icon(Icons.phone_outlined, color: secondaryColor),
                       filled: true,
                       fillColor: Colors.white,
@@ -294,10 +342,15 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       child: Text(
                         submitBtn,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: isBangla
+                            ? const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              )
+                            : GoogleFonts.gentiumBookPlus(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                       ),
                     ),
                   ),

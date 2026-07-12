@@ -184,7 +184,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       debugPrint('TEST MODE — profile data saved: $profileData');
       _showSnackBar('প্রোফাইল সফলভাবে সংরক্ষিত!');
     } catch (e) {
-      _showSnackBar('প্রোফাইল সংরক্ষণ করতে ব্যর্থ হয়েছে: $e', isError: true);
+      _showSnackBar('প্রোফাইল সেভ করতে ব্যর্থ হয়েছে: $e', isError: true);
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -441,7 +441,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                     height: 20,
                     child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                   )
-                : const Text('তথ্য সংরক্ষণ করুন', style: TextStyle(color: Colors.white)),
+                : const Text('সেভ করুন', style: TextStyle(color: Colors.white)),
           ),
         ),
       ],

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../routes/app_routes.dart';
+import '../../providers/language_provider.dart';
 
 class DashboardBottomNav extends StatelessWidget {
   const DashboardBottomNav({
@@ -15,6 +17,9 @@ class DashboardBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = context.watch<LanguageProvider>();
+    final bool isBangla = languageProvider.isBangla;
+
     return SafeArea(
       top: false,
       child: Container(
@@ -39,7 +44,7 @@ class DashboardBottomNav extends StatelessWidget {
             _buildNavItem(
               context,
               icon: "assets/icons/home.svg",
-              label: "Home",
+              label: isBangla ? "হোম" : "Home",
               index: 0,
               route: "/dashboard",
             ),
@@ -47,7 +52,7 @@ class DashboardBottomNav extends StatelessWidget {
             _buildNavItem(
               context,
               icon: "assets/icons/diagnosis.svg",
-              label: "Diagnosis",
+              label: isBangla ? "লক্ষণ" : "Diagnosis",
               index: 1,
               route: "/symptom-input",
             ),
@@ -55,7 +60,7 @@ class DashboardBottomNav extends StatelessWidget {
             _buildNavItem(
               context,
               icon: "assets/icons/guides.svg",
-              label: "Guides",
+              label: isBangla ? "নির্দেশিকা" : "Guides",
               index: 2,
               route: "/guides",
             ),
@@ -63,7 +68,7 @@ class DashboardBottomNav extends StatelessWidget {
             _buildNavItem(
               context,
               icon: "assets/icons/profile.svg",
-              label: "Profile",
+              label: isBangla ? "প্রোফাইল" : "Profile",
               index: 3,
               route: AppRoutes.personalInfo,
             ),

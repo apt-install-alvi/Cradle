@@ -118,7 +118,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                               ),
                               child: Text(
                                 'English',
-                                style: TextStyle(
+                                style: GoogleFonts.gentiumBookPlus(
                                   color: !isBangla ? Colors.white : textColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
@@ -174,21 +174,34 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   // "Cradle" Name
                   Text(
                     'Cradle',
-                    style: GoogleFonts.geo(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
-                      color: secondaryColor,
-                      letterSpacing: 2.0,
-                    ),
+                    style: isBangla
+                        ? GoogleFonts.geo(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w800,
+                            color: secondaryColor,
+                            letterSpacing: 2.0,
+                          )
+                        : GoogleFonts.gentiumBookPlus(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: secondaryColor,
+                            letterSpacing: 2.0,
+                          ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: textColor,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: isBangla
+                        ? const TextStyle(
+                            fontSize: 14,
+                            color: textColor,
+                            fontWeight: FontWeight.w500,
+                          )
+                        : GoogleFonts.gentiumBookPlus(
+                            fontSize: 14,
+                            color: textColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                   ),
                   const SizedBox(height: 50),
                   
@@ -199,20 +212,32 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                         Text(
                           otpHeader,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                          ),
+                          style: isBangla
+                              ? const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
+                                )
+                              : GoogleFonts.gentiumBookPlus(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
+                                ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           otpSub,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: textColor.withValues(alpha: 0.7),
-                          ),
+                          style: isBangla
+                              ? TextStyle(
+                                  fontSize: 13,
+                                  color: textColor.withValues(alpha: 0.7),
+                                )
+                              : GoogleFonts.gentiumBookPlus(
+                                  fontSize: 13,
+                                  color: textColor.withValues(alpha: 0.7),
+                                  fontWeight: FontWeight.bold,
+                                ),
                         ),
                       ],
                     ),
@@ -224,27 +249,48 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     controller: _otpController,
                     keyboardType: TextInputType.number,
                     maxLength: 6,
-                    style: const TextStyle(
-                      color: textColor,
-                      fontSize: 22,
-                      letterSpacing: 8.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: isBangla
+                        ? const TextStyle(
+                            color: textColor,
+                            fontSize: 22,
+                            letterSpacing: 8.0,
+                            fontWeight: FontWeight.bold,
+                          )
+                        : GoogleFonts.gentiumBookPlus(
+                            color: textColor,
+                            fontSize: 22,
+                            letterSpacing: 8.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
                       counterText: '',
                       labelText: otpLabel,
-                      labelStyle: const TextStyle(
-                        color: secondaryColor,
-                        fontSize: 14,
-                        letterSpacing: 0.0,
-                      ),
+                      labelStyle: isBangla
+                          ? const TextStyle(
+                              color: secondaryColor,
+                              fontSize: 14,
+                              letterSpacing: 0.0,
+                            )
+                          : GoogleFonts.gentiumBookPlus(
+                              color: secondaryColor,
+                              fontSize: 14,
+                              letterSpacing: 0.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                       hintText: otpHint,
-                      hintStyle: TextStyle(
-                        color: textColor.withValues(alpha: 0.3),
-                        fontSize: 20,
-                        letterSpacing: 8.0,
-                      ),
+                      hintStyle: isBangla
+                          ? TextStyle(
+                              color: textColor.withValues(alpha: 0.3),
+                              fontSize: 20,
+                              letterSpacing: 8.0,
+                            )
+                          : GoogleFonts.gentiumBookPlus(
+                              color: textColor.withValues(alpha: 0.3),
+                              fontSize: 20,
+                              letterSpacing: 8.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                       filled: true,
                       fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
@@ -281,11 +327,17 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     Text(
                       _errorMessage!,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.redAccent,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: isBangla
+                          ? const TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            )
+                          : GoogleFonts.gentiumBookPlus(
+                              color: Colors.redAccent,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
                     ),
                   ],
                   
@@ -307,10 +359,15 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       ),
                       child: Text(
                         submitBtn,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: isBangla
+                            ? const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              )
+                            : GoogleFonts.gentiumBookPlus(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                       ),
                     ),
                   ),
@@ -323,7 +380,9 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                         SnackBar(
                           content: Text(
                             resendMessage,
-                            style: const TextStyle(fontSize: 14),
+                            style: isBangla
+                                ? const TextStyle(fontSize: 14)
+                                : GoogleFonts.gentiumBookPlus(fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                           backgroundColor: secondaryColor,
                         ),
@@ -331,11 +390,17 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     },
                     child: Text(
                       resendBtn,
-                      style: const TextStyle(
-                        color: secondaryColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: isBangla
+                          ? const TextStyle(
+                              color: secondaryColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            )
+                          : GoogleFonts.gentiumBookPlus(
+                              color: secondaryColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                     ),
                   ),
                 ],
