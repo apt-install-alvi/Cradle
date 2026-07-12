@@ -62,7 +62,7 @@ class DashboardBottomNav extends StatelessWidget {
               icon: "assets/icons/guides.svg",
               label: isBangla ? "নির্দেশিকা" : "Guides",
               index: 2,
-              route: "/guides",
+              route: AppRoutes.education,
             ),
 
             _buildNavItem(
