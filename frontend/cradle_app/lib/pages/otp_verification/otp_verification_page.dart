@@ -40,10 +40,11 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         // Save name to AuthProvider
         Provider.of<AuthProvider>(context, listen: false).setUserName(name);
 
-        // Correct OTP - Navigate to Dashboard
-        Navigator.pushNamed(
+        // Correct OTP - Navigate to Dashboard (clear auth flow from stack)
+        Navigator.pushNamedAndRemoveUntil(
           context,
           AppRoutes.dashboard,
+          (route) => false,
         );
       } else {
         final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;

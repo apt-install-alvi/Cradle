@@ -92,7 +92,7 @@ class DashboardBottomNav extends StatelessWidget {
       onTap: () {
         if (selected) return;
 
-        Navigator.pushReplacementNamed(
+        Navigator.pushNamed(
           context,
           route,
         );
