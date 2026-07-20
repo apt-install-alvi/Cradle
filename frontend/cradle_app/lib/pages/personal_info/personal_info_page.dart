@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart'; // NEW
 import 'dart:io'; // NEW (for File)
 import 'package:flutter/foundation.dart' show kIsWeb; // NEW (for Web check)
 import 'package:provider/provider.dart'; // NEW
+import 'package:google_fonts/google_fonts.dart'; // NEW
 import '../../providers/auth_provider.dart'; // NEW
 import '../../providers/language_provider.dart'; // NEW
 import '../../core/routes/app_routes.dart'; // NEW
@@ -36,10 +37,12 @@ class PersonalInfoPage extends StatefulWidget {
 }
 
 class _PersonalInfoPageState extends State<PersonalInfoPage> {
-  static const Color primaryPink = Color(0xFFE96487);
-  static const Color lightPink = Color(0xFFFDECF1);
-  static const Color darkText = Color(0xFF33293A);
-  static const Color subText = Color(0xFF8A7E8D);
+  // ── Colour constants (Theme matching) ──────────────────────────────
+  static const Color _topGradient = Color(0xFFFFCAE1);
+  static const Color _bottomGradient = Color(0xFFFFE8F2);
+  static const Color _accent = Color(0xFFAB0A65);
+  static const Color _primaryWhite52 = Color(0x85FFFFFF); // #FFF 52%
+  static const Color _secondaryWhite = Color(0xFFFFFFFF);
 
   // static const String _testFullName = 'Ariful';
   static const String _testEmail = 'xyz@example.com';
@@ -142,7 +145,12 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(primary: primaryPink),
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+                  primary: _accent,
+                  onPrimary: _secondaryWhite,
+                  surface: _bottomGradient,
+                  onSurface: _accent,
+                ),
           ),
           child: child!,
         );
@@ -218,8 +226,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red.shade400 : Colors.green.shade500,
+        content: Text(message, style: GoogleFonts.gentiumBookPlus(color: _secondaryWhite)),
+        backgroundColor: isError ? Colors.red.shade700 : _accent,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -232,20 +240,27 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     final bool isBangla = languageProvider.isBangla;
 
     return Scaffold(
-      backgroundColor: lightPink.withValues(alpha: 0.4),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: _accent),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(
           isBangla ? 'ব্যক্তিগত তথ্য' : 'Personal Info',
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: GoogleFonts.gentiumBookPlus(
+            fontWeight: FontWeight.bold,
+            color: _accent,
+            fontSize: 22,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: primaryPink,
-        foregroundColor: Colors.white,
-        elevation: 0,
         // --- ADDED LOGOUT BUTTON HERE ---
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: _accent),
             tooltip: isBangla ? 'লগ আউট' : 'Log Out',
             onPressed: () {
               // Clear session and return to login
@@ -254,39 +269,50 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: primaryPink))
-          : SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final double maxWidth = constraints.maxWidth > 700 ? 650 : constraints.maxWidth;
-                  return Center(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: maxWidth),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _buildProfileHeader(isBangla),
-                              const SizedBox(height: 24),
-                              _buildPersonalDetailsCard(isBangla),
-                              const SizedBox(height: 20),
-                              _buildMedicalHistoryCard(isBangla),
-                              const SizedBox(height: 28),
-                              _buildActionButtons(isBangla),
-                              const SizedBox(height: 20),
-                            ],
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [_topGradient, _bottomGradient],
+          ),
+        ),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator(color: _accent))
+            : SafeArea(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final double maxWidth = constraints.maxWidth > 700 ? 650 : constraints.maxWidth;
+                    return Center(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: maxWidth),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _buildProfileHeader(isBangla),
+                                const SizedBox(height: 24),
+                                _buildPersonalDetailsCard(isBangla),
+                                const SizedBox(height: 20),
+                                _buildMedicalHistoryCard(isBangla),
+                                const SizedBox(height: 28),
+                                _buildActionButtons(isBangla),
+                                const SizedBox(height: 20),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
+      ),
     );
   }
 
@@ -300,11 +326,11 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           children: [
             CircleAvatar(
               radius: 44,
-              backgroundColor: primaryPink.withValues(alpha: 0.15),
+              backgroundColor: _accent.withValues(alpha: 0.15),
               backgroundImage: _pickedImage != null
                   ? (kIsWeb ? NetworkImage(_pickedImage!.path) : FileImage(File(_pickedImage!.path)) as ImageProvider)
                   : null,
-              child: _pickedImage == null ? const Icon(Icons.person, size: 48, color: primaryPink) : null,
+              child: _pickedImage == null ? const Icon(Icons.person, size: 48, color: _accent) : null,
             ),
             Positioned(
               bottom: 0,
@@ -314,45 +340,71 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: const BoxDecoration(
-                    color: primaryPink,
+                    color: _accent,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                  child: const Icon(Icons.camera_alt, color: _secondaryWhite, size: 16),
                 ),
               ),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        Text(isBangla ? 'আবার স্বাগতম,' : 'Welcome back,', style: const TextStyle(fontSize: 14, color: subText)),
+        Text(
+          isBangla ? 'আবার স্বাগতম,' : 'Welcome back,',
+          style: GoogleFonts.gentiumBookPlus(
+            fontSize: 14,
+            color: _accent.withValues(alpha: 0.65),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 2),
         Text(
           _fullNameController.text.isNotEmpty ? _fullNameController.text : (isBangla ? 'মা' : 'Mother'),
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: darkText),
+          style: GoogleFonts.gentiumBookPlus(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: _accent,
+          ),
         ),
         const SizedBox(height: 4),
-        Text(_userEmail, style: const TextStyle(fontSize: 13, color: subText)),
+        Text(
+          _userEmail,
+          style: GoogleFonts.gentiumBookPlus(
+            fontSize: 13,
+            color: _accent.withValues(alpha: 0.55),
+          ),
+        ),
       ],
     );
   }
 
   Widget _sectionCard({required String title, required IconData icon, required List<Widget> children}) {
     return Card(
-      elevation: 3,
-      shadowColor: Colors.black.withValues(alpha: 0.08),
-      color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      elevation: 0,
+      color: _primaryWhite52,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: _accent.withValues(alpha: 0.08)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
-              Icon(icon, color: primaryPink),
+              Icon(icon, color: _accent),
               const SizedBox(width: 8),
-              Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: darkText))
+              Text(
+                title,
+                style: GoogleFonts.gentiumBookPlus(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: _accent,
+                ),
+              )
             ]),
-            const Divider(height: 24),
+            Divider(height: 24, thickness: 0.6, color: _accent.withValues(alpha: 0.08)),
             ...children,
           ],
         ),
@@ -374,16 +426,28 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       keyboardType: keyboardType,
       maxLines: maxLines,
       validator: validator,
-      style: const TextStyle(color: darkText),
+      style: GoogleFonts.gentiumBookPlus(
+        color: _accent,
+        fontWeight: FontWeight.w600,
+      ),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: GoogleFonts.gentiumBookPlus(color: _accent.withValues(alpha: 0.7)),
         hintText: hint,
-        prefixIcon: Icon(icon, color: primaryPink),
+        hintStyle: GoogleFonts.gentiumBookPlus(color: _accent.withValues(alpha: 0.4)),
+        prefixIcon: Icon(icon, color: _accent),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: _secondaryWhite.withValues(alpha: 0.4),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Color(0xFFEEEEEE))),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: primaryPink, width: 1.5)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: _accent.withValues(alpha: 0.15)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: _accent, width: 1.5),
+        ),
+        errorStyle: GoogleFonts.gentiumBookPlus(color: Colors.red.shade800),
       ),
     );
   }
@@ -391,14 +455,27 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   Widget _buildBloodGroupDropdown(bool isBangla) {
     return DropdownButtonFormField<String>(
       initialValue: _selectedBloodGroup,
+      style: GoogleFonts.gentiumBookPlus(
+        color: _accent,
+        fontWeight: FontWeight.w600,
+      ),
       decoration: InputDecoration(
         labelText: isBangla ? 'রক্তের গ্রুপ' : 'Blood Group',
-        prefixIcon: const Icon(Icons.bloodtype_outlined, color: primaryPink),
+        labelStyle: GoogleFonts.gentiumBookPlus(color: _accent.withValues(alpha: 0.7)),
+        prefixIcon: const Icon(Icons.bloodtype_outlined, color: _accent),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: _secondaryWhite.withValues(alpha: 0.4),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Color(0xFFEEEEEE))),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: _accent.withValues(alpha: 0.15)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: _accent, width: 1.5),
+        ),
       ),
+      dropdownColor: _bottomGradient,
       items: _bloodGroups.map((group) => DropdownMenuItem(value: group, child: Text(group))).toList(),
       onChanged: (value) => setState(() => _selectedBloodGroup = value),
       validator: (value) => value == null ? (isBangla ? 'প্রয়োজন' : 'Required') : null,
@@ -466,13 +543,22 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           child: InputDecorator(
             decoration: InputDecoration(
               labelText: isBangla ? 'LMP তারিখ' : 'LMP Date',
-              prefixIcon: const Icon(Icons.calendar_today, color: primaryPink),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              labelStyle: GoogleFonts.gentiumBookPlus(color: _accent, fontWeight: FontWeight.bold),
+              prefixIcon: const Icon(Icons.calendar_today, color: _accent),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: _accent.withValues(alpha: 0.15)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: _accent.withValues(alpha: 0.15)),
+              ),
             ),
             child: Text(
               _lmpDate != null
                   ? DateFormat('dd MMM yyyy').format(_lmpDate!)
                   : (isBangla ? 'নির্বাচিত তারিখ' : 'Select Date'),
+              style: GoogleFonts.gentiumBookPlus(color: _accent, fontWeight: FontWeight.bold),
             ),
           ),
         ),
@@ -515,14 +601,32 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   Widget _readOnlyInfoBox({required IconData icon, required String label, required String value}) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: lightPink, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: _accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Icon(icon, size: 14, color: primaryPink),
+          Icon(icon, size: 14, color: _accent),
           const SizedBox(width: 4),
-          Text(label, style: const TextStyle(fontSize: 10, color: subText))
+          Text(
+            label,
+            style: GoogleFonts.gentiumBookPlus(
+              fontSize: 10,
+              color: _accent.withValues(alpha: 0.65),
+              fontWeight: FontWeight.bold,
+            ),
+          )
         ]),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: GoogleFonts.gentiumBookPlus(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+            color: _accent,
+          ),
+        ),
       ]),
     );
   }
@@ -533,7 +637,21 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         Expanded(
           child: OutlinedButton(
             onPressed: _isSaving ? null : () => Navigator.pop(context),
-            child: Text(isBangla ? 'বাতিল করুন' : 'Cancel'),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: _accent.withValues(alpha: 0.25), width: 1.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            child: Text(
+              isBangla ? 'বাতিল করুন' : 'Cancel',
+              style: GoogleFonts.gentiumBookPlus(
+                color: _accent,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
           ),
         ),
         const SizedBox(width: 16),
@@ -541,14 +659,29 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           flex: 2,
           child: ElevatedButton(
             onPressed: _isSaving ? null : saveProfile,
-            style: ElevatedButton.styleFrom(backgroundColor: primaryPink),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _accent,
+              foregroundColor: _secondaryWhite,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              elevation: 4,
+              shadowColor: _accent.withValues(alpha: 0.35),
+            ),
             child: _isSaving
                 ? const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                    child: CircularProgressIndicator(color: _secondaryWhite, strokeWidth: 2),
                   )
-                : Text(isBangla ? 'সেভ করুন' : 'Save', style: const TextStyle(color: Colors.white)),
+                : Text(
+                    isBangla ? 'সেভ করুন' : 'Save',
+                    style: GoogleFonts.gentiumBookPlus(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
           ),
         ),
       ],
