@@ -5,6 +5,7 @@ import 'dart:io'; // NEW (for File)
 import 'package:flutter/foundation.dart' show kIsWeb; // NEW (for Web check)
 import 'package:provider/provider.dart'; // NEW
 import '../../providers/auth_provider.dart'; // NEW
+import '../../providers/language_provider.dart'; // NEW
 import '../../core/routes/app_routes.dart'; // NEW
 
 // ----------------------------------------------------------------
@@ -86,7 +87,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     _longTermDiseasesController.dispose();
     super.dispose();
   }
-//
+
   // --- NEW PHOTO PICKING METHOD ---
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -101,13 +102,18 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     setState(() => _isLoading = true);
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
       _userEmail = _testEmail;
       _fullNameController.text = authProvider.userName.isNotEmpty
           ? authProvider.userName
-          : 'মা';
+          : (isBangla ? 'মা' : 'Mother');
       _emergencyContactController.text = _testEmergencyContact;
     } catch (e) {
-      _showSnackBar('প্রোফাইল লোড করতে ব্যর্থ হয়েছে: $e', isError: true);
+      final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
+      _showSnackBar(
+        isBangla ? 'প্রোফাইল লোড করতে ব্যর্থ হয়েছে: $e' : 'Failed to load profile: $e',
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -125,13 +131,14 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   }
 
   Future<void> _pickLmpDate() async {
+    final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
     final DateTime now = DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _lmpDate ?? now,
       firstDate: DateTime(now.year - 2),
       lastDate: now,
-      helpText: 'শেষ মাসিকের সময়কাল নির্বাচন করুন',
+      helpText: isBangla ? 'শেষ মাসিকের সময়কাল নির্বাচন করুন' : 'Select Last Menstrual Period Date',
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -148,16 +155,30 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   }
 
   Future<void> saveProfile() async {
+    final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
     if (!_formKey.currentState!.validate()) {
-      _showSnackBar('অনুগ্রহ করে সকল প্রয়োজনীয় ক্ষেত্র সঠিকভাবে পূরণ করুন ।', isError: true);
+      _showSnackBar(
+        isBangla
+            ? 'অনুগ্রহ করে সকল প্রয়োজনীয় ক্ষেত্র সঠিকভাবে পূরণ করুন ।'
+            : 'Please fill all required fields correctly.',
+        isError: true,
+      );
       return;
     }
     if (_selectedBloodGroup == null) {
-      _showSnackBar('অনুগ্রহ করে আপনার রক্তের গ্রুপ নির্বাচন করুন ।', isError: true);
+      _showSnackBar(
+        isBangla ? 'অনুগ্রহ করে আপনার রক্তের গ্রুপ নির্বাচন করুন ।' : 'Please select your blood group.',
+        isError: true,
+      );
       return;
     }
     if (_lmpDate == null) {
-      _showSnackBar('অনুগ্রহ করে আপনার শেষ মাসিকের সময় (LMP) নির্বাচন করুন । ', isError: true);
+      _showSnackBar(
+        isBangla
+            ? 'অনুগ্রহ করে আপনার শেষ মাসিকের সময় (LMP) নির্বাচন করুন । '
+            : 'Please select your last menstrual period (LMP) date.',
+        isError: true,
+      );
       return;
     }
 
@@ -182,9 +203,12 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
       await Future.delayed(const Duration(milliseconds: 600));
       debugPrint('TEST MODE — profile data saved: $profileData');
-      _showSnackBar('প্রোফাইল সফলভাবে সংরক্ষিত!');
+      _showSnackBar(isBangla ? 'প্রোফাইল সফলভাবে সংরক্ষিত!' : 'Profile saved successfully!');
     } catch (e) {
-      _showSnackBar('প্রোফাইল সেভ করতে ব্যর্থ হয়েছে: $e', isError: true);
+      _showSnackBar(
+        isBangla ? 'প্রোফাইল সেভ করতে ব্যর্থ হয়েছে: $e' : 'Failed to save profile: $e',
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -204,10 +228,16 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = context.watch<LanguageProvider>();
+    final bool isBangla = languageProvider.isBangla;
+
     return Scaffold(
       backgroundColor: lightPink.withValues(alpha: 0.4),
       appBar: AppBar(
-        title: const Text('ব্যক্তিগত তথ্য', style: TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(
+          isBangla ? 'ব্যক্তিগত তথ্য' : 'Personal Info',
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
         centerTitle: true,
         backgroundColor: primaryPink,
         foregroundColor: Colors.white,
@@ -216,14 +246,10 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            tooltip: 'লগ আউট',
+            tooltip: isBangla ? 'লগ আউট' : 'Log Out',
             onPressed: () {
               // Clear session and return to login
-              Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.login,
-                      (route) => false
-              );
+              Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
             },
           ),
         ],
@@ -231,43 +257,43 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: primaryPink))
           : SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final double maxWidth = constraints.maxWidth > 700 ? 650 : constraints.maxWidth;
-            return Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: maxWidth),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _buildProfileHeader(),
-                        const SizedBox(height: 24),
-                        _buildPersonalDetailsCard(),
-                        const SizedBox(height: 20),
-                        _buildMedicalHistoryCard(),
-                        const SizedBox(height: 28),
-                        _buildActionButtons(),
-                        const SizedBox(height: 20),
-                      ],
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final double maxWidth = constraints.maxWidth > 700 ? 650 : constraints.maxWidth;
+                  return Center(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: maxWidth),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _buildProfileHeader(isBangla),
+                              const SizedBox(height: 24),
+                              _buildPersonalDetailsCard(isBangla),
+                              const SizedBox(height: 20),
+                              _buildMedicalHistoryCard(isBangla),
+                              const SizedBox(height: 28),
+                              _buildActionButtons(isBangla),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
-            );
-          },
-        ),
-      ),
+            ),
     );
   }
 
   // ============================================================
   // UPDATED SECTION: Profile Header with Photo Change Option
   // ============================================================
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(bool isBangla) {
     return Column(
       children: [
         Stack(
@@ -276,13 +302,9 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
               radius: 44,
               backgroundColor: primaryPink.withValues(alpha: 0.15),
               backgroundImage: _pickedImage != null
-                  ? (kIsWeb
-                  ? NetworkImage(_pickedImage!.path)
-                  : FileImage(File(_pickedImage!.path)) as ImageProvider)
+                  ? (kIsWeb ? NetworkImage(_pickedImage!.path) : FileImage(File(_pickedImage!.path)) as ImageProvider)
                   : null,
-              child: _pickedImage == null
-                  ? const Icon(Icons.person, size: 48, color: primaryPink)
-                  : null,
+              child: _pickedImage == null ? const Icon(Icons.person, size: 48, color: primaryPink) : null,
             ),
             Positioned(
               bottom: 0,
@@ -302,10 +324,10 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           ],
         ),
         const SizedBox(height: 12),
-        const Text('আবার স্বাগতম,', style: TextStyle(fontSize: 14, color: subText)),
+        Text(isBangla ? 'আবার স্বাগতম,' : 'Welcome back,', style: const TextStyle(fontSize: 14, color: subText)),
         const SizedBox(height: 2),
         Text(
-          _fullNameController.text.isNotEmpty ? _fullNameController.text : 'মা',
+          _fullNameController.text.isNotEmpty ? _fullNameController.text : (isBangla ? 'মা' : 'Mother'),
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: darkText),
         ),
         const SizedBox(height: 4),
@@ -313,8 +335,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       ],
     );
   }
-
-  // --- All other helper methods (_sectionCard, _buildTextField, etc.) remain exactly the same ---
 
   Widget _sectionCard({required String title, required IconData icon, required List<Widget> children}) {
     return Card(
@@ -327,7 +347,11 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [Icon(icon, color: primaryPink), const SizedBox(width: 8), Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: darkText))]),
+            Row(children: [
+              Icon(icon, color: primaryPink),
+              const SizedBox(width: 8),
+              Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: darkText))
+            ]),
             const Divider(height: 24),
             ...children,
           ],
@@ -336,7 +360,15 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     );
   }
 
-  Widget _buildTextField({required TextEditingController controller, required String label, required IconData icon, TextInputType keyboardType = TextInputType.text, int maxLines = 1, String? hint, String? Function(String?)? validator}) {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+    String? hint,
+    String? Function(String?)? validator,
+  }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
@@ -350,66 +382,132 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Color(0xFFEEEEEE))),
         focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: primaryPink, width: 1.5)),
       ),
     );
   }
 
-  Widget _buildBloodGroupDropdown() {
+  Widget _buildBloodGroupDropdown(bool isBangla) {
     return DropdownButtonFormField<String>(
       initialValue: _selectedBloodGroup,
-      decoration: InputDecoration(labelText: 'রক্তের গ্রুপ', prefixIcon: const Icon(Icons.bloodtype_outlined, color: primaryPink), filled: true, fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none), enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200))),
+      decoration: InputDecoration(
+        labelText: isBangla ? 'রক্তের গ্রুপ' : 'Blood Group',
+        prefixIcon: const Icon(Icons.bloodtype_outlined, color: primaryPink),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Color(0xFFEEEEEE))),
+      ),
       items: _bloodGroups.map((group) => DropdownMenuItem(value: group, child: Text(group))).toList(),
       onChanged: (value) => setState(() => _selectedBloodGroup = value),
-      validator: (value) => value == null ? 'Required' : null,
+      validator: (value) => value == null ? (isBangla ? 'প্রয়োজন' : 'Required') : null,
     );
   }
 
-  Widget _buildPersonalDetailsCard() {
+  Widget _buildPersonalDetailsCard(bool isBangla) {
     return _sectionCard(
-      title: 'ব্যক্তিগত বিবরণ',
+      title: isBangla ? 'ব্যক্তিগত বিবরণ' : 'Personal Details',
       icon: Icons.badge_outlined,
       children: [
-        _buildTextField(controller: _fullNameController, label: 'পুরো নাম', icon: Icons.person_outline, validator: (v) => (v == null || v.isEmpty) ? 'প্রয়োজন' : null),
+        _buildTextField(
+          controller: _fullNameController,
+          label: isBangla ? 'পুরো নাম' : 'Full Name',
+          icon: Icons.person_outline,
+          validator: (v) => (v == null || v.isEmpty) ? (isBangla ? 'প্রয়োজন' : 'Required') : null,
+        ),
         const SizedBox(height: 16),
-        _buildBloodGroupDropdown(),
+        _buildBloodGroupDropdown(isBangla),
         const SizedBox(height: 16),
         Row(children: [
-          Expanded(child: _buildTextField(controller: _ageController, label: 'বয়স', icon: Icons.cake_outlined, keyboardType: TextInputType.number)),
+          Expanded(
+            child: _buildTextField(
+              controller: _ageController,
+              label: isBangla ? 'বয়স' : 'Age',
+              icon: Icons.cake_outlined,
+              keyboardType: TextInputType.number,
+            ),
+          ),
           const SizedBox(width: 12),
-          Expanded(child: _buildTextField(controller: _weightController, label: 'ওজন (কেজি)', icon: Icons.monitor_weight_outlined, keyboardType: TextInputType.number)),
+          Expanded(
+            child: _buildTextField(
+              controller: _weightController,
+              label: isBangla ? 'ওজন (কেজি)' : 'Weight (kg)',
+              icon: Icons.monitor_weight_outlined,
+              keyboardType: TextInputType.number,
+            ),
+          ),
         ]),
         const SizedBox(height: 16),
-        _buildTextField(controller: _heightController, label: 'উচ্চতা (সেমি)', icon: Icons.height, keyboardType: TextInputType.number),
+        _buildTextField(
+          controller: _heightController,
+          label: isBangla ? 'উচ্চতা (সেমি)' : 'Height (cm)',
+          icon: Icons.height,
+          keyboardType: TextInputType.number,
+        ),
         const SizedBox(height: 16),
-        _buildTextField(controller: _emergencyContactController, label: 'জরুরী যোগাযোগ', icon: Icons.phone_outlined, keyboardType: TextInputType.phone),
+        _buildTextField(
+          controller: _emergencyContactController,
+          label: isBangla ? 'জরুরী যোগাযোগ' : 'Emergency Contact',
+          icon: Icons.phone_outlined,
+          keyboardType: TextInputType.phone,
+        ),
       ],
     );
   }
 
-  Widget _buildMedicalHistoryCard() {
+  Widget _buildMedicalHistoryCard(bool isBangla) {
     return _sectionCard(
-      title: 'মেডিকেল ইতিহাস',
+      title: isBangla ? 'মেডিকেল ইতিহাস' : 'Medical History',
       icon: Icons.medical_information_outlined,
       children: [
         InkWell(
           onTap: _pickLmpDate,
           child: InputDecorator(
-            decoration: InputDecoration(labelText: 'LMP তারিখ', prefixIcon: const Icon(Icons.calendar_today, color: primaryPink), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-            child: Text(_lmpDate != null ? DateFormat('dd MMM yyyy').format(_lmpDate!) : 'নির্বাচিত তারিখ'),
+            decoration: InputDecoration(
+              labelText: isBangla ? 'LMP তারিখ' : 'LMP Date',
+              prefixIcon: const Icon(Icons.calendar_today, color: primaryPink),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(
+              _lmpDate != null
+                  ? DateFormat('dd MMM yyyy').format(_lmpDate!)
+                  : (isBangla ? 'নির্বাচিত তারিখ' : 'Select Date'),
+            ),
           ),
         ),
         const SizedBox(height: 16),
         Row(children: [
-          Expanded(child: _readOnlyInfoBox(icon: Icons.pregnant_woman, label: 'সপ্তাহ', value: _pregnancyWeek != null ? 'সপ্তাহ $_pregnancyWeek' : '--')),
+          Expanded(
+            child: _readOnlyInfoBox(
+              icon: Icons.pregnant_woman,
+              label: isBangla ? 'সপ্তাহ' : 'Week',
+              value: _pregnancyWeek != null ? (isBangla ? 'সপ্তাহ $_pregnancyWeek' : 'Week $_pregnancyWeek') : '--',
+            ),
+          ),
           const SizedBox(width: 12),
-          Expanded(child: _readOnlyInfoBox(icon: Icons.event, label: 'বাকি তারিখ', value: _estimatedDueDate != null ? DateFormat('dd MMM yyyy').format(_estimatedDueDate!) : '--')),
+          Expanded(
+            child: _readOnlyInfoBox(
+              icon: Icons.event,
+              label: isBangla ? 'বাকি তারিখ' : 'Due Date',
+              value: _estimatedDueDate != null ? DateFormat('dd MMM yyyy').format(_estimatedDueDate!) : '--',
+            ),
+          ),
         ]),
         const SizedBox(height: 16),
-        _buildTextField(controller: _allergiesController, label: 'এলার্জি', icon: Icons.warning_amber, maxLines: 2),
+        _buildTextField(
+          controller: _allergiesController,
+          label: isBangla ? 'এলার্জি' : 'Allergies',
+          icon: Icons.warning_amber,
+          maxLines: 2,
+        ),
         const SizedBox(height: 16),
-        _buildTextField(controller: _longTermDiseasesController, label: 'রোগ', icon: Icons.local_hospital, maxLines: 2),
+        _buildTextField(
+          controller: _longTermDiseasesController,
+          label: isBangla ? 'রোগ' : 'Diseases',
+          icon: Icons.local_hospital,
+          maxLines: 2,
+        ),
       ],
     );
   }
@@ -419,16 +517,25 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(color: lightPink, borderRadius: BorderRadius.circular(12)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [Icon(icon, size: 14, color: primaryPink), const SizedBox(width: 4), Text(label, style: const TextStyle(fontSize: 10, color: subText))]),
+        Row(children: [
+          Icon(icon, size: 14, color: primaryPink),
+          const SizedBox(width: 4),
+          Text(label, style: const TextStyle(fontSize: 10, color: subText))
+        ]),
         Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
       ]),
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(bool isBangla) {
     return Row(
       children: [
-        Expanded(child: OutlinedButton(onPressed: _isSaving ? null : () => Navigator.pop(context), child: const Text('বাতিল করুন'))),
+        Expanded(
+          child: OutlinedButton(
+            onPressed: _isSaving ? null : () => Navigator.pop(context),
+            child: Text(isBangla ? 'বাতিল করুন' : 'Cancel'),
+          ),
+        ),
         const SizedBox(width: 16),
         Expanded(
           flex: 2,
@@ -441,7 +548,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                     height: 20,
                     child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                   )
-                : const Text('সেভ করুন', style: TextStyle(color: Colors.white)),
+                : Text(isBangla ? 'সেভ করুন' : 'Save', style: const TextStyle(color: Colors.white)),
           ),
         ),
       ],
