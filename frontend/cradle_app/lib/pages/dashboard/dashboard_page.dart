@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../core/routes/app_routes.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
 import './widgets/mood_card.dart';
@@ -116,7 +117,7 @@ class DashboardScreen extends StatelessWidget {
                         child: InkWell(
                           borderRadius: BorderRadius.circular(16),
                           onTap: () {
-                            // TODO: Navigate to settings
+                            Navigator.of(context).pushNamed(AppRoutes.settings);
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(10),
