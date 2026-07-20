@@ -172,22 +172,14 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  // "Cradle" Name
                   Text(
                     'Cradle',
-                    style: isBangla
-                        ? GoogleFonts.geo(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w800,
-                            color: secondaryColor,
-                            letterSpacing: 2.0,
-                          )
-                        : GoogleFonts.gentiumBookPlus(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: secondaryColor,
-                            letterSpacing: 2.0,
-                          ),
+                    style: GoogleFonts.geom(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                      color: secondaryColor,
+                      letterSpacing: 2.0,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Text(
