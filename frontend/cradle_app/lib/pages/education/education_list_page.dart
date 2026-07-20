@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
+
 
 class EducationListPage extends StatelessWidget {
   const EducationListPage({super.key});
@@ -21,6 +23,7 @@ class EducationListPage extends StatelessWidget {
       length: 4,
       child: Scaffold(
         backgroundColor: Colors.transparent,
+        bottomNavigationBar: const DashboardBottomNav(selectedIndex: 2),
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -135,7 +138,7 @@ class ArticleFeed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Localized sample articles list
-    final List<Map<String, String>> articles = _getArticles();
+    final List<Map<String, dynamic>> articles = _getArticles();
 
     if (articles.isEmpty) {
       return Center(
@@ -169,6 +172,32 @@ class ArticleFeed extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Featured Image (Added)
+                if (article["images"] != null && (article["images"] as List).isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16), // Fixed line
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        article["images"][0],
+                        width: double.infinity,
+                        height: 160,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: double.infinity,
+                            height: 160,
+                            decoration: BoxDecoration(
+                              color: _accent.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Icon(Icons.broken_image_rounded, color: _accent, size: 40),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
                 // Source label
                 Row(
                   children: [
@@ -227,8 +256,7 @@ class ArticleFeed extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: TextButton.icon(
                     onPressed: () {
-                      // TODO: open article in WebView or browser
-                      _showComingSoon(context);
+                      _showArticleDetails(context, article);
                     },
                     icon: const Icon(Icons.menu_book_rounded, size: 16, color: _accent),
                     label: Text(
@@ -270,7 +298,132 @@ class ArticleFeed extends StatelessWidget {
     );
   }
 
-  List<Map<String, String>> _getArticles() {
+  void _showArticleDetails(BuildContext context, Map<String, dynamic> article) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          children: [
+            // Handle bar and Close Button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.cancel_rounded, color: _accent, size: 28),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (article["images"] != null)
+                      SizedBox(
+                        height: 220,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: (article["images"] as List).length,
+                          separatorBuilder: (context, index) => const SizedBox(width: 12),
+                          itemBuilder: (context, index) {
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.asset(
+                                article["images"][index],
+                                width: 320,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 320,
+                                    height: 220,
+                                    decoration: BoxDecoration(
+                                      color: _accent.withValues(alpha: 0.05),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: const Icon(
+                                      Icons.broken_image_rounded,
+                                      color: _accent,
+                                      size: 48,
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    const SizedBox(height: 24),
+                    Text(
+                      article["title"]!,
+                      style: GoogleFonts.gentiumBookPlus(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: _accent,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Text(
+                          article["source"]!,
+                          style: GoogleFonts.gentiumBookPlus(
+                            fontWeight: FontWeight.bold,
+                            color: _accent.withValues(alpha: 0.6),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          "• ${article["date"]!}",
+                          style: GoogleFonts.gentiumBookPlus(
+                            color: _accent.withValues(alpha: 0.4),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Divider(height: 40),
+                    Text(
+                      article["details"] ?? article["summary"]!,
+                      style: GoogleFonts.gentiumBookPlus(
+                        fontSize: 16,
+                        height: 1.6,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Map<String, dynamic>> _getArticles() {
     if (category == "maternal") {
       return [
         {
@@ -280,7 +433,11 @@ class ArticleFeed extends StatelessWidget {
               : "Learn what foods to eat and avoid for a safe and healthy pregnancy journey.",
           "source": isBangla ? "ডাব্লিউএইচও (WHO)" : "WHO",
           "date": isBangla ? "জুলাই ২০২৬" : "July 2026",
-          "url": "https://www.who.int/maternal-health"
+          "url": "https://www.who.int/maternal-health",
+          "images": ["assets/images/pf3.jpg"],
+          "details": isBangla
+              ? "গর্ভাবস্থায় স্বাস্থ্যকর খাবার খাওয়া আপনার শিশুর বৃদ্ধি এবং বিকাশে সহায়তা করার জন্য অত্যন্ত গুরুত্বপূর্ণ। আপনাকে বিভিন্ন ধরণের পুষ্টিকর খাবার খেতে হবে, যেমন ফলমূল, শাকসবজি, প্রোটিন সমৃদ্ধ খাবার (যেমন মাছ, মাংস, ডিম, মটরশুঁটি) এবং দুগ্ধজাত পণ্য। প্রচুর পরিমাণে পানি পান করুন এবং চিনিযুক্ত পানীয় বা অতিরিক্ত ক্যাফেইন বর্জন করুন। সুস্থ থাকতে নিয়মিত সুষম খাবার গ্রহণ করুন।"
+              : "Eating healthy food during pregnancy is crucial to help your baby grow and develop. You should eat a variety of nutritious foods, including fruits, vegetables, protein-rich foods (such as fish, meat, eggs, beans), and dairy products. Drink plenty of water and avoid sugary drinks or excessive caffeine. Maintaining a balanced diet is key to a healthy pregnancy."
         },
         {
           "title": isBangla ? "গর্ভাবস্থায় ব্যায়াম এবং হাঁটাচলা" : "Prenatal Exercise & Physical Activities",
@@ -289,6 +446,7 @@ class ArticleFeed extends StatelessWidget {
               : "Best practices and guidelines for light exercises to stay active during pregnancy safely.",
           "source": isBangla ? " ইউনিসেফ" : "UNICEF",
           "date": isBangla ? "জুন ২০২৬" : "June 2026",
+          "images": ["assets/images/pf2.jpg"],
           "url": "https://www.unicef.org"
         }
       ];
@@ -301,6 +459,7 @@ class ArticleFeed extends StatelessWidget {
               : "Understand common symptoms of infant jaundice and when you should seek professional medical care.",
           "source": isBangla ? "ইউনিসেফ" : "UNICEF",
           "date": isBangla ? "জুলাই ২০২৬" : "July 2026",
+          "images": ["assets/images/pf2.jpg"],
           "url": "https://www.unicef.org/baby-health"
         },
         {
@@ -310,6 +469,7 @@ class ArticleFeed extends StatelessWidget {
               : "The absolute importance of exclusive breastfeeding during the first six months of your baby's life.",
           "source": isBangla ? "ডাব্লিউএইচও" : "WHO",
           "date": isBangla ? "মে ২০২৬" : "May 2026",
+          "images": ["assets/images/pf2.jpg"],
           "url": "https://www.who.int"
         }
       ];
@@ -322,6 +482,7 @@ class ArticleFeed extends StatelessWidget {
               : "Tips on managing stress and preserving mental well-being for expecting mothers.",
           "source": isBangla ? "আইসিডিডিআর,বি" : "icddr,b",
           "date": isBangla ? "জুলাই ২০২৬" : "July 2026",
+          "images": ["assets/images/pf2.jpg"],
           "url": "https://www.icddrb.org"
         }
       ];
@@ -334,6 +495,7 @@ class ArticleFeed extends StatelessWidget {
               : "Be aware of early warning signals and how to react promptly to avoid pregnancy complications.",
           "source": isBangla ? "ডাব্লিউএইচও" : "WHO",
           "date": isBangla ? "জুন ২০২৬" : "June 2026",
+          "images": ["assets/images/pf2.jpg"],
           "url": "https://www.who.int"
         }
       ];
