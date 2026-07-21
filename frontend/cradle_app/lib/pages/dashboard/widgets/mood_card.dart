@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/language_provider.dart';
 
 enum Mood {
   happy,
@@ -28,22 +30,29 @@ class _MoodCardState extends State<MoodCard>
 
   Mood? selectedMood;
 
-  final Map<Mood, String> motivation = {
+  final Map<Mood, String> motivationBn = {
     Mood.happy:
      "আজ আপনি ভালো অনুভব করছেন জেনে আমরা আনন্দিত। হাসিখুশি থাকুন এবং আপনার মাতৃত্বের প্রতিটি মুহূর্ত উপভোগ করুন।",
-        // "We're glad you're feeling happy today. Keep smiling and enjoy every moment of your pregnancy journey.",
-
     Mood.sad:
     "কঠিন দিন আসতেই পারে, এতে দুশ্চিন্তার কিছু নেই। কিছুটা বিশ্রাম নিন, কাছের কারও সঙ্গে কথা বলুন এবং মনে রাখুন—আপনি একা নন।",
-        // "It's okay to have difficult days. Take some time to rest, speak with someone you trust, and remember you're not alone.",
-
     Mood.stressed:
      "ধীরে ধীরে গভীর শ্বাস নিন। কয়েক মিনিটের আরামও আপনার এবং আপনার শিশুর জন্য ইতিবাচক পরিবর্তন আনতে পারে।",
-        // "Take slow deep breaths. Even a few minutes of relaxation can make a meaningful difference for both you and your baby.",
+  };
+
+  final Map<Mood, String> motivationEn = {
+    Mood.happy:
+     "We're glad you're feeling happy today. Keep smiling and enjoy every moment of your pregnancy journey.",
+    Mood.sad:
+    "It's okay to have difficult days. Take some time to rest, speak with someone you trust, and remember you're not alone.",
+    Mood.stressed:
+     "Take slow deep breaths. Even a few minutes of relaxation can make a meaningful difference for both you and your baby.",
   };
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = context.watch<LanguageProvider>();
+    final bool isBangla = languageProvider.isBangla;
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(28),
       child: BackdropFilter(
@@ -76,8 +85,7 @@ class _MoodCardState extends State<MoodCard>
               children: [
 
                 Text(
-                   "আজ আপনার কেমন লাগছে?",
-                  // "How are you feeling today?",
+                  isBangla ? "আজ আপনার কেমন লাগছে?" : "How are you feeling today?",
                   style: GoogleFonts.gentiumBookPlus(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
@@ -93,8 +101,8 @@ class _MoodCardState extends State<MoodCard>
                   switchOutCurve: Curves.easeOut,
 
                   child: selectedMood == null
-                      ? _buildMoodChooser()
-                      : _buildSelectedMood(),
+                      ? _buildMoodChooser(isBangla)
+                      : _buildSelectedMood(isBangla),
                 ),
               ],
             ),
@@ -104,7 +112,7 @@ class _MoodCardState extends State<MoodCard>
     );
   }
 
-  Widget _buildMoodChooser() {
+  Widget _buildMoodChooser(bool isBangla) {
     return Row(
       key: const ValueKey("chooser"),
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -132,7 +140,7 @@ class _MoodCardState extends State<MoodCard>
               ),
               const SizedBox(height: 8),
               Text(
-                _label(mood),
+                _label(mood, isBangla),
                 style: GoogleFonts.gentiumBookPlus(
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
@@ -146,7 +154,7 @@ class _MoodCardState extends State<MoodCard>
     );
   }
 
-  Widget _buildSelectedMood() {
+  Widget _buildSelectedMood(bool isBangla) {
     return Row(
       key: ValueKey(selectedMood),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,7 +182,7 @@ class _MoodCardState extends State<MoodCard>
               const SizedBox(height: 8),
 
               Text(
-                _label(selectedMood!),
+                _label(selectedMood!, isBangla),
                 style: GoogleFonts.gentiumBookPlus(
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
@@ -201,7 +209,7 @@ class _MoodCardState extends State<MoodCard>
               );
             },
             child: Text(
-              motivation[selectedMood]!,
+              isBangla ? motivationBn[selectedMood]! : motivationEn[selectedMood]!,
               style: GoogleFonts.gentiumBookPlus(
                 fontWeight: FontWeight.w400,
                 fontSize: 16,
@@ -214,30 +222,31 @@ class _MoodCardState extends State<MoodCard>
     );
   }
 
-String _label(Mood mood) {
-  switch (mood) {
-    case Mood.happy:
-      return "খুশি";
-    case Mood.sad:
-      return "মন খারাপ";
-    case Mood.stressed:
-      return "চাপগ্রস্ত";
-    case Mood.sick:
-      return "অসুস্থ";
+  String _label(Mood mood, bool isBangla) {
+    if (isBangla) {
+      switch (mood) {
+        case Mood.happy:
+          return "খুশি";
+        case Mood.sad:
+          return "মন খারাপ";
+        case Mood.stressed:
+          return "চাপগ্রস্ত";
+        case Mood.sick:
+          return "অসুস্থ";
+      }
+    } else {
+      switch (mood) {
+        case Mood.happy:
+          return "Happy";
+        case Mood.sad:
+          return "Sad";
+        case Mood.stressed:
+          return "Stressed";
+        case Mood.sick:
+          return "Sick";
+      }
+    }
   }
-}
-  // String _label(Mood mood) {
-  //   switch (mood) {
-  //     case Mood.happy:
-  //       return "Happy";
-  //     case Mood.sad:
-  //       return "Sad";
-  //     case Mood.stressed:
-  //       return "Stressed";
-  //     case Mood.sick:
-  //       return "Sick";
-  //   }
-  // }
 
   String _icon(Mood mood) {
     switch (mood) {

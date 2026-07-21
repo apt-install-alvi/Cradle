@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart'; // NEW
 import 'dart:io'; // NEW (for File)
 import 'package:flutter/foundation.dart' show kIsWeb; // NEW (for Web check)
 import 'package:provider/provider.dart'; // NEW
+import 'package:google_fonts/google_fonts.dart'; // NEW
 import '../../providers/auth_provider.dart'; // NEW
+import '../../providers/language_provider.dart'; // NEW
 import '../../core/routes/app_routes.dart'; // NEW
 
 // ----------------------------------------------------------------
@@ -16,7 +19,7 @@ import '../../core/routes/app_routes.dart'; // NEW
 // ----------------------------------------------------------------
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart'; // used only for date formatting (dd MMM yyyy)
+// used only for date formatting (dd MMM yyyy)
 
 /// ============================================================
 /// PersonalInfoPage
@@ -34,10 +37,12 @@ class PersonalInfoPage extends StatefulWidget {
 }
 
 class _PersonalInfoPageState extends State<PersonalInfoPage> {
-  static const Color primaryPink = Color(0xFFAB0A65);
-  static const Color lightPink = Color(0xFFFDECF1);
-  static const Color darkText = Color(0xFF33293A);
-  static const Color subText = Color(0xFF5A535B);
+  // ── Colour constants (Theme matching) ──────────────────────────────
+  static const Color _topGradient = Color(0xFFFFCAE1);
+  static const Color _bottomGradient = Color(0xFFFFE8F2);
+  static const Color _accent = Color(0xFFAB0A65);
+  static const Color _primaryWhite52 = Color(0x85FFFFFF); // #FFF 52%
+  static const Color _secondaryWhite = Color(0xFFFFFFFF);
 
   // static const String _testFullName = 'Ariful';
   static const String _testEmail = 'xyz@example.com';
@@ -85,7 +90,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     _longTermDiseasesController.dispose();
     super.dispose();
   }
-//
+
   // --- NEW PHOTO PICKING METHOD ---
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -100,13 +105,18 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     setState(() => _isLoading = true);
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
       _userEmail = _testEmail;
       _fullNameController.text = authProvider.userName.isNotEmpty
           ? authProvider.userName
-          : 'মা';
+          : (isBangla ? 'মা' : 'Mother');
       _emergencyContactController.text = _testEmergencyContact;
     } catch (e) {
-      _showSnackBar('প্রোফাইল লোড করতে ব্যর্থ হয়েছে: $e', isError: true);
+      final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
+      _showSnackBar(
+        isBangla ? 'প্রোফাইল লোড করতে ব্যর্থ হয়েছে: $e' : 'Failed to load profile: $e',
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -124,17 +134,23 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   }
 
   Future<void> _pickLmpDate() async {
+    final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
     final DateTime now = DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _lmpDate ?? now,
       firstDate: DateTime(now.year - 2),
       lastDate: now,
-      helpText: 'শেষ মাসিকের সময়কাল নির্বাচন করুন',
+      helpText: isBangla ? 'শেষ মাসিকের সময়কাল নির্বাচন করুন' : 'Select Last Menstrual Period Date',
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(primary: primaryPink),
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+                  primary: _accent,
+                  onPrimary: _secondaryWhite,
+                  surface: _bottomGradient,
+                  onSurface: _accent,
+                ),
           ),
           child: child!,
         );
@@ -147,16 +163,30 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   }
 
   Future<void> saveProfile() async {
+    final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
     if (!_formKey.currentState!.validate()) {
-      _showSnackBar('অনুগ্রহ করে সকল প্রয়োজনীয় ক্ষেত্র সঠিকভাবে পূরণ করুন ।', isError: true);
+      _showSnackBar(
+        isBangla
+            ? 'অনুগ্রহ করে সকল প্রয়োজনীয় ক্ষেত্র সঠিকভাবে পূরণ করুন ।'
+            : 'Please fill all required fields correctly.',
+        isError: true,
+      );
       return;
     }
     if (_selectedBloodGroup == null) {
-      _showSnackBar('অনুগ্রহ করে আপনার রক্তের গ্রুপ নির্বাচন করুন ।', isError: true);
+      _showSnackBar(
+        isBangla ? 'অনুগ্রহ করে আপনার রক্তের গ্রুপ নির্বাচন করুন ।' : 'Please select your blood group.',
+        isError: true,
+      );
       return;
     }
     if (_lmpDate == null) {
-      _showSnackBar('অনুগ্রহ করে আপনার শেষ মাসিকের সময় (LMP) নির্বাচন করুন । ', isError: true);
+      _showSnackBar(
+        isBangla
+            ? 'অনুগ্রহ করে আপনার শেষ মাসিকের সময় (LMP) নির্বাচন করুন । '
+            : 'Please select your last menstrual period (LMP) date.',
+        isError: true,
+      );
       return;
     }
 
@@ -181,9 +211,12 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
       await Future.delayed(const Duration(milliseconds: 600));
       debugPrint('TEST MODE — profile data saved: $profileData');
-      _showSnackBar('প্রোফাইল সফলভাবে সংরক্ষিত!');
+      _showSnackBar(isBangla ? 'প্রোফাইল সফলভাবে সংরক্ষিত!' : 'Profile saved successfully!');
     } catch (e) {
-      _showSnackBar('প্রোফাইল সংরক্ষণ করতে ব্যর্থ হয়েছে: $e', isError: true);
+      _showSnackBar(
+        isBangla ? 'প্রোফাইল সেভ করতে ব্যর্থ হয়েছে: $e' : 'Failed to save profile: $e',
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -193,8 +226,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red.shade400 : Colors.green.shade500,
+        content: Text(message, style: GoogleFonts.gentiumBookPlus(color: _secondaryWhite)),
+        backgroundColor: isError ? Colors.red.shade700 : _accent,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -203,62 +236,82 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = context.watch<LanguageProvider>();
+    final bool isBangla = languageProvider.isBangla;
+
     return Scaffold(
-      backgroundColor: lightPink.withValues(alpha: 0.4),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('ব্যক্তিগত তথ্য', style: TextStyle(fontWeight: FontWeight.w600)),
-        centerTitle: true,
-        backgroundColor: primaryPink,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: _accent),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          isBangla ? 'ব্যক্তিগত তথ্য' : 'Personal Info',
+          style: GoogleFonts.gentiumBookPlus(
+            fontWeight: FontWeight.bold,
+            color: _accent,
+            fontSize: 22,
+          ),
+        ),
+        centerTitle: true,
         // --- ADDED LOGOUT BUTTON HERE ---
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'লগ আউট',
+            icon: const Icon(Icons.logout, color: _accent),
+            tooltip: isBangla ? 'লগ আউট' : 'Log Out',
             onPressed: () {
               // Clear session and return to login
-              Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.login,
-                      (route) => false
-              );
+              Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
             },
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: primaryPink))
-          : SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final double maxWidth = constraints.maxWidth > 700 ? 650 : constraints.maxWidth;
-            return Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: maxWidth),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _buildProfileHeader(),
-                        const SizedBox(height: 24),
-                        _buildPersonalDetailsCard(),
-                        const SizedBox(height: 20),
-                        _buildMedicalHistoryCard(),
-                        const SizedBox(height: 28),
-                        _buildActionButtons(),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [_topGradient, _bottomGradient],
+          ),
+        ),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator(color: _accent))
+            : SafeArea(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final double maxWidth = constraints.maxWidth > 700 ? 650 : constraints.maxWidth;
+                    return Center(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: maxWidth),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _buildProfileHeader(isBangla),
+                                const SizedBox(height: 24),
+                                _buildPersonalDetailsCard(isBangla),
+                                const SizedBox(height: 20),
+                                _buildMedicalHistoryCard(isBangla),
+                                const SizedBox(height: 28),
+                                _buildActionButtons(isBangla),
+                                const SizedBox(height: 20),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
-            );
-          },
-        ),
       ),
     );
   }
@@ -266,22 +319,18 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   // ============================================================
   // UPDATED SECTION: Profile Header with Photo Change Option
   // ============================================================
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(bool isBangla) {
     return Column(
       children: [
         Stack(
           children: [
             CircleAvatar(
               radius: 44,
-              backgroundColor: primaryPink.withValues(alpha: 0.15),
+              backgroundColor: _accent.withValues(alpha: 0.15),
               backgroundImage: _pickedImage != null
-                  ? (kIsWeb
-                  ? NetworkImage(_pickedImage!.path)
-                  : FileImage(File(_pickedImage!.path)) as ImageProvider)
+                  ? (kIsWeb ? NetworkImage(_pickedImage!.path) : FileImage(File(_pickedImage!.path)) as ImageProvider)
                   : null,
-              child: _pickedImage == null
-                  ? const Icon(Icons.person, size: 48, color: primaryPink)
-                  : null,
+              child: _pickedImage == null ? const Icon(Icons.person, size: 48, color: _accent) : null,
             ),
             Positioned(
               bottom: 0,
@@ -291,43 +340,71 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: const BoxDecoration(
-                    color: primaryPink,
+                    color: _accent,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                  child: const Icon(Icons.camera_alt, color: _secondaryWhite, size: 16),
                 ),
               ),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        const Text('আবার স্বাগতম,', style: TextStyle(fontSize: 14, color: subText)),
+        Text(
+          isBangla ? 'আবার স্বাগতম,' : 'Welcome back,',
+          style: GoogleFonts.gentiumBookPlus(
+            fontSize: 14,
+            color: _accent.withValues(alpha: 0.65),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 2),
         Text(
-          _fullNameController.text.isNotEmpty ? _fullNameController.text : 'মা',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: darkText),
+          _fullNameController.text.isNotEmpty ? _fullNameController.text : (isBangla ? 'মা' : 'Mother'),
+          style: GoogleFonts.gentiumBookPlus(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: _accent,
+          ),
         ),
         const SizedBox(height: 4),
-        Text(_userEmail, style: const TextStyle(fontSize: 13, color: subText)),
+        Text(
+          _userEmail,
+          style: GoogleFonts.gentiumBookPlus(
+            fontSize: 13,
+            color: _accent.withValues(alpha: 0.55),
+          ),
+        ),
       ],
     );
   }
 
-  // --- All other helper methods (_sectionCard, _buildTextField, etc.) remain exactly the same ---
-
   Widget _sectionCard({required String title, required IconData icon, required List<Widget> children}) {
     return Card(
-      elevation: 3,
-      shadowColor: Colors.black.withValues(alpha: 0.08),
-      color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      elevation: 0,
+      color: _primaryWhite52,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: _accent.withValues(alpha: 0.08)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [Icon(icon, color: primaryPink), const SizedBox(width: 8), Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: darkText))]),
-            const Divider(height: 24),
+            Row(children: [
+              Icon(icon, color: _accent),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: GoogleFonts.gentiumBookPlus(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: _accent,
+                ),
+              )
+            ]),
+            Divider(height: 24, thickness: 0.6, color: _accent.withValues(alpha: 0.08)),
             ...children,
           ],
         ),
@@ -335,80 +412,188 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     );
   }
 
-  Widget _buildTextField({required TextEditingController controller, required String label, required IconData icon, TextInputType keyboardType = TextInputType.text, int maxLines = 1, String? hint, String? Function(String?)? validator}) {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+    String? hint,
+    String? Function(String?)? validator,
+  }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       maxLines: maxLines,
       validator: validator,
-      style: const TextStyle(color: darkText),
+      style: GoogleFonts.gentiumBookPlus(
+        color: _accent,
+        fontWeight: FontWeight.w600,
+      ),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: GoogleFonts.gentiumBookPlus(color: _accent.withValues(alpha: 0.7)),
         hintText: hint,
-        prefixIcon: Icon(icon, color: primaryPink),
+        hintStyle: GoogleFonts.gentiumBookPlus(color: _accent.withValues(alpha: 0.4)),
+        prefixIcon: Icon(icon, color: _accent),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: _secondaryWhite.withValues(alpha: 0.4),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: primaryPink, width: 1.5)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: _accent.withValues(alpha: 0.15)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: _accent, width: 1.5),
+        ),
+        errorStyle: GoogleFonts.gentiumBookPlus(color: Colors.red.shade800),
       ),
     );
   }
 
-  Widget _buildBloodGroupDropdown() {
+  Widget _buildBloodGroupDropdown(bool isBangla) {
     return DropdownButtonFormField<String>(
       initialValue: _selectedBloodGroup,
-      decoration: InputDecoration(labelText: 'রক্তের গ্রুপ', prefixIcon: const Icon(Icons.bloodtype_outlined, color: primaryPink), filled: true, fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none), enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200))),
+      style: GoogleFonts.gentiumBookPlus(
+        color: _accent,
+        fontWeight: FontWeight.w600,
+      ),
+      decoration: InputDecoration(
+        labelText: isBangla ? 'রক্তের গ্রুপ' : 'Blood Group',
+        labelStyle: GoogleFonts.gentiumBookPlus(color: _accent.withValues(alpha: 0.7)),
+        prefixIcon: const Icon(Icons.bloodtype_outlined, color: _accent),
+        filled: true,
+        fillColor: _secondaryWhite.withValues(alpha: 0.4),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: _accent.withValues(alpha: 0.15)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: _accent, width: 1.5),
+        ),
+      ),
+      dropdownColor: _bottomGradient,
       items: _bloodGroups.map((group) => DropdownMenuItem(value: group, child: Text(group))).toList(),
       onChanged: (value) => setState(() => _selectedBloodGroup = value),
-      validator: (value) => value == null ? 'Required' : null,
+      validator: (value) => value == null ? (isBangla ? 'প্রয়োজন' : 'Required') : null,
     );
   }
 
-  Widget _buildPersonalDetailsCard() {
+  Widget _buildPersonalDetailsCard(bool isBangla) {
     return _sectionCard(
-      title: 'ব্যক্তিগত বিবরণ',
+      title: isBangla ? 'ব্যক্তিগত বিবরণ' : 'Personal Details',
       icon: Icons.badge_outlined,
       children: [
-        _buildTextField(controller: _fullNameController, label: 'পুরো নাম', icon: Icons.person_outline, validator: (v) => (v == null || v.isEmpty) ? 'প্রয়োজন' : null),
+        _buildTextField(
+          controller: _fullNameController,
+          label: isBangla ? 'পুরো নাম' : 'Full Name',
+          icon: Icons.person_outline,
+          validator: (v) => (v == null || v.isEmpty) ? (isBangla ? 'প্রয়োজন' : 'Required') : null,
+        ),
         const SizedBox(height: 16),
-        _buildBloodGroupDropdown(),
+        _buildBloodGroupDropdown(isBangla),
         const SizedBox(height: 16),
         Row(children: [
-          Expanded(child: _buildTextField(controller: _ageController, label: 'বয়স', icon: Icons.cake_outlined, keyboardType: TextInputType.number)),
+          Expanded(
+            child: _buildTextField(
+              controller: _ageController,
+              label: isBangla ? 'বয়স' : 'Age',
+              icon: Icons.cake_outlined,
+              keyboardType: TextInputType.number,
+            ),
+          ),
           const SizedBox(width: 12),
-          Expanded(child: _buildTextField(controller: _weightController, label: 'ওজন (কেজি)', icon: Icons.monitor_weight_outlined, keyboardType: TextInputType.number)),
+          Expanded(
+            child: _buildTextField(
+              controller: _weightController,
+              label: isBangla ? 'ওজন (কেজি)' : 'Weight (kg)',
+              icon: Icons.monitor_weight_outlined,
+              keyboardType: TextInputType.number,
+            ),
+          ),
         ]),
         const SizedBox(height: 16),
-        _buildTextField(controller: _heightController, label: 'উচ্চতা (সেমি)', icon: Icons.height, keyboardType: TextInputType.number),
+        _buildTextField(
+          controller: _heightController,
+          label: isBangla ? 'উচ্চতা (সেমি)' : 'Height (cm)',
+          icon: Icons.height,
+          keyboardType: TextInputType.number,
+        ),
         const SizedBox(height: 16),
-        _buildTextField(controller: _emergencyContactController, label: 'জরুরী যোগাযোগ', icon: Icons.phone_outlined, keyboardType: TextInputType.phone),
+        _buildTextField(
+          controller: _emergencyContactController,
+          label: isBangla ? 'জরুরী যোগাযোগ' : 'Emergency Contact',
+          icon: Icons.phone_outlined,
+          keyboardType: TextInputType.phone,
+        ),
       ],
     );
   }
 
-  Widget _buildMedicalHistoryCard() {
+  Widget _buildMedicalHistoryCard(bool isBangla) {
     return _sectionCard(
-      title: 'মেডিকেল ইতিহাস',
+      title: isBangla ? 'মেডিকেল ইতিহাস' : 'Medical History',
       icon: Icons.medical_information_outlined,
       children: [
         InkWell(
           onTap: _pickLmpDate,
           child: InputDecorator(
-            decoration: InputDecoration(labelText: 'LMP তারিখ', prefixIcon: const Icon(Icons.calendar_today, color: primaryPink), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-            child: Text(_lmpDate != null ? DateFormat('dd MMM yyyy').format(_lmpDate!) : 'নির্বাচিত তারিখ'),
+            decoration: InputDecoration(
+              labelText: isBangla ? 'LMP তারিখ' : 'LMP Date',
+              labelStyle: GoogleFonts.gentiumBookPlus(color: _accent, fontWeight: FontWeight.bold),
+              prefixIcon: const Icon(Icons.calendar_today, color: _accent),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: _accent.withValues(alpha: 0.15)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: _accent.withValues(alpha: 0.15)),
+              ),
+            ),
+            child: Text(
+              _lmpDate != null
+                  ? DateFormat('dd MMM yyyy').format(_lmpDate!)
+                  : (isBangla ? 'নির্বাচিত তারিখ' : 'Select Date'),
+              style: GoogleFonts.gentiumBookPlus(color: _accent, fontWeight: FontWeight.bold),
+            ),
           ),
         ),
         const SizedBox(height: 16),
         Row(children: [
-          Expanded(child: _readOnlyInfoBox(icon: Icons.pregnant_woman, label: 'সপ্তাহ', value: _pregnancyWeek != null ? 'সপ্তাহ $_pregnancyWeek' : '--')),
+          Expanded(
+            child: _readOnlyInfoBox(
+              icon: Icons.pregnant_woman,
+              label: isBangla ? 'সপ্তাহ' : 'Week',
+              value: _pregnancyWeek != null ? (isBangla ? 'সপ্তাহ $_pregnancyWeek' : 'Week $_pregnancyWeek') : '--',
+            ),
+          ),
           const SizedBox(width: 12),
-          Expanded(child: _readOnlyInfoBox(icon: Icons.event, label: 'বাকি তারিখ', value: _estimatedDueDate != null ? DateFormat('dd MMM yyyy').format(_estimatedDueDate!) : '--')),
+          Expanded(
+            child: _readOnlyInfoBox(
+              icon: Icons.event,
+              label: isBangla ? 'বাকি তারিখ' : 'Due Date',
+              value: _estimatedDueDate != null ? DateFormat('dd MMM yyyy').format(_estimatedDueDate!) : '--',
+            ),
+          ),
         ]),
         const SizedBox(height: 16),
-        _buildTextField(controller: _allergiesController, label: 'এলার্জি', icon: Icons.warning_amber, maxLines: 2),
+        _buildTextField(
+          controller: _allergiesController,
+          label: isBangla ? 'এলার্জি' : 'Allergies',
+          icon: Icons.warning_amber,
+          maxLines: 2,
+        ),
         const SizedBox(height: 16),
-        _buildTextField(controller: _longTermDiseasesController, label: 'রোগ', icon: Icons.local_hospital, maxLines: 2),
+        _buildTextField(
+          controller: _longTermDiseasesController,
+          label: isBangla ? 'রোগ' : 'Diseases',
+          icon: Icons.local_hospital,
+          maxLines: 2,
+        ),
       ],
     );
   }
@@ -416,21 +601,89 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   Widget _readOnlyInfoBox({required IconData icon, required String label, required String value}) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: lightPink, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: _accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [Icon(icon, size: 14, color: primaryPink), const SizedBox(width: 4), Text(label, style: const TextStyle(fontSize: 10, color: subText))]),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        Row(children: [
+          Icon(icon, size: 14, color: _accent),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: GoogleFonts.gentiumBookPlus(
+              fontSize: 10,
+              color: _accent.withValues(alpha: 0.65),
+              fontWeight: FontWeight.bold,
+            ),
+          )
+        ]),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: GoogleFonts.gentiumBookPlus(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+            color: _accent,
+          ),
+        ),
       ]),
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(bool isBangla) {
     return Row(
       children: [
-        Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(context), child: const Text(
-          'বাতিল করুন'))),
+        Expanded(
+          child: OutlinedButton(
+            onPressed: _isSaving ? null : () => Navigator.pop(context),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: _accent.withValues(alpha: 0.25), width: 1.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            child: Text(
+              isBangla ? 'বাতিল করুন' : 'Cancel',
+              style: GoogleFonts.gentiumBookPlus(
+                color: _accent,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ),
         const SizedBox(width: 16),
-        Expanded(flex: 2, child: ElevatedButton(onPressed: saveProfile, style: ElevatedButton.styleFrom(backgroundColor: primaryPink), child: const Text('তথ্য সংরক্ষণ করুন', style: TextStyle(color: Colors.white)))),
+        Expanded(
+          flex: 2,
+          child: ElevatedButton(
+            onPressed: _isSaving ? null : saveProfile,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _accent,
+              foregroundColor: _secondaryWhite,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              elevation: 4,
+              shadowColor: _accent.withValues(alpha: 0.35),
+            ),
+            child: _isSaving
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(color: _secondaryWhite, strokeWidth: 2),
+                  )
+                : Text(
+                    isBangla ? 'সেভ করুন' : 'Save',
+                    style: GoogleFonts.gentiumBookPlus(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+          ),
+        ),
       ],
     );
   }

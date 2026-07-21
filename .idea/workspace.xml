@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5e7f32e2-e561-42ae-bc3d-cefd2a777370" name="Changes" comment="&quot;guide page add hover page and pics but pics are brokenly shown&quot;">
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/education/education_list_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/education/education_list_page.dart" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/main" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/Splash" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;arifulmist&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/apt-install-alvi/Cradle.git&quot;,
+    &quot;accountId&quot;: &quot;a377454e-0e8d-4b68-8d80-7e967f9af245&quot;
+  },
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
+    },
+    &quot;owner&quot;: &quot;apt-install-alvi&quot;,
+    &quot;repository&quot;: &quot;Cradle&quot;
+  },
+  &quot;editorReviewEnabled&quot;: false
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/frontend/cradle_app/lib/pages/splash/splash_page.dart" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+    <option name="showPreview" value="true" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3FuTlMeFV5msmKJdmcR6PZHc083" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Flutter.main.dart.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "dev",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "settings.editor.selected.configurable": "templates.modelproviders.configurable",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\code\Cradle\frontend\cradle_app\lib\pages\" />
+      <recent name="D:\code\Cradle\frontend\cradle_app\lib\pages\personal_info" />
+    </key>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5e7f32e2-e561-42ae-bc3d-cefd2a777370" name="Changes" comment="" />
+      <created>1782924106644</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1782924106644</updated>
+    </task>
+    <task id="LOCAL-00001" summary="&quot;profile page demo&quot;">
+      <option name="closed" value="true" />
+      <created>1783354658154</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1783354658154</updated>
+    </task>
+    <task id="LOCAL-00002" summary="&quot;profile header add and we can change the profile pic also &quot;">
+      <option name="closed" value="true" />
+      <created>1783355073150</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1783355073150</updated>
+    </task>
+    <task id="LOCAL-00003" summary="&quot;personal details form add,here blood grp also include&quot;">
+      <option name="closed" value="true" />
+      <created>1783355487319</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1783355487319</updated>
+    </task>
+    <task id="LOCAL-00004" summary="&quot;all details is add for user info also it is now just testcase based like ,global variable is username is ariful ,in future it connect to login&quot;">
+      <option name="closed" value="true" />
+      <created>1783355794456</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1783355794456</updated>
+    </task>
+    <task id="LOCAL-00005" summary="&quot;marge with main and fix the name fetch from otp&quot;">
+      <option name="closed" value="true" />
+      <created>1783361445102</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1783361445102</updated>
+    </task>
+    <task id="LOCAL-00006" summary="&quot;bangla text &quot;">
+      <option name="closed" value="true" />
+      <created>1783362759970</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1783362759970</updated>
+    </task>
+    <task id="LOCAL-00007" summary="&quot;log out button added &quot;">
+      <option name="closed" value="true" />
+      <created>1783363463651</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1783363463651</updated>
+    </task>
+    <task id="LOCAL-00008" summary="&quot;log out button added and &quot;">
+      <option name="closed" value="true" />
+      <created>1783392584644</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1783392584644</updated>
+    </task>
+    <task id="LOCAL-00009" summary="&quot;log out button added and &quot;">
+      <option name="closed" value="true" />
+      <created>1783394556041</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1783394556041</updated>
+    </task>
+    <task id="LOCAL-00010" summary="&quot;merge with dev&quot;">
+      <option name="closed" value="true" />
+      <created>1783394639852</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1783394639852</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="&quot;profile page demo&quot;" />
+    <MESSAGE value="&quot;profile header add and we can change the profile pic also &quot;" />
+    <MESSAGE value="&quot;personal details form add,here blood grp also include&quot;" />
+    <MESSAGE value="&quot;all details is add for user info also it is now just testcase based like ,global variable is username is ariful ,in future it connect to login&quot;" />
+    <MESSAGE value="&quot;rebase frome main&quot;" />
+    <MESSAGE value="&quot;marge with main and fix the name fetch from otp&quot;" />
+    <MESSAGE value="&quot;bangla text &quot;" />
+    <MESSAGE value="&quot;log out button added &quot;" />
+    <MESSAGE value="&quot;log out button added and &quot;" />
+    <MESSAGE value="&quot;merge with dev&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="&quot;merge with dev&quot;" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://F:/hp/develop/flutter/packages/flutter/lib/material.dart</url>
+          <line>18</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
