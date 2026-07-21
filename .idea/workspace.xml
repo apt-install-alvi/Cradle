@@ -4,8 +4,16 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5e7f32e2-e561-42ae-bc3d-cefd2a777370" name="Changes" comment="&quot;guide page add hover page and pics but pics are brokenly shown&quot;">
+    <list default="true" id="5e7f32e2-e561-42ae-bc3d-cefd2a777370" name="Changes" comment="&quot;new jinis pati&quot;">
       <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/education/education_list_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/education/education_list_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/personal_info/personal_info_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/personal_info/personal_info_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugin_registrant.h" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugin_registrant.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugin_registrant.h" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugin_registrant.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugins.cmake" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,7 +112,7 @@
     "git-widget-placeholder": "dev",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
-    "settings.editor.selected.configurable": "templates.modelproviders.configurable",
+    "settings.editor.selected.configurable": "dart.settings",
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
@@ -113,6 +121,12 @@
       <recent name="D:\code\Cradle\frontend\cradle_app\lib\pages\" />
       <recent name="D:\code\Cradle\frontend\cradle_app\lib\pages\personal_info" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="filePath" value="$PROJECT_DIR$/frontend/cradle_app/lib/main.dart" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -233,7 +247,7 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://F:/hp/develop/flutter/packages/flutter/lib/material.dart</url>
+          <url>file://$PROJECT_DIR$/../../../hp/develop/flutter/packages/flutter/lib/material.dart</url>
           <line>18</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
