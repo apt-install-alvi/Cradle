@@ -45,7 +45,16 @@ switch (routeName) {
       case AppRoutes.symptomInput:
         return MaterialPageRoute(builder: (_) => const SymptomInputPage());
       case AppRoutes.riskAssessment:
-        return MaterialPageRoute(builder: (_) => const AiRiskAssessmentPage());
+        if (settings.arguments == null) {
+          return MaterialPageRoute(
+            builder: (_) => const Scaffold(
+              body: Center(child: Text('Route Error: Missing risk assessment result')), 
+            ),
+          );
+        }
+        return MaterialPageRoute(
+          builder: (_) => AiRiskAssessmentPage(result: settings.arguments as dynamic),
+        );
       case AppRoutes.healthHistory:
         return MaterialPageRoute(builder: (_) => const HealthHistoryPage());
       case AppRoutes.appointments:

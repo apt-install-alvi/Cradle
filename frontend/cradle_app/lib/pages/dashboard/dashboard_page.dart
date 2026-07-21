@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../core/routes/app_routes.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
 import './widgets/mood_card.dart';
