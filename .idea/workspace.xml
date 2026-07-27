@@ -4,7 +4,28 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5e7f32e2-e561-42ae-bc3d-cefd2a777370" name="Changes" comment="&quot;some issue fix&quot;" />
+    <list default="true" id="5e7f32e2-e561-42ae-bc3d-cefd2a777370" name="Changes" comment="&quot;some issue fix&quot;">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/core/models/diagnosis_result.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/core/models/diagnosis_result.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/core/models/symptom.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/core/models/symptom.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/core/widgets/bottom_nav.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/core/widgets/bottom_nav.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/core/widgets/risk_pill.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/core/widgets/risk_pill.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/ai_risk_assessment/ai_risk_assessment_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/ai_risk_assessment/ai_risk_assessment_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/dashboard/dashboard_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/dashboard/dashboard_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/education/education_list_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/education/education_list_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/health_history/health_history_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/health_history/health_history_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/health_history/widgets/history_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/health_history/widgets/history_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/symptom_input/symptom_input_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/symptom_input/symptom_input_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/symptom_input/widgets/measurement_input_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/symptom_input/widgets/measurement_input_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/symptom_input/widgets/symptom_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/symptom_input/widgets/symptom_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugins.cmake" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

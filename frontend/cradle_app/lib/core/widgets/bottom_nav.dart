@@ -52,7 +52,7 @@ class DashboardBottomNav extends StatelessWidget {
             _buildNavItem(
               context,
               icon: "assets/icons/diagnosis.svg",
-              label: isBangla ? "লক্ষণ" : "Diagnosis",
+              label: isBangla ? "রোগনির্ণয়" : "Diagnosis",
               index: 1,
               route: "/symptom-input",
             ),
@@ -79,12 +79,12 @@ class DashboardBottomNav extends StatelessWidget {
   }
 
   Widget _buildNavItem(
-    BuildContext context, {
-    required String icon,
-    required String label,
-    required int index,
-    required String route,
-  }) {
+      BuildContext context, {
+        required String icon,
+        required String label,
+        required int index,
+        required String route,
+      }) {
     final bool selected = selectedIndex == index;
 
     return InkWell(

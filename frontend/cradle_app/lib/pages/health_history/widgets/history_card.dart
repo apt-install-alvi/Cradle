@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/diagnosis_result.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../providers/language_provider.dart';
+import 'package:provider/provider.dart';
 
 /// One row in the diagnosis history list: date, diagnosis name and
 /// symptoms are all left-aligned, with only the risk tag (High/Med/Low)
@@ -13,6 +15,8 @@ class HistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBangla = context.watch<LanguageProvider>().isBangla;
+
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(AppRadii.card),
@@ -36,7 +40,7 @@ class HistoryCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _formattedDate,
+                      _formattedDate(isBangla),
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                         fontSize: 11.5,
@@ -47,14 +51,14 @@ class HistoryCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      entry.diagnosisName,
+                      entry.localizedDiagnosisName(isBangla),
                       textAlign: TextAlign.left,
                       style: AppText.historyTitle,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       entry.reportedSymptoms
-                          .map((s) => s.symptom.label)
+                          .map((s) => s.displayLabel(isBangla))
                           .join(' · '),
                       textAlign: TextAlign.left,
                       style: const TextStyle(fontSize: 12.5, color: AppColors.muted),
@@ -70,7 +74,7 @@ class HistoryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  entry.riskLevel.shortLabel,
+                  entry.riskLevel.shortDisplayLabel(isBangla),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
@@ -85,13 +89,17 @@ class HistoryCard extends StatelessWidget {
     );
   }
 
-  String get _formattedDate {
+  String _formattedDate(bool isBangla) {
     final now = DateTime.now();
     final diff = now.difference(entry.timestamp);
-    if (diff.inDays == 0) return 'Today';
-    if (diff.inDays == 1) return 'Yesterday';
-    if (diff.inDays < 7) return '${diff.inDays} days ago';
-    if (diff.inDays < 14) return 'Last week';
-    return '${(diff.inDays / 7).floor()} weeks ago';
+    if (diff.inDays == 0) return isBangla ? 'আজ' : 'Today';
+    if (diff.inDays == 1) return isBangla ? 'গতকাল' : 'Yesterday';
+    if (diff.inDays < 7) {
+      return isBangla ? '${diff.inDays} দিন আগে' : '${diff.inDays} days ago';
+    }
+    if (diff.inDays < 14) return isBangla ? 'গত সপ্তাহে' : 'Last week';
+    return isBangla
+        ? '${(diff.inDays / 7).floor()} সপ্তাহ আগে'
+        : '${(diff.inDays / 7).floor()} weeks ago';
   }
 }

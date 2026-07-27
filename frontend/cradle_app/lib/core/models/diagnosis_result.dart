@@ -16,6 +16,19 @@ extension RiskLevelStyle on RiskLevel {
     }
   }
 
+  String displayLabel(bool isBangla) {
+    if (!isBangla) return label;
+
+    switch (this) {
+      case RiskLevel.low:
+        return 'নিম্ন ঝুঁকি';
+      case RiskLevel.medium:
+        return 'মাঝারি ঝুঁকি';
+      case RiskLevel.high:
+        return 'উচ্চ ঝুঁকি';
+    }
+  }
+
   String get shortLabel {
     switch (this) {
       case RiskLevel.low:
@@ -24,6 +37,19 @@ extension RiskLevelStyle on RiskLevel {
         return 'Medium';
       case RiskLevel.high:
         return 'High';
+    }
+  }
+
+  String shortDisplayLabel(bool isBangla) {
+    if (!isBangla) return shortLabel;
+
+    switch (this) {
+      case RiskLevel.low:
+        return 'নিম্ন';
+      case RiskLevel.medium:
+        return 'মাঝারি';
+      case RiskLevel.high:
+        return 'উচ্চ';
     }
   }
 
@@ -68,19 +94,21 @@ class SymptomEntry {
   const SymptomEntry({required this.symptom, this.measurements = const {}});
 
   /// A short display string for chips, e.g. "Fever · 101.2°F".
-  String get displayLabel {
-    if (!symptom.isMeasurable || measurements.isEmpty) return symptom.label;
+  String displayLabel(bool isBangla) {
+    final symptomLabel = symptom.displayLabel(isBangla);
+
+    if (!symptom.isMeasurable || measurements.isEmpty) return symptomLabel;
     switch (symptom.measurementType) {
       case MeasurementType.temperature:
         final value = measurements['value'];
-        return value == null ? symptom.label : '${symptom.label} · $value°F';
+        return value == null ? symptomLabel : '$symptomLabel · $value°F';
       case MeasurementType.bloodPressure:
         final sys = measurements['systolic'];
         final dia = measurements['diastolic'];
-        if (sys == null || dia == null) return symptom.label;
-        return '${symptom.label} · $sys/$dia mmHg';
+        if (sys == null || dia == null) return symptomLabel;
+        return '$symptomLabel · $sys/$dia mmHg';
       case null:
-        return symptom.label;
+        return symptomLabel;
     }
   }
 }
@@ -101,4 +129,34 @@ class DiagnosisResult {
     required this.warningMessage,
     required this.timestamp,
   });
+
+  String localizedDiagnosisName(bool isBangla) {
+    if (!isBangla) return diagnosisName;
+
+    switch (diagnosisName) {
+      case 'Possible Preeclampsia':
+        return 'সম্ভাব্য প্রি-এক্ল্যাম্পসিয়া';
+      case 'Mild Dehydration':
+        return 'হালকা পানিশূন্যতা';
+      case 'Normal Pregnancy Fatigue':
+        return 'স্বাভাবিক গর্ভাবস্থার ক্লান্তি';
+      default:
+        return diagnosisName;
+    }
+  }
+
+  String localizedWarningMessage(bool isBangla) {
+    if (!isBangla) return warningMessage;
+
+    switch (warningMessage) {
+      case 'Your symptoms suggest a condition that can affect you and your baby quickly. Please see a doctor today.':
+        return 'আপনার উপসর্গগুলো এমন একটি অবস্থার ইঙ্গিত দিচ্ছে যা আপনার এবং আপনার শিশুর ওপর দ্রুত প্রভাব ফেলতে পারে। অনুগ্রহ করে আজই একজন ডাক্তার দেখান।';
+      case 'Drink fluids and monitor your symptoms; see a doctor if they persist beyond a day.':
+        return 'পর্যাপ্ত তরল পান করুন এবং আপনার উপসর্গ পর্যবেক্ষণ করুন; এক দিনের বেশি থাকলে ডাক্তার দেখান।';
+      case 'No action needed — rest and stay hydrated.':
+        return 'কোনো তৎক্ষণাৎ পদক্ষেপ দরকার নেই — বিশ্রাম নিন এবং পর্যাপ্ত পানি পান করুন।';
+      default:
+        return warningMessage;
+    }
+  }
 }

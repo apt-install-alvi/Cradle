@@ -459,7 +459,7 @@ class ArticleFeed extends StatelessWidget {
               : "Understand common symptoms of infant jaundice and when you should seek professional medical care.",
           "source": isBangla ? "ইউনিসেফ" : "UNICEF",
           "date": isBangla ? "জুলাই ২০২৬" : "July 2026",
-          "images": ["assets/images/pf2.jpg"],
+          "images": ["assets/images/pf44.jpg"],
           "url": "https://www.unicef.org/baby-health"
         },
         {
@@ -469,7 +469,7 @@ class ArticleFeed extends StatelessWidget {
               : "The absolute importance of exclusive breastfeeding during the first six months of your baby's life.",
           "source": isBangla ? "ডাব্লিউএইচও" : "WHO",
           "date": isBangla ? "মে ২০২৬" : "May 2026",
-          "images": ["assets/images/pf2.jpg"],
+          "images": ["assets/images/pf5.jpg"],
           "url": "https://www.who.int"
         }
       ];
@@ -482,7 +482,7 @@ class ArticleFeed extends StatelessWidget {
               : "Tips on managing stress and preserving mental well-being for expecting mothers.",
           "source": isBangla ? "আইসিডিডিআর,বি" : "icddr,b",
           "date": isBangla ? "জুলাই ২০২৬" : "July 2026",
-          "images": ["assets/images/pf2.jpg"],
+          "images": ["assets/images/pf6.jpg"],
           "url": "https://www.icddrb.org"
         }
       ];
@@ -495,7 +495,7 @@ class ArticleFeed extends StatelessWidget {
               : "Be aware of early warning signals and how to react promptly to avoid pregnancy complications.",
           "source": isBangla ? "ডাব্লিউএইচও" : "WHO",
           "date": isBangla ? "জুন ২০২৬" : "June 2026",
-          "images": ["assets/images/pf2.jpg"],
+          "images": ["assets/images/pf7.jpg"],
           "url": "https://www.who.int"
         }
       ];

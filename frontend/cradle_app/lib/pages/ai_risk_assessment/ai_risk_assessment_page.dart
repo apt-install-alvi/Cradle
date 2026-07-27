@@ -5,6 +5,8 @@ import '../../core/widgets/app_button.dart';
 import '../../core/widgets/gradient_scaffold.dart';
 import '../../core/widgets/risk_pill.dart';
 import '../../core/widgets/bottom_nav.dart';
+import '../../providers/language_provider.dart';
+import 'package:provider/provider.dart';
 /// Shows the AI-recommended diagnosis, the symptoms it was based on, and
 /// a risk-appropriate call to action — escalating to emergency actions
 /// for high-risk results.
@@ -19,11 +21,12 @@ class AiRiskAssessmentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBangla = context.watch<LanguageProvider>().isBangla;
     final risk = result.riskLevel;
 
     return GradientScaffold(
       bottomNavigationBar: const DashboardBottomNav(
-      selectedIndex: 1,
+        selectedIndex: 1,
       ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 24),
@@ -45,17 +48,20 @@ class AiRiskAssessmentPage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             // const SizedBox(height: 4),
-            _DiagnosisHero(result: result),
+            _DiagnosisHero(result: result, isBangla: isBangla),
             const SizedBox(height: 16),
-            _SymptomsSection(result: result),
+            _SymptomsSection(result: result, isBangla: isBangla),
             const SizedBox(height: 16),
             if (risk.recommendsDoctorVisit) ...[
-              _WarningBanner(riskLevel: risk, message: result.warningMessage),
+              _WarningBanner(
+                riskLevel: risk,
+                message: result.localizedWarningMessage(isBangla),
+              ),
               const SizedBox(height: 16),
             ],
             if (risk.isEmergency) ...[
               AppButton(
-                label: 'Inform Emergency Contacts',
+                label: isBangla ? 'জরুরি যোগাযোগের নম্বরে জানান' : 'Inform Emergency Contacts',
                 icon: Icons.contact_phone_outlined,
                 variant: AppButtonVariant.outlined,
                 onPressed: () {
@@ -64,7 +70,7 @@ class AiRiskAssessmentPage extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               AppButton(
-                label: 'Call Ambulance · 999',
+                label: isBangla ? 'অ্যাম্বুলেন্স কল করুন · 999' : 'Call Ambulance · 999',
                 icon: Icons.local_hospital_outlined,
                 variant: AppButtonVariant.danger,
                 onPressed: () {
@@ -81,7 +87,9 @@ class AiRiskAssessmentPage extends StatelessWidget {
 
 class _DiagnosisHero extends StatelessWidget {
   final DiagnosisResult result;
-  const _DiagnosisHero({required this.result});
+  final bool isBangla;
+
+  const _DiagnosisHero({required this.result, required this.isBangla});
 
   @override
   Widget build(BuildContext context) {
@@ -95,10 +103,13 @@ class _DiagnosisHero extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text('RECOMMENDED DIAGNOSIS', style: AppText.eyebrow),
+          Text(
+            isBangla ? 'প্রস্তাবিত রোগনির্ণয়' : 'RECOMMENDED DIAGNOSIS',
+            style: AppText.eyebrow,
+          ),
           const SizedBox(height: 8),
           Text(
-            result.diagnosisName,
+            result.localizedDiagnosisName(isBangla),
             textAlign: TextAlign.center,
             style: AppText.diagnosisTitle,
           ),
@@ -112,7 +123,9 @@ class _DiagnosisHero extends StatelessWidget {
 
 class _SymptomsSection extends StatelessWidget {
   final DiagnosisResult result;
-  const _SymptomsSection({required this.result});
+  final bool isBangla;
+
+  const _SymptomsSection({required this.result, required this.isBangla});
 
   @override
   Widget build(BuildContext context) {
@@ -127,9 +140,9 @@ class _SymptomsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'REPORTED SYMPTOMS',
-            style: TextStyle(
+          Text(
+            isBangla ? 'উপসর্গসমূহ' : 'REPORTED SYMPTOMS',
+            style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.5,
@@ -148,7 +161,7 @@ class _SymptomsSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  entry.displayLabel,
+                  entry.displayLabel(isBangla),
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,

@@ -5,15 +5,15 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/widgets/bottom_nav.dart';
+import '../../core/theme/app_theme.dart';
 import '../../providers/language_provider.dart';
 import './widgets/mood_card.dart';
 import './widgets/pregnancy_card.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
-  static const Color topGradient = Color(0xFFFFCAE1);
-  static const Color bottomGradient = Color(0xFFFFE8F2);
   static const Color primaryPink = Color(0xFFAB0A65);
 
   @override
@@ -22,87 +22,105 @@ class DashboardScreen extends StatelessWidget {
     final bool isBangla = languageProvider.isBangla;
 
     return Scaffold(
-      bottomNavigationBar: const DashboardBottomNav(),
-      backgroundColor: Colors.transparent,
-      extendBody: true,
+        bottomNavigationBar: const DashboardBottomNav(),
+        backgroundColor: Colors.transparent,
+        extendBody: true,
 
-      body: Container(
-        width: double.infinity,
+        body: Stack(
+          children: [
+            Container(
+              width: double.infinity,
 
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              topGradient,
-              bottomGradient,
-            ],
-          ),
-        ),
+              decoration: const BoxDecoration(
+                gradient: AppGradients.background,
+              ),
 
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              22,
-              10,
-              22,
-              20,
-            ),
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(
+                    22,
+                    10,
+                    22,
+                    20,
+                  ),
 
-            child: Column(
-              children: [
-
-                //--------------------------------------------------
-                // SETTINGS BUTTON & LANGUAGE SWITCHER
-                //--------------------------------------------------
-
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  child: Column(
                     children: [
-                      // Language Toggle Switch
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: .5),
-                          borderRadius: BorderRadius.circular(25),
-                          border: Border.all(color: primaryPink.withValues(alpha: 0.2)),
-                        ),
+
+                      //--------------------------------------------------
+                      // SETTINGS BUTTON & LANGUAGE SWITCHER
+                      //--------------------------------------------------
+
+                      Align(
+                        alignment: Alignment.topRight,
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            GestureDetector(
-                              onTap: () => context.read<LanguageProvider>().setLanguage(false),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: !isBangla ? primaryPink : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                                child: Text(
-                                  'English',
-                                  style: GoogleFonts.gentiumBookPlus(
-                                    color: !isBangla ? Colors.white : primaryPink,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
+                            // Language Toggle Switch
+                            Padding(padding: EdgeInsetsGeometry.all(25)),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: .5),
+                                borderRadius: BorderRadius.circular(25),
+                                border: Border.all(color: primaryPink.withValues(alpha: 0.2)),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () => context.read<LanguageProvider>().setLanguage(false),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      decoration: BoxDecoration(
+                                        color: !isBangla ? primaryPink : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      child: Text(
+                                        'English',
+                                        style: GoogleFonts.gentiumBookPlus(
+                                          color: !isBangla ? Colors.white : primaryPink,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  GestureDetector(
+                                    onTap: () => context.read<LanguageProvider>().setLanguage(true),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      decoration: BoxDecoration(
+                                        color: isBangla ? primaryPink : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      child: Text(
+                                        'বাংলা',
+                                        style: TextStyle(
+                                          color: isBangla ? Colors.white : primaryPink,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () => context.read<LanguageProvider>().setLanguage(true),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: isBangla ? primaryPink : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                                child: Text(
-                                  'বাংলা',
-                                  style: TextStyle(
-                                    color: isBangla ? Colors.white : primaryPink,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
+                            const SizedBox(width: 8),
+                            Material(
+                              color: Colors.white.withValues(alpha: .0),
+                              borderRadius: BorderRadius.circular(16),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(16),
+                                onTap: () {
+                                  Navigator.of(context).pushNamed(AppRoutes.settings);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(0),
+                                  child: SvgPicture.asset(
+                                    "assets/icons/settings.svg",
+                                    width: 24,
+                                    height: 24,
                                   ),
                                 ),
                               ),
@@ -110,49 +128,97 @@ class DashboardScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Material(
-                        color: Colors.white.withValues(alpha: .35),
-                        borderRadius: BorderRadius.circular(16),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(16),
-                          onTap: () {
-                            Navigator.of(context).pushNamed(AppRoutes.settings);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: SvgPicture.asset(
-                              "assets/icons/settings.svg",
-                              width: 28,
-                              height: 28,
-                            ),
-                          ),
-                        ),
-                      ),
+
+                      const SizedBox(height: 16),
+
+                      //--------------------------------------------------
+                      // Pregnancy Card
+                      //--------------------------------------------------
+
+                      const PregnancyCard(),
+
+                      const SizedBox(height: 28),
+
+                      //--------------------------------------------------
+                      // Mood Card
+                      //--------------------------------------------------
+
+                      const MoodCard(),
                     ],
                   ),
                 ),
-
-                const SizedBox(height: 16),
-
-                //--------------------------------------------------
-                // Pregnancy Card
-                //--------------------------------------------------
-
-                const PregnancyCard(),
-
-                const SizedBox(height: 28),
-
-                //--------------------------------------------------
-                // Mood Card
-                //--------------------------------------------------
-
-                const MoodCard(),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+
+            Positioned(
+              right: 10,
+              bottom: 10, // Sits just above the bottom navigation bar
+              child: SafeArea(
+                child: Material(
+                  elevation: 8,
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(50),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(50),
+                    onTap: () {
+                      final Uri phone = Uri(
+                        scheme: 'tel',
+                        path: '999',
+                      );
+
+                      launchUrl(phone);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        color: primaryPink,
+                        borderRadius: BorderRadius.circular(50),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: .15),
+                            blurRadius: 15,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            "assets/icons/ambulance.png",
+                            width: 24,
+                            height: 24,
+                            fit: BoxFit.contain,
+                          ),
+                          const SizedBox(width: 10),
+
+                          Flexible(
+                            child: Consumer<LanguageProvider>(
+                              builder: (_, languageProvider, __) {
+                                return Text(
+                                  languageProvider.isBangla
+                                      ? "জরুরি অ্যাম্বুলেন্স সেবা(৯৯৯)"
+                                      : "Emergency Ambulance Service(999)",
+                                  style: GoogleFonts.gentiumBookPlus(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/symptom.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../providers/language_provider.dart';
+import 'package:provider/provider.dart';
 
 /// Follow-up input card shown directly under a measurable symptom once
 /// it's selected. Only symptoms with `symptom.isMeasurable == true`
@@ -20,6 +22,8 @@ class MeasurementInputCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBangla = context.watch<LanguageProvider>().isBangla;
+
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(top: 8, bottom: 14),
@@ -34,7 +38,7 @@ class MeasurementInputCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _label,
+            _label(isBangla),
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
@@ -42,22 +46,22 @@ class MeasurementInputCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          _buildFields(),
+          _buildFields(isBangla),
         ],
       ),
     );
   }
 
-  String get _label {
+  String _label(bool isBangla) {
     switch (symptom.measurementType!) {
       case MeasurementType.temperature:
-        return "What's the temperature?";
+        return isBangla ? 'তাপমাত্রা কত?' : "What's the temperature?";
       case MeasurementType.bloodPressure:
-        return "What's your blood pressure reading?";
+        return isBangla ? 'আপনার রক্তচাপ কত?' : "What's your blood pressure reading?";
     }
   }
 
-  Widget _buildFields() {
+  Widget _buildFields(bool isBangla) {
     switch (symptom.measurementType!) {
       case MeasurementType.temperature:
         return Row(
@@ -65,6 +69,7 @@ class MeasurementInputCard extends StatelessWidget {
             Expanded(
               child: _MeasurementField(
                 initialValue: values['value'],
+                isBangla: isBangla,
                 onChanged: (v) => onChanged({...values, 'value': v}),
               ),
             ),
@@ -78,6 +83,7 @@ class MeasurementInputCard extends StatelessWidget {
             Expanded(
               child: _MeasurementField(
                 initialValue: values['systolic'],
+                isBangla: isBangla,
                 onChanged: (v) => onChanged({...values, 'systolic': v}),
               ),
             ),
@@ -95,6 +101,7 @@ class MeasurementInputCard extends StatelessWidget {
             Expanded(
               child: _MeasurementField(
                 initialValue: values['diastolic'],
+                isBangla: isBangla,
                 onChanged: (v) => onChanged({...values, 'diastolic': v}),
               ),
             ),
@@ -108,9 +115,14 @@ class MeasurementInputCard extends StatelessWidget {
 
 class _MeasurementField extends StatelessWidget {
   final String? initialValue;
+  final bool isBangla;
   final ValueChanged<String> onChanged;
 
-  const _MeasurementField({required this.initialValue, required this.onChanged});
+  const _MeasurementField({
+    required this.initialValue,
+    required this.isBangla,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +136,7 @@ class _MeasurementField extends StatelessWidget {
         color: Color(0xFF4A3540),
       ),
       decoration: InputDecoration(
-        hintText: 'Type here',
+        hintText: isBangla ? 'এখানে লিখুন' : 'Type here',
         hintStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600),
         filled: true,
         fillColor: const Color(0xFFFBF2F5),
