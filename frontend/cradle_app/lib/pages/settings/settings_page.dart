@@ -286,7 +286,7 @@ class _SettingsPageState extends State<SettingsPage>
                             subtitle: isBangla
                                 ? 'ব্যবহারের শর্তাবলী পড়ুন'
                                 : 'Read our terms of use',
-                            onTap: () => _showComingSoon(context, isBangla),
+                            onTap: () => _showTermsDialog(context, isBangla),
                           ),
                           _divider(),
                           _navTile(
@@ -297,7 +297,7 @@ class _SettingsPageState extends State<SettingsPage>
                             subtitle: isBangla
                                 ? 'আমরা কীভাবে আপনার ডেটা ব্যবহার করি'
                                 : 'How we use your data',
-                            onTap: () => _showComingSoon(context, isBangla),
+                            onTap: () => _showPrivacyPolicyDialog(context, isBangla),
                           ),
                           _divider(),
                           _navTile(
@@ -306,7 +306,7 @@ class _SettingsPageState extends State<SettingsPage>
                             subtitle: isBangla
                                 ? 'স্টোরে আমাদের রিভিউ দিন'
                                 : 'Leave us a review on the store',
-                            onTap: () => _showComingSoon(context, isBangla),
+                            onTap: () => _showRatingDialog(context, isBangla),
                           ),
                         ]),
                         const SizedBox(height: 32),
@@ -1375,6 +1375,315 @@ class _SettingsPageState extends State<SettingsPage>
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void _showTermsDialog(BuildContext context, bool isBangla) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Container(
+            constraints: const BoxConstraints(maxHeight: 500),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [_topGradient, _bottomGradient],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
+            ),
+            child: Stack(
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 8),
+                    Text(
+                      isBangla ? 'শর্তাবলী' : 'Terms & Conditions',
+                      style: GoogleFonts.gentiumBookPlus(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: _accent,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Text(
+                          isBangla
+                              ? '১. সম্মতি: ক্র্যাডল অ্যাপটি ব্যবহার করে আপনি আমাদের শর্তাবলীতে সম্মত হচ্ছেন।\n\n'
+                                  '২. কোনো চিকিৎসা পরামর্শ নয়: এই অ্যাপের তথ্য শুধুমাত্র শিক্ষামূলক এবং সাধারণ সহায়তার জন্য। এটি পেশাদার ডাক্তারের পরামর্শ, রোগ নির্ণয় বা চিকিৎসার বিকল্প নয়।\n\n'
+                                  '৩. দায়বদ্ধতা সীমাবদ্ধতা: অ্যাপের তথ্যের উপর ভিত্তি করে নেওয়া কোনো সিদ্ধান্তের জন্য ক্র্যাডল টিম দায়ী থাকবে না। যেকোনো জটিলতায় চিকিৎসকের পরামর্শ নিন।\n\n'
+                                  '৪. শর্তাবলীর পরিবর্তন: আমরা যেকোনো সময় এই শর্তাবলী আপডেট করার অধিকার রাখি।'
+                              : '1. Acceptance: By using the Cradle app, you agree to these Terms & Conditions.\n\n'
+                                  '2. No Medical Advice: The content provided in this app is for educational and general support purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment.\n\n'
+                                  '3. Limitation of Liability: Under no circumstances shall the Cradle team be liable for any decisions made based on the info provided inside the app. Always consult with a doctor for health concerns.\n\n'
+                                  '4. Changes to Terms: We reserve the right to update these terms at any time.',
+                          style: GoogleFonts.gentiumBookPlus(
+                            fontSize: 14,
+                            color: _accent.withValues(alpha: 0.85),
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: _accent.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        color: _accent,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showPrivacyPolicyDialog(BuildContext context, bool isBangla) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Container(
+            constraints: const BoxConstraints(maxHeight: 500),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [_topGradient, _bottomGradient],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
+            ),
+            child: Stack(
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 8),
+                    Text(
+                      isBangla ? 'গোপনীয়তা নীতি' : 'Privacy Policy',
+                      style: GoogleFonts.gentiumBookPlus(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: _accent,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Text(
+                          isBangla
+                              ? '১. তথ্য সংগ্রহ: আমরা আপনার প্রোফাইলের নাম এবং প্রসূতি স্বাস্থ্য সংক্রান্ত ডাটা সংরক্ষণ করি।\n\n'
+                                  '২. স্থানীয় প্রসেসিং: আপনার প্রদেয় সকল স্বাস্থ্য ডেটা আপনার ডিভাইসেই স্থানীয়ভাবে সংরক্ষণ ও বিশ্লেষণ করা হয় এবং বাইরের কোনো সার্ভারে অননুমোদিতভাবে শেয়ার করা হয় না।\n\n'
+                                  '৩. নিরাপত্তা: আমরা আপনার ডেটার সর্বোচ্চ গোপনীয়তা রক্ষা করতে প্রতিশ্রুতিবদ্ধ।\n\n'
+                                  '৪. আপনার নিয়ন্ত্রণ: আপনি যখনই চান সেটিং থেকে ক্যাশ পরিষ্কার অথবা অ্যাকাউন্ট মুছে ফেলে আপনার সকল ডেটা চিরতরে মুছে ফেলতে পারেন।'
+                              : '1. Data Collection: We store your profile name and obstetric health parameters.\n\n'
+                                  '2. Local Processing: All your health data is stored and analyzed locally on your device and is not shared with external servers without authorization.\n\n'
+                                  '3. Security: We are committed to protecting the confidentiality of your personal information.\n\n'
+                                  '4. Control: You can clear your cache or delete your account at any time through settings to permanently erase your data.',
+                          style: GoogleFonts.gentiumBookPlus(
+                            fontSize: 14,
+                            color: _accent.withValues(alpha: 0.85),
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: _accent.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        color: _accent,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showRatingDialog(BuildContext context, bool isBangla) {
+    int selectedStars = 5;
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [_topGradient, _bottomGradient],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
+                ),
+                child: Stack(
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 8),
+                        Text(
+                          isBangla ? 'অ্যাপ রেট করুন' : 'Rate the App',
+                          style: GoogleFonts.gentiumBookPlus(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: _accent,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          isBangla
+                              ? 'ক্র্যাডল অ্যাপ সম্পর্কে আপনার মতামত আমাদের জানান!'
+                              : 'How do you like Cradle? Give us your rating!',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.gentiumBookPlus(
+                            fontSize: 14.5,
+                            color: _accent.withValues(alpha: 0.8),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(5, (index) {
+                            final currentStarValue = index + 1;
+                            return IconButton(
+                              icon: Icon(
+                                currentStarValue <= selectedStars
+                                    ? Icons.star_rounded
+                                    : Icons.star_outline_rounded,
+                                color: currentStarValue <= selectedStars
+                                    ? Colors.amber[700]
+                                    : _accent.withValues(alpha: 0.35),
+                                size: 38,
+                              ),
+                              onPressed: () {
+                                setStateDialog(() {
+                                  selectedStars = currentStarValue;
+                                });
+                              },
+                            );
+                          }),
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(dialogContext);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isBangla ? 'মতামত দেওয়ার জন্য ধন্যবাদ!' : 'Thank you for your rating!',
+                                    style: GoogleFonts.gentiumBookPlus(color: _secondaryWhite),
+                                  ),
+                                  backgroundColor: _accent,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _accent,
+                              foregroundColor: _secondaryWhite,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 2,
+                            ),
+                            child: Text(
+                              isBangla ? 'জমা দিন' : 'Submit',
+                              style: GoogleFonts.gentiumBookPlus(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                      ],
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(dialogContext),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: _accent.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close_rounded,
+                            color: _accent,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );
