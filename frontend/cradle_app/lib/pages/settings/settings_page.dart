@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../core/routes/app_routes.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
+import '../../providers/font_size_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -84,8 +85,8 @@ class _SettingsPageState extends State<SettingsPage>
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [_topGradient, _bottomGradient],
           ),
         ),
@@ -173,7 +174,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 isBangla ? 'ফন্ট সাইজ' : 'Font Size',
                             subtitle:
                                 isBangla ? 'টেক্সটের আকার পরিবর্তন করুন' : 'Adjust text size',
-                            onTap: () => _showComingSoon(context, isBangla),
+                            onTap: () => _showFontSizeDialog(context, isBangla),
                           ),
                         ]),
                         const SizedBox(height: 26),
@@ -243,7 +244,7 @@ class _SettingsPageState extends State<SettingsPage>
                             subtitle: isBangla
                                 ? 'সাধারণ প্রশ্নের উত্তর'
                                 : 'Answers to common questions',
-                            onTap: () => _showComingSoon(context, isBangla),
+                            onTap: () => _showFAQDialog(context, isBangla),
                           ),
                           _divider(),
                           _navTile(
@@ -252,7 +253,7 @@ class _SettingsPageState extends State<SettingsPage>
                             subtitle: isBangla
                                 ? 'আমাদের সাপোর্ট টিমের সাথে কথা বলুন'
                                 : 'Reach out to our support team',
-                            onTap: () => _showComingSoon(context, isBangla),
+                            onTap: () => _showContactUsDialog(context, isBangla),
                           ),
                           _divider(),
                           _navTile(
@@ -901,72 +902,481 @@ class _SettingsPageState extends State<SettingsPage>
     );
   }
 
-  void _showAboutDialog(BuildContext ctx, bool isBangla) {
+  void _showAboutDialog(BuildContext context, bool isBangla) {
     showDialog(
-      context: ctx,
-      builder: (_) => AlertDialog(
-        backgroundColor: _bottomGradient,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Cradle',
-          style: GoogleFonts.gentiumBookPlus(
-            fontWeight: FontWeight.bold,
-            color: _accent,
-            fontSize: 24,
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [_topGradient, _bottomGradient],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
+            ),
+            child: Stack(
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    Center(
+                      child: Text(
+                        'Cradle',
+                        style: GoogleFonts.gentiumBookPlus(
+                          fontWeight: FontWeight.bold,
+                          color: _accent,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      isBangla ? 'সংস্করণ: 1.0.0' : 'Version: 1.0.0',
+                      style: GoogleFonts.gentiumBookPlus(
+                        color: _accent,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      isBangla
+                          ? 'Cradle হলো একটি মাতৃস্বাস্থ্য সহায়ক অ্যাপ যা গর্ভবতী মায়েদের স্বাস্থ্য পর্যবেক্ষণ, ঝুঁকি মূল্যায়ন এবং শিক্ষামূলক সামগ্রী প্রদান করে।'
+                          : 'Cradle is a maternal health companion app that provides health monitoring, risk assessment, and educational content for expecting mothers.',
+                      style: GoogleFonts.gentiumBookPlus(
+                        color: _accent.withValues(alpha: 0.8),
+                        fontSize: 14,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      isBangla ? '© ২০২৬ Cradle Team' : '© 2026 Cradle Team',
+                      style: GoogleFonts.gentiumBookPlus(
+                        color: _accent.withValues(alpha: 0.5),
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: _accent.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        color: _accent,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              isBangla
-                  ? 'সংস্করণ: 1.0.0'
-                  : 'Version: 1.0.0',
-              style: GoogleFonts.gentiumBookPlus(
-                color: _accent,
-                fontSize: 14,
+        );
+      },
+    );
+  }
+
+  void _showFontSizeDialog(BuildContext context, bool isBangla) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return Consumer<FontSizeProvider>(
+          builder: (context, fontSizeProvider, _) {
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [_topGradient, _bottomGradient],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
+                ),
+                child: Stack(
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 8),
+                        Text(
+                          isBangla ? 'ফন্ট সাইজ' : 'Font Size',
+                          style: GoogleFonts.gentiumBookPlus(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: _accent,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          isBangla ? 'টেক্সট আকার নমুনা' : 'Sample Text Size',
+                          style: GoogleFonts.gentiumBookPlus(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: _accent,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          isBangla
+                              ? 'এই স্লাইডারটি পরিবর্তন করে অ্যাপের লেখার আকার নিয়ন্ত্রণ করুন।'
+                              : 'Change this slider to adjust the text size of the app.',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.gentiumBookPlus(
+                            fontSize: 13,
+                            color: _accent.withValues(alpha: 0.75),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        SliderTheme(
+                          data: SliderThemeData(
+                            activeTrackColor: _accent,
+                            inactiveTrackColor: _accent.withValues(alpha: 0.15),
+                            thumbColor: _accent,
+                            overlayColor: _accent.withValues(alpha: 0.12),
+                            valueIndicatorColor: _accent,
+                            valueIndicatorTextStyle: GoogleFonts.gentiumBookPlus(color: _secondaryWhite),
+                          ),
+                          child: Slider(
+                            value: fontSizeProvider.scaleFactor,
+                            min: 0.8,
+                            max: 1.6,
+                            divisions: 8,
+                            label: fontSizeProvider.scaleFactor.toStringAsFixed(1),
+                            onChanged: (val) {
+                              fontSizeProvider.setScaleFactor(val);
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(dialogContext),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: _accent.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close_rounded,
+                            color: _accent,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              isBangla
-                  ? 'Cradle হলো একটি মাতৃস্বাস্থ্য সহায়ক অ্যাপ যা গর্ভবতী মায়েদের স্বাস্থ্য পর্যবেক্ষণ, ঝুঁকি মূল্যায়ন এবং শিক্ষামূলক সামগ্রী প্রদান করে।'
-                  : 'Cradle is a maternal health companion app that provides health monitoring, risk assessment, and educational content for expecting mothers.',
-              style: GoogleFonts.gentiumBookPlus(
-                color: _accent.withValues(alpha: 0.8),
-                fontSize: 14,
-                height: 1.5,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showFAQDialog(BuildContext context, bool isBangla) {
+    final List<Map<String, String>> faqList = isBangla
+        ? [
+            {
+              'q': 'ক্র্যাডল কি?',
+              'a': 'ক্র্যাডল হলো একটি মাতৃত্বকালীন স্বাস্থ্য সহায়ক অ্যাপ যা গর্ভবতী মায়েদের স্বাস্থ্য পর্যবেক্ষণ, ঝুঁকি মূল্যায়ন এবং শিক্ষামূলক সামগ্রী প্রদান করে।'
+            },
+            {
+              'q': 'এআই ঝুঁকি মূল্যায়ন কীভাবে কাজ করে?',
+              'a': 'এটি আপনার প্রদান করা লক্ষণ ও স্বাস্থ্য প্যারামিটার বিশ্লেষণ করে সম্ভাব্য ঝুঁকি সনাক্ত করে এবং চিকিৎসকের পরামর্শ নেওয়ার পরামর্শ দেয়।'
+            },
+            {
+              'q': 'আমার স্বাস্থ্য ডেটা কি নিরাপদ?',
+              'a': 'হ্যাঁ, আপনার ডেটা সম্পূর্ণ নিরাপদ এবং এটি শুধুমাত্র আপনার স্বাস্থ্য মূল্যায়নের জন্য ব্যবহৃত হয়।'
+            },
+            {
+              'q': 'আমি কি আমার ডেটা এক্সপোর্ট করতে পারি?',
+              'a': 'হ্যাঁ, আপনার চিকিৎসকের সাথে শেয়ার করার জন্য ডেটা ও স্টোরেজ সেটিং থেকে আপনার তথ্য ডাউনলোড করতে পারেন।'
+            },
+          ]
+        : [
+            {
+              'q': 'What is Cradle?',
+              'a': 'Cradle is a maternal health companion app designed to support expecting mothers by providing health monitoring, risk assessment, and educational content.'
+            },
+            {
+              'q': 'How does the AI risk assessment work?',
+              'a': 'It analyzes the maternal health parameters and symptoms you input to identify potential risk factors and suggests when to consult a healthcare provider.'
+            },
+            {
+              'q': 'Is my health data secure?',
+              'a': 'Yes, your health data is private, secure, and only used locally to calculate assessments and track your health metrics.'
+            },
+            {
+              'q': 'Can I export my data?',
+              'a': 'Yes, you can export your health history from the Data & Storage settings to share with your doctor.'
+            },
+          ];
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Container(
+            constraints: const BoxConstraints(maxHeight: 500),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [_topGradient, _bottomGradient],
               ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
             ),
-            const SizedBox(height: 16),
-            Text(
-              isBangla
-                  ? '© ২০২৬ Cradle Team'
-                  : '© 2026 Cradle Team',
-              style: GoogleFonts.gentiumBookPlus(
-                color: _accent.withValues(alpha: 0.5),
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _accent,
-              foregroundColor: _secondaryWhite,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-            child: Text(
-              isBangla ? 'ঠিক আছে' : 'OK',
-              style: GoogleFonts.gentiumBookPlus(),
+            child: Stack(
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 8),
+                    Text(
+                      isBangla ? 'সচরাচর জিজ্ঞাসা' : 'FAQ',
+                      style: GoogleFonts.gentiumBookPlus(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: _accent,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: faqList.map((faq) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    faq['q']!,
+                                    style: GoogleFonts.gentiumBookPlus(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: _accent,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    faq['a']!,
+                                    style: GoogleFonts.gentiumBookPlus(
+                                      fontSize: 13.5,
+                                      color: _accent.withValues(alpha: 0.8),
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: _accent.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        color: _accent,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
+    );
+  }
+
+  void _showContactUsDialog(BuildContext context, bool isBangla) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [_topGradient, _bottomGradient],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
+            ),
+            child: Stack(
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 8),
+                    Text(
+                      isBangla ? 'যোগাযোগ করুন' : 'Contact Us',
+                      style: GoogleFonts.gentiumBookPlus(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: _accent,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: _accent.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.email_rounded, color: _accent, size: 22),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                isBangla ? 'ইমেইল' : 'Email',
+                                style: GoogleFonts.gentiumBookPlus(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: _accent.withValues(alpha: 0.6),
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'cradle.bd@gmail.com',
+                                style: GoogleFonts.gentiumBookPlus(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: _accent,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: _accent.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.phone_rounded, color: _accent, size: 22),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                isBangla ? 'ফোন' : 'Phone',
+                                style: GoogleFonts.gentiumBookPlus(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: _accent.withValues(alpha: 0.6),
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '+880 1234 567890',
+                                style: GoogleFonts.gentiumBookPlus(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: _accent,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: _accent.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        color: _accent,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
