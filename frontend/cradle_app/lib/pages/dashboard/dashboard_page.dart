@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/widgets/bottom_nav.dart';
+import '../../core/theme/app_theme.dart';
 import '../../providers/language_provider.dart';
 import './widgets/mood_card.dart';
 import './widgets/pregnancy_card.dart';
@@ -12,8 +13,6 @@ import './widgets/pregnancy_card.dart';
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
-  static const Color topGradient = Color(0xFFFFCAE1);
-  static const Color bottomGradient = Color(0xFFFFE8F2);
   static const Color primaryPink = Color(0xFFAB0A65);
 
   @override
@@ -30,14 +29,7 @@ class DashboardScreen extends StatelessWidget {
         width: double.infinity,
 
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              topGradient,
-              bottomGradient,
-            ],
-          ),
+          gradient: AppGradients.background,
         ),
 
         child: SafeArea(

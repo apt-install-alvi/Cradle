@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/routes/app_routes.dart';
+import '../../core/theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
 
@@ -16,7 +17,6 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage>
     with SingleTickerProviderStateMixin {
   // ── Colour constants ──────────────────────────────────────────────
-  static const Color _topGradient = Color(0xFFFFCAE1);
   static const Color _bottomGradient = Color(0xFFFFE8F2);
   static const Color _accent = Color(0xFFAB0A65);
   static const Color _primaryWhite52 = Color(0x85FFFFFF); // #FFF 52 %
@@ -86,11 +86,7 @@ class _SettingsPageState extends State<SettingsPage>
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [_topGradient, _bottomGradient],
-          ),
+          gradient: AppGradients.background,
         ),
         child: SafeArea(
           child: FadeTransition(

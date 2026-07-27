@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart'; // NEW
 import '../../providers/auth_provider.dart'; // NEW
 import '../../providers/language_provider.dart'; // NEW
 import '../../core/routes/app_routes.dart'; // NEW
+import '../../core/theme/app_theme.dart';
 
 // ----------------------------------------------------------------
 // TEST MODE: Firebase is not wired up yet.
@@ -38,7 +39,6 @@ class PersonalInfoPage extends StatefulWidget {
 
 class _PersonalInfoPageState extends State<PersonalInfoPage> {
   // ── Colour constants (Theme matching) ──────────────────────────────
-  static const Color _topGradient = Color(0xFFFFCAE1);
   static const Color _bottomGradient = Color(0xFFFFE8F2);
   static const Color _accent = Color(0xFFAB0A65);
   static const Color _primaryWhite52 = Color(0x85FFFFFF); // #FFF 52%
@@ -273,11 +273,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [_topGradient, _bottomGradient],
-          ),
+          gradient: AppGradients.background,
         ),
         child: _isLoading
             ? const Center(child: CircularProgressIndicator(color: _accent))

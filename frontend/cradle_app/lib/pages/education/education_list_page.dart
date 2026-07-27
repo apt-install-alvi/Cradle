@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
 
@@ -8,9 +9,6 @@ import '../../providers/language_provider.dart';
 class EducationListPage extends StatelessWidget {
   const EducationListPage({super.key});
 
-  // ── Colour constants (Theme matching) ──────────────────────────────
-  static const Color _topGradient = Color(0xFFFFCAE1);
-  static const Color _bottomGradient = Color(0xFFFFE8F2);
   static const Color _accent = Color(0xFFAB0A65);
   static const Color _primaryWhite52 = Color(0x85FFFFFF); // #FFF 52%
 
@@ -28,11 +26,7 @@ class EducationListPage extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [_topGradient, _bottomGradient],
-            ),
+            gradient: AppGradients.background,
           ),
           child: SafeArea(
             child: Column(
