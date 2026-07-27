@@ -37,12 +37,12 @@ class PregnancyCard extends StatelessWidget {
         ),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.fromLTRB(10, 18, 10, 12),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: .50),
             borderRadius: BorderRadius.circular(28),
             border: Border.all(
-              color: Colors.white.withValues(alpha: .4),
+              color: Colors.pink.withValues(alpha: .4),
             ),
             boxShadow: [
               BoxShadow(
@@ -62,11 +62,11 @@ class PregnancyCard extends StatelessWidget {
 
               Text(
                 isBangla
-                    ? "অভিনন্দন! আপনার গর্ভাবস্থার ${toBanglaDigits(weeksPregnant)} সপ্তাহ চলছে।"
-                    : "Congratulations! You are $weeksPregnant weeks pregnant.",
+                    ? "অভিনন্দন! আপনার গর্ভাবস্থার ${toBanglaDigits(weeksPregnant)} সপ্তাহ চলছে!"
+                    : "Congratulations! You are $weeksPregnant weeks pregnant!",
                 style: GoogleFonts.gentiumBookPlus(
                   fontWeight: FontWeight.bold,
-                  fontSize: 20,
+                  fontSize: 18,
                   color: primaryPink,
                 ),
               ),
@@ -88,7 +88,7 @@ class PregnancyCard extends StatelessWidget {
 
                         return Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 1.3),
 
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
@@ -98,16 +98,19 @@ class PregnancyCard extends StatelessWidget {
                                 color: isToday
                                     ? primaryPink
                                     : Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: isToday
-                                    ? [
-                                        BoxShadow(
-                                          color: primaryPink.withValues(alpha: .25),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ]
-                                    : [],
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.pink.withAlpha(50)
+                                ),
+                                // boxShadow: isToday
+                                //     ? [
+                                //         BoxShadow(
+                                //           color: primaryPink.withValues(alpha: .25),
+                                //           blurRadius: 10,
+                                //           offset: const Offset(0, 4),
+                                //         ),
+                                //       ]
+                                //     : [],
                               ),
 
                               child: Column(
@@ -176,17 +179,19 @@ class PregnancyCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 255, 214, 228),
                   borderRadius: BorderRadius.all(
                     Radius.circular(28),
                   ),
-                  gradient: RadialGradient(
-                    center: Alignment(0.05, -.2),
-                    radius: 1.75,
-                    colors: [
-                      Color(0xFFFFD0D3),
-                      Color(0xFFEB88FF),
-                    ],
-                  ),
+                  
+                  // gradient: RadialGradient(
+                  //   center: Alignment(0.05, -.2),
+                  //   radius: 1.75,
+                  //   colors: [
+                  //     Color(0xFFFFD0D3),
+                  //     Color(0xFFEB88FF),
+                  //   ],
+                  // ),
                 ),
                 child: Column(
                   children: [
@@ -203,23 +208,48 @@ class PregnancyCard extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 16),
 
-                    SizedBox(
-                      height: 80,
-                      child: Image.asset(
-                        "assets/images/grape.png",
-                        fit: BoxFit.contain,
-                        errorBuilder:
-                            (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.eco,
-                            size: 90,
-                            color: Colors.orange,
-                          );
-                        },
-                      ),
+                   SizedBox(
+                    height: 85,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Shadow
+                        Transform.translate(
+                          offset: const Offset(0, 6),
+                          child: ImageFiltered(
+                            imageFilter: ImageFilter.blur(
+                              sigmaX: 4,
+                              sigmaY: 4,
+                            ),
+                            child: ColorFiltered(
+                              colorFilter: ColorFilter.mode(
+                                primaryPink.withValues(alpha: 0.4),
+                                BlendMode.srcIn,
+                              ),
+                              child: Image.asset(
+                                "assets/images/grape.png",
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        Image.asset(
+                          "assets/images/grape.png",
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.eco,
+                              size: 90,
+                              color: Colors.orange,
+                            );
+                          },
+                        ),
+                      ],
                     ),
+                  ),
                   ],
                 ),
               ),

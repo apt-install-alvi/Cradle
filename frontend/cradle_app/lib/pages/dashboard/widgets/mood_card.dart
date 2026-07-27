@@ -70,7 +70,7 @@ class _MoodCardState extends State<MoodCard>
               color: Colors.white.withValues(alpha: .50),
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
-                color: Colors.white.withValues(alpha: .4),
+                color: Colors.pink.withValues(alpha: .4),
               ),
               boxShadow: [
                 BoxShadow(
