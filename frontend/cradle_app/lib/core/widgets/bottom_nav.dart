@@ -52,7 +52,7 @@ class DashboardBottomNav extends StatelessWidget {
             _buildNavItem(
               context,
               icon: "assets/icons/diagnosis.svg",
-              label: isBangla ? "লক্ষণ" : "Diagnosis",
+              label: isBangla ? "রোগনির্ণয়" : "Diagnosis",
               index: 1,
               route: "/symptom-input",
             ),

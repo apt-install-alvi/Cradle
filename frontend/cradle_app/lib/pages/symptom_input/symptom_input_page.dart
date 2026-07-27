@@ -9,6 +9,8 @@ import '../../core/widgets/gradient_scaffold.dart';
 import './widgets/measurement_input_card.dart';
 import './widgets/symptom_card.dart';
 import '../../core/widgets/bottom_nav.dart';
+import '../../providers/language_provider.dart';
+import 'package:provider/provider.dart';
 
 /// First screen of the flow: the user selects symptoms from rows of
 /// cards. Only symptoms that make sense to measure — Fever and High BP —
@@ -92,6 +94,7 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isBangla = context.watch<LanguageProvider>().isBangla;
     final hasMore = _remainingPool.isNotEmpty;
 
     return GradientScaffold(
@@ -106,15 +109,17 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
             const SizedBox(height: 32),
             _Header(onHistoryTap: _openHistory),
             const SizedBox(height: 4),
-            const Text(
-              "Select all that apply — you can add details next.",
+            Text(
+              isBangla
+                  ? 'যেগুলো প্রযোজ্য সবগুলো নির্বাচন করুন — পরে আরও বিস্তারিত যোগ করতে পারবেন।'
+                  : 'Select all that apply — you can add details next.',
               style: AppText.subtext,
             ),
             const SizedBox(height: 16),
             for (var i = 0; i < _batches.length; i++) ...[
               if (i > 0) ...[
                 const SizedBox(height: 4),
-                Text('What else?', style: AppText.sectionHeading),
+                Text(isBangla ? 'আর কিছু?' : 'What else?', style: AppText.sectionHeading),
                 const SizedBox(height: 12),
               ],
               _SymptomGrid(
@@ -133,7 +138,7 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
                 if (hasMore) ...[
                   Expanded(
                     child: AppButton(
-                      label: 'Next',
+                      label: isBangla ? 'পরবর্তী' : 'Next',
                       variant: AppButtonVariant.outlined,
                       onPressed: _revealNextBatch,
                     ),
@@ -142,7 +147,7 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
                 ],
                 Expanded(
                   child: AppButton(
-                    label: 'Done',
+                    label: isBangla ? 'সম্পন্ন' : 'Done',
                     onPressed: _selectedIds.isEmpty ? null : _onDone,
                   ),
                 ),
@@ -161,12 +166,14 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBangla = context.watch<LanguageProvider>().isBangla;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Text(
-            'What problems are you facing?',
+            isBangla ? 'আপনার কী সমস্যা হচ্ছে?' : 'What problems are you facing?',
             style: AppText.headerTitle,
           ),
         ),

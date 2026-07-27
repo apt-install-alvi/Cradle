@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/diagnosis_result.dart';
+import '../../providers/language_provider.dart';
+import 'package:provider/provider.dart';
 
 /// Color-coded pill showing the assessed risk level
 /// (green = low, yellowish-orange = medium, red = high).
@@ -10,6 +12,8 @@ class RiskPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBangla = context.watch<LanguageProvider>().isBangla;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
       decoration: BoxDecoration(
@@ -29,7 +33,7 @@ class RiskPill extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            riskLevel.label,
+            riskLevel.displayLabel(isBangla),
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w800,

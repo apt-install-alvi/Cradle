@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/symptom.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../providers/language_provider.dart';
+import 'package:provider/provider.dart';
 
 /// A single selectable symptom card in the input screen's grid.
 class SymptomCard extends StatelessWidget {
@@ -17,6 +19,8 @@ class SymptomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBangla = context.watch<LanguageProvider>().isBangla;
+
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(AppRadii.card),
@@ -35,15 +39,21 @@ class SymptomCard extends StatelessWidget {
             boxShadow: appCardShadow,
           ),
           child: Stack(
+            alignment: Alignment.center,
             children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(symptom.emoji, style: const TextStyle(fontSize: 22)),
+                  Image.asset(
+                    symptom.icon,
+                    width: 28,
+                    height: 28,
+                    fit: BoxFit.contain,
+                  ),
                   const SizedBox(height: 8),
                   Text(
-                    symptom.label,
+                    symptom.displayLabel(isBangla),
                     textAlign: TextAlign.center,
                     style: AppText.cardLabel,
                   ),
