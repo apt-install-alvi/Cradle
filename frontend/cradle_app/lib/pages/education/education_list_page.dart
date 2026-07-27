@@ -434,7 +434,7 @@ class ArticleFeed extends StatelessWidget {
           "source": isBangla ? "ডাব্লিউএইচও (WHO)" : "WHO",
           "date": isBangla ? "জুলাই ২০২৬" : "July 2026",
           "url": "https://www.who.int/maternal-health",
-          "images": ["assets/images/pf3.jpg"],
+          "images": ["assets/images/pf2.jpg"],
           "details": isBangla
               ? "গর্ভাবস্থায় স্বাস্থ্যকর খাবার খাওয়া আপনার শিশুর বৃদ্ধি এবং বিকাশে সহায়তা করার জন্য অত্যন্ত গুরুত্বপূর্ণ। আপনাকে বিভিন্ন ধরণের পুষ্টিকর খাবার খেতে হবে, যেমন ফলমূল, শাকসবজি, প্রোটিন সমৃদ্ধ খাবার (যেমন মাছ, মাংস, ডিম, মটরশুঁটি) এবং দুগ্ধজাত পণ্য। প্রচুর পরিমাণে পানি পান করুন এবং চিনিযুক্ত পানীয় বা অতিরিক্ত ক্যাফেইন বর্জন করুন। সুস্থ থাকতে নিয়মিত সুষম খাবার গ্রহণ করুন।"
               : "Eating healthy food during pregnancy is crucial to help your baby grow and develop. You should eat a variety of nutritious foods, including fruits, vegetables, protein-rich foods (such as fish, meat, eggs, beans), and dairy products. Drink plenty of water and avoid sugary drinks or excessive caffeine. Maintaining a balanced diet is key to a healthy pregnancy."
@@ -446,7 +446,7 @@ class ArticleFeed extends StatelessWidget {
               : "Best practices and guidelines for light exercises to stay active during pregnancy safely.",
           "source": isBangla ? " ইউনিসেফ" : "UNICEF",
           "date": isBangla ? "জুন ২০২৬" : "June 2026",
-          "images": ["assets/images/pf2.jpg"],
+          "images": ["assets/images/pf3.jpg"],
           "url": "https://www.unicef.org"
         }
       ];

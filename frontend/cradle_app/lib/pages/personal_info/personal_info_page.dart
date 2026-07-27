@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart'; // NEW
 import '../../providers/auth_provider.dart'; // NEW
 import '../../providers/language_provider.dart'; // NEW
 import '../../core/routes/app_routes.dart'; // NEW
+import '../../core/widgets/bottom_nav.dart';
 
 // ----------------------------------------------------------------
 // TEST MODE: Firebase is not wired up yet.
@@ -240,6 +241,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     final bool isBangla = languageProvider.isBangla;
 
     return Scaffold(
+      bottomNavigationBar: const DashboardBottomNav(),
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
