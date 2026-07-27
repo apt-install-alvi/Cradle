@@ -523,7 +523,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         const SizedBox(height: 16),
         _buildTextField(
           controller: _emergencyContactController,
-          label: isBangla ? 'জরুরী যোগাযোগ' : 'Emergency Contact',
+          label: isBangla ? 'জরুরী যোগাযোগ' : 'EmergencyContact',
           icon: Icons.phone_outlined,
           keyboardType: TextInputType.phone,
         ),
