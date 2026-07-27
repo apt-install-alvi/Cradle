@@ -24,11 +24,8 @@ class _SettingsPageState extends State<SettingsPage>
 
   // ── Toggle states ─────────────────────────────────────────────────
   bool _pushNotifications = true;
-  bool _emailNotifications = false;
   bool _appointmentReminders = true;
   bool _healthAlerts = true;
-  bool _darkMode = false;
-  bool _biometricLock = false;
   bool _locationAccess = true;
   bool _analyticsEnabled = true;
 
@@ -131,19 +128,6 @@ class _SettingsPageState extends State<SettingsPage>
                           ),
                           _divider(),
                           _toggleTile(
-                            icon: Icons.email_rounded,
-                            title: isBangla
-                                ? 'ইমেইল বিজ্ঞপ্তি'
-                                : 'Email Notifications',
-                            subtitle: isBangla
-                                ? 'ইমেইল আপডেট পান'
-                                : 'Get updates via email',
-                            value: _emailNotifications,
-                            onChanged: (v) =>
-                                setState(() => _emailNotifications = v),
-                          ),
-                          _divider(),
-                          _toggleTile(
                             icon: Icons.calendar_month_rounded,
                             title: isBangla
                                 ? 'অ্যাপয়েন্টমেন্ট রিমাইন্ডার'
@@ -183,16 +167,6 @@ class _SettingsPageState extends State<SettingsPage>
                             isBangla ? 'চেহারা' : 'APPEARANCE'),
                         const SizedBox(height: 10),
                         _buildSettingsCard([
-                          _toggleTile(
-                            icon: Icons.dark_mode_rounded,
-                            title: isBangla ? 'ডার্ক মোড' : 'Dark Mode',
-                            subtitle: isBangla
-                                ? 'গাঢ় থিম সক্রিয় করুন'
-                                : 'Enable dark theme',
-                            value: _darkMode,
-                            onChanged: (v) => setState(() => _darkMode = v),
-                          ),
-                          _divider(),
                           _navTile(
                             icon: Icons.text_fields_rounded,
                             title:
@@ -209,26 +183,6 @@ class _SettingsPageState extends State<SettingsPage>
                             isBangla ? 'গোপনীয়তা ও নিরাপত্তা' : 'PRIVACY & SECURITY'),
                         const SizedBox(height: 10),
                         _buildSettingsCard([
-                          _toggleTile(
-                            icon: Icons.fingerprint_rounded,
-                            title: isBangla ? 'বায়োমেট্রিক লক' : 'Biometric Lock',
-                            subtitle: isBangla
-                                ? 'ফিঙ্গারপ্রিন্ট / ফেস আইডি ব্যবহার করুন'
-                                : 'Use fingerprint / Face ID',
-                            value: _biometricLock,
-                            onChanged: (v) =>
-                                setState(() => _biometricLock = v),
-                          ),
-                          _divider(),
-                          _navTile(
-                            icon: Icons.lock_rounded,
-                            title: isBangla ? 'পাসওয়ার্ড পরিবর্তন' : 'Change Password',
-                            subtitle: isBangla
-                                ? 'আপনার পাসওয়ার্ড আপডেট করুন'
-                                : 'Update your password',
-                            onTap: () => _showComingSoon(context, isBangla),
-                          ),
-                          _divider(),
                           _toggleTile(
                             icon: Icons.location_on_rounded,
                             title: isBangla ? 'লোকেশন অ্যাক্সেস' : 'Location Access',
