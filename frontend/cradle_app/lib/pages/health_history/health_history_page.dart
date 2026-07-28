@@ -40,7 +40,7 @@ class _HealthHistoryPageState extends State<HealthHistoryPage> {
         SymptomEntry(symptom: kAllSymptoms.firstWhere((s) => s.id == 'swelling')),
       ],
       warningMessage:
-          'Your symptoms suggest a condition that can affect you and your '
+      'Your symptoms suggest a condition that can affect you and your '
           'baby quickly. Please see a doctor today.',
       timestamp: DateTime.now(),
     ),
@@ -52,7 +52,7 @@ class _HealthHistoryPageState extends State<HealthHistoryPage> {
         SymptomEntry(symptom: kAllSymptoms.firstWhere((s) => s.id == 'nausea')),
       ],
       warningMessage:
-          'Drink fluids and monitor your symptoms; see a doctor if they '
+      'Drink fluids and monitor your symptoms; see a doctor if they '
           'persist beyond a day.',
       timestamp: DateTime.now().subtract(const Duration(days: 3)),
     ),
@@ -87,8 +87,9 @@ class _HealthHistoryPageState extends State<HealthHistoryPage> {
   Widget build(BuildContext context) {
     final isBangla = context.watch<LanguageProvider>().isBangla;
 
+
     return GradientScaffold(
-        bottomNavigationBar: const DashboardBottomNav(
+      bottomNavigationBar: const DashboardBottomNav(
         selectedIndex: 1,
       ),
       child: Column(
@@ -163,6 +164,7 @@ class _SearchField extends StatelessWidget {
     required this.onChanged,
     required this.isBangla,
   });
+
 
   @override
   Widget build(BuildContext context) {

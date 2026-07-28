@@ -6,6 +6,7 @@ import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/language_provider.dart';
 import 'providers/font_size_provider.dart';
+import 'providers/education_provider.dart';
 
 void main() {
   runApp(const CradleApp());
@@ -21,6 +22,7 @@ class CradleApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ChangeNotifierProvider(create: (_) => FontSizeProvider()),
+        ChangeNotifierProvider(create: (_) => EducationProvider()),
       ],
       child: Consumer<FontSizeProvider>(
         builder: (context, fontSizeProvider, child) {

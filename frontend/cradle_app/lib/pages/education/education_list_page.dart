@@ -4,496 +4,264 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
+import '../../providers/education_provider.dart';
+import '../../widgets/education/article_card.dart';
+import '../../widgets/education/faq_accordion.dart';
+import 'article_detail_page.dart';
 
-
-class EducationListPage extends StatelessWidget {
+class EducationListPage extends StatefulWidget {
   const EducationListPage({super.key});
 
+  @override
+  State<EducationListPage> createState() => _EducationListPageState();
+}
+
+class _EducationListPageState extends State<EducationListPage> {
+  final ScrollController _scrollController = ScrollController();
+  bool _showBackToTop = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      setState(() {
+        _showBackToTop = _scrollController.offset > 400;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  static const Color _topGradient = Color(0xFFFFCAE1);
+  static const Color _bottomGradient = Color(0xFFFFE8F2);
   static const Color _accent = Color(0xFFAB0A65);
-  static const Color _primaryWhite52 = Color(0x85FFFFFF); // #FFF 52%
 
   @override
   Widget build(BuildContext context) {
     final languageProvider = context.watch<LanguageProvider>();
+    final eduProvider = context.watch<EducationProvider>();
     final bool isBangla = languageProvider.isBangla;
 
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        bottomNavigationBar: const DashboardBottomNav(selectedIndex: 2),
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: AppGradients.background,
-          ),
-          child: SafeArea(
-            child: Column(
-              children: [
-                // ── App Bar ──────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 20, 0),
-                  child: Row(
-                    children: [
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(16),
-                          onTap: () => Navigator.of(context).pop(),
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: _primaryWhite52,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: _accent.withValues(alpha: 0.08)),
-                            ),
-                            child: const Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              color: _accent,
-                              size: 22,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Text(
-                        isBangla ? "শিক্ষামূলক গাইড" : "Education Guides",
-                        style: GoogleFonts.gentiumBookPlus(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: _accent,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 14),
+    final List<String> categories = [
+      'All', 'Trimester', 'Nutrition', 'Exercise', 'Baby', 'Maternal', 'Mental Health', 'Emergency', 'Medication', 'Checkups'
+    ];
 
-                // ── Tab Bar ──────────────────────────────────────────
-                TabBar(
-                  isScrollable: true,
-                  tabAlignment: TabAlignment.start,
-                  labelColor: _accent,
-                  unselectedLabelColor: _accent.withValues(alpha: 0.55),
-                  indicatorColor: _accent,
-                  dividerColor: Colors.transparent,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  labelStyle: GoogleFonts.gentiumBookPlus(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                  tabs: [
-                    Tab(text: isBangla ? "মায়ের স্বাস্থ্য" : "Mother’s Health"),
-                    Tab(text: isBangla ? "শিশুর স্বাস্থ্য" : "Baby’s Health"),
-                    Tab(text: isBangla ? "সচেতনতা ও গাইডেন্স" : "Awareness & Guidance"),
-                    Tab(text: isBangla ? "প্রতিরোধ ও নিরাপত্তা" : "Prevention & Safety"),
-                  ],
-                ),
-
-                // ── Tab Views ────────────────────────────────────────
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      ArticleFeed(category: "maternal", isBangla: isBangla),
-                      ArticleFeed(category: "baby", isBangla: isBangla),
-                      ArticleFeed(category: "awareness", isBangla: isBangla),
-                      ArticleFeed(category: "prevention", isBangla: isBangla),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+    return Scaffold(
+      bottomNavigationBar: const DashboardBottomNav(selectedIndex: 2),
+      floatingActionButton: _showBackToTop
+          ? FloatingActionButton(
+              onPressed: () => _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut),
+              backgroundColor: _accent,
+              child: const Icon(Icons.arrow_upward, color: Colors.white),
+            )
+          : null,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [_topGradient, _bottomGradient],
           ),
         ),
-      ),
-    );
-  }
-}
-
-//--------------------------------------------------
-// ARTICLE FEED WIDGET
-//--------------------------------------------------
-class ArticleFeed extends StatelessWidget {
-  final String category;
-  final bool isBangla;
-
-  const ArticleFeed({
-    super.key,
-    required this.category,
-    required this.isBangla,
-  });
-
-  // ── Theme Colours ──────────────────────────────────────────────────
-  static const Color _accent = Color(0xFFAB0A65);
-  static const Color _primaryWhite52 = Color(0x85FFFFFF);
-  static const Color _secondaryWhite = Color(0xFFFFFFFF);
-
-  @override
-  Widget build(BuildContext context) {
-    // Localized sample articles list
-    final List<Map<String, dynamic>> articles = _getArticles();
-
-    if (articles.isEmpty) {
-      return Center(
-        child: Text(
-          isBangla ? "কোন আর্টিকেল পাওয়া যায়নি" : "No articles found",
-          style: GoogleFonts.gentiumBookPlus(
-            color: _accent.withValues(alpha: 0.6),
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      );
-    }
-
-    return ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      itemCount: articles.length,
-      itemBuilder: (context, index) {
-        final article = articles[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 16),
-          elevation: 0,
-          color: _primaryWhite52,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: _accent.withValues(alpha: 0.08)),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Featured Image (Added)
-                if (article["images"] != null && (article["images"] as List).isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16), // Fixed line
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                        article["images"][0],
-                        width: double.infinity,
-                        height: 160,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            width: double.infinity,
-                            height: 160,
-                            decoration: BoxDecoration(
-                              color: _accent.withValues(alpha: 0.05),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: const Icon(Icons.broken_image_rounded, color: _accent, size: 40),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-
-                // Source label
-                Row(
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: _accent.withValues(alpha: 0.09),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        article["source"]!,
-                        style: GoogleFonts.gentiumBookPlus(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: _accent,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
                     Text(
-                      article["date"]!,
+                      isBangla ? "শিক্ষামূলক গাইড" : "Education Guides",
                       style: GoogleFonts.gentiumBookPlus(
-                        fontSize: 12,
-                        color: _accent.withValues(alpha: 0.5),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
-                // Title
-                Text(
-                  article["title"]!,
-                  style: GoogleFonts.gentiumBookPlus(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: _accent,
-                    height: 1.3,
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                // Summary
-                Text(
-                  article["summary"]!,
-                  style: GoogleFonts.gentiumBookPlus(
-                    fontSize: 14,
-                    color: _accent.withValues(alpha: 0.75),
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 14),
-
-                // Action Button
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton.icon(
-                    onPressed: () {
-                      _showArticleDetails(context, article);
-                    },
-                    icon: const Icon(Icons.menu_book_rounded, size: 16, color: _accent),
-                    label: Text(
-                      isBangla ? "আরও পড়ুন" : "Read More",
-                      style: GoogleFonts.gentiumBookPlus(
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: _accent,
                       ),
                     ),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      backgroundColor: _accent.withValues(alpha: 0.08),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Search Bar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextField(
+                  onChanged: (val) => eduProvider.setSearchQuery(val),
+                  decoration: InputDecoration(
+                    hintText: isBangla ? "আর্টিকেল বা সাধারণ জিজ্ঞাসা খুঁজুন..." : "Search articles or FAQs...",
+                    prefixIcon: const Icon(Icons.search, color: _accent),
+                    filled: true,
+                    fillColor: Colors.white.withValues(alpha: 0.8),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
                     ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
                   ),
                 ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _showComingSoon(BuildContext ctx) {
-    ScaffoldMessenger.of(ctx).showSnackBar(
-      SnackBar(
-        content: Text(
-          isBangla ? 'শীঘ্রই আসছে!' : 'Coming soon!',
-          style: GoogleFonts.gentiumBookPlus(color: _secondaryWhite),
-        ),
-        backgroundColor: _accent,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-  void _showArticleDetails(BuildContext context, Map<String, dynamic> article) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.85,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        child: Column(
-          children: [
-            // Handle bar and Close Button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.cancel_rounded, color: _accent, size: 28),
-                    ),
-                  ),
-                ],
               ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 12),
+
+              // Category Chips
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: categories.map((cat) {
+                    final isSelected = eduProvider.selectedCategory == cat;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        selected: isSelected,
+                        label: Text(
+                          _getCategoryName(cat, isBangla),
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : _accent,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                        onSelected: (val) => eduProvider.setCategory(cat),
+                        selectedColor: _accent,
+                        backgroundColor: Colors.white.withValues(alpha: 0.6),
+                        checkmarkColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              Expanded(
+                child: ListView(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   children: [
-                    if (article["images"] != null)
+                    // Saved Articles Section (if any)
+                    if (eduProvider.bookmarkedArticles.isNotEmpty && eduProvider.selectedCategory == 'All') ...[
+                      _buildSectionHeader(isBangla ? "⭐ সংরক্ষিত আর্টিকেল" : "⭐ Saved Articles"),
+                      const SizedBox(height: 12),
                       SizedBox(
-                        height: 220,
-                        child: ListView.separated(
+                        height: 280,
+                        child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: (article["images"] as List).length,
-                          separatorBuilder: (context, index) => const SizedBox(width: 12),
+                          itemCount: eduProvider.bookmarkedArticles.length,
                           itemBuilder: (context, index) {
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.asset(
-                                article["images"][index],
-                                width: 320,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    width: 320,
-                                    height: 220,
-                                    decoration: BoxDecoration(
-                                      color: _accent.withValues(alpha: 0.05),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: const Icon(
-                                      Icons.broken_image_rounded,
-                                      color: _accent,
-                                      size: 48,
-                                    ),
-                                  );
-                                },
+                            final article = eduProvider.bookmarkedArticles[index];
+                            return Container(
+                              width: 300,
+                              margin: const EdgeInsets.only(right: 16),
+                              child: ArticleCard(
+                                article: article,
+                                isBangla: isBangla,
+                                isBookmarked: true,
+                                progress: eduProvider.getProgress(article.id),
+                                onBookmarkToggle: () => eduProvider.toggleBookmark(article.id),
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => ArticleDetailPage(article: article, isBangla: isBangla)),
+                                ),
                               ),
                             );
                           },
                         ),
                       ),
-                    const SizedBox(height: 24),
-                    Text(
-                      article["title"]!,
-                      style: GoogleFonts.gentiumBookPlus(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: _accent,
-                      ),
-                    ),
+                      const SizedBox(height: 24),
+                    ],
+
+                    // Main Articles List
+                    _buildSectionHeader(isBangla ? "📚 গর্ভাবস্থা শিক্ষা" : "📚 Pregnancy Education"),
                     const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Text(
-                          article["source"]!,
-                          style: GoogleFonts.gentiumBookPlus(
-                            fontWeight: FontWeight.bold,
-                            color: _accent.withValues(alpha: 0.6),
-                          ),
+                    if (eduProvider.filteredArticles.isEmpty)
+                      Center(child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(isBangla ? "কোন আর্টিকেল পাওয়া যায়নি" : "No articles found"),
+                      ))
+                    else
+                      ...eduProvider.filteredArticles.map((article) => ArticleCard(
+                        article: article,
+                        isBangla: isBangla,
+                        isBookmarked: eduProvider.isBookmarked(article.id),
+                        progress: eduProvider.getProgress(article.id),
+                        onBookmarkToggle: () => eduProvider.toggleBookmark(article.id),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => ArticleDetailPage(article: article, isBangla: isBangla)),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          "• ${article["date"]!}",
-                          style: GoogleFonts.gentiumBookPlus(
-                            color: _accent.withValues(alpha: 0.4),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 40),
+                      )),
+
+                    const SizedBox(height: 24),
+
+                    // FAQ Section
+                    _buildSectionHeader(isBangla ? "❓ সাধারণ জিজ্ঞাসা" : "❓ Frequently Asked Questions"),
+                    const SizedBox(height: 12),
+                    if (eduProvider.filteredFAQs.isEmpty)
+                      Center(child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(isBangla ? "কোন প্রশ্ন পাওয়া যায়নি" : "No questions found"),
+                      ))
+                    else
+                      ...eduProvider.filteredFAQs.asMap().entries.map((entry) {
+                        return FAQAccordion(
+                          faq: entry.value,
+                          isBangla: isBangla,
+                          isExpanded: eduProvider.expandedFaqIndex == entry.key,
+                          onToggle: () => eduProvider.toggleFaq(entry.key),
+                        );
+                      }),
+                    
+                    const SizedBox(height: 20),
+                    // Medical Disclaimer
                     Text(
-                      article["details"] ?? article["summary"]!,
-                      style: GoogleFonts.gentiumBookPlus(
-                        fontSize: 16,
-                        height: 1.6,
-                        color: Colors.black87,
-                      ),
+                      isBangla 
+                        ? "এই অ্যাপ্লিকেশনটি শুধুমাত্র শিক্ষামূলক তথ্য প্রদান করে এবং পেশাদার চিকিৎসা পরামর্শের বিকল্প নয়।"
+                        : "This application provides educational information only and does not replace professional medical advice.",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 10, color: Colors.grey, fontStyle: FontStyle.italic),
                     ),
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  List<Map<String, dynamic>> _getArticles() {
-    if (category == "maternal") {
-      return [
-        {
-          "title": isBangla ? "গর্ভাবস্থায় স্বাস্থ্যকর পুষ্টি" : "Healthy Nutrition During Pregnancy",
-          "summary": isBangla
-              ? "গর্ভাবস্থায় নিরাপদ থাকার জন্য কোন খাবারগুলো খাবেন এবং বর্জন করবেন তা বিস্তারিতভাবে জানুন।"
-              : "Learn what foods to eat and avoid for a safe and healthy pregnancy journey.",
-          "source": isBangla ? "ডাব্লিউএইচও (WHO)" : "WHO",
-          "date": isBangla ? "জুলাই ২০২৬" : "July 2026",
-          "url": "https://www.who.int/maternal-health",
-          "images": ["assets/images/pf2.jpg"],
-          "details": isBangla
-              ? "গর্ভাবস্থায় স্বাস্থ্যকর খাবার খাওয়া আপনার শিশুর বৃদ্ধি এবং বিকাশে সহায়তা করার জন্য অত্যন্ত গুরুত্বপূর্ণ। আপনাকে বিভিন্ন ধরণের পুষ্টিকর খাবার খেতে হবে, যেমন ফলমূল, শাকসবজি, প্রোটিন সমৃদ্ধ খাবার (যেমন মাছ, মাংস, ডিম, মটরশুঁটি) এবং দুগ্ধজাত পণ্য। প্রচুর পরিমাণে পানি পান করুন এবং চিনিযুক্ত পানীয় বা অতিরিক্ত ক্যাফেইন বর্জন করুন। সুস্থ থাকতে নিয়মিত সুষম খাবার গ্রহণ করুন।"
-              : "Eating healthy food during pregnancy is crucial to help your baby grow and develop. You should eat a variety of nutritious foods, including fruits, vegetables, protein-rich foods (such as fish, meat, eggs, beans), and dairy products. Drink plenty of water and avoid sugary drinks or excessive caffeine. Maintaining a balanced diet is key to a healthy pregnancy."
-        },
-        {
-          "title": isBangla ? "গর্ভাবস্থায় ব্যায়াম এবং হাঁটাচলা" : "Prenatal Exercise & Physical Activities",
-          "summary": isBangla
-              ? "একজন গর্ভবতী মায়ের জন্য প্রতিদিন কতটুকু শারীরিক কসরত প্রয়োজন এবং তার সঠিক নিয়মগুলো।"
-              : "Best practices and guidelines for light exercises to stay active during pregnancy safely.",
-          "source": isBangla ? " ইউনিসেফ" : "UNICEF",
-          "date": isBangla ? "জুন ২০২৬" : "June 2026",
-          "images": ["assets/images/pf3.jpg"],
-          "url": "https://www.unicef.org"
-        }
-      ];
-    } else if (category == "baby") {
-      return [
-        {
-          "title": isBangla ? "নবজাতকের জন্ডিস সচেতনতা" : "Baby Jaundice Awareness",
-          "summary": isBangla
-              ? "নবজাতকের জন্ডিসের সাধারণ লক্ষণগুলো বুঝুন এবং কখন চিকিৎসকের পরামর্শ নেবেন তা জানুন।"
-              : "Understand common symptoms of infant jaundice and when you should seek professional medical care.",
-          "source": isBangla ? "ইউনিসেফ" : "UNICEF",
-          "date": isBangla ? "জুলাই ২০২৬" : "July 2026",
-          "images": ["assets/images/pf2.jpg"],
-          "url": "https://www.unicef.org/baby-health"
-        },
-        {
-          "title": isBangla ? "প্রথম ৬ মাস স্তন্যপান করানোর নিয়ম" : "Guidelines for Breastfeeding First 6 Months",
-          "summary": isBangla
-              ? "শিশুর প্রথম ৬ মাস শুধুমাত্র মায়ের দুধ খাওয়ানোর গুরুত্ব এবং শিশুর বিকাশে এর অপরিসীম অবদান।"
-              : "The absolute importance of exclusive breastfeeding during the first six months of your baby's life.",
-          "source": isBangla ? "ডাব্লিউএইচও" : "WHO",
-          "date": isBangla ? "মে ২০২৬" : "May 2026",
-          "images": ["assets/images/pf2.jpg"],
-          "url": "https://www.who.int"
-        }
-      ];
-    } else if (category == "awareness") {
-      return [
-        {
-          "title": isBangla ? "গর্ভাবস্থায় মানসিক স্বাস্থ্য ও যত্ন" : "Mental Health & Care During Pregnancy",
-          "summary": isBangla
-              ? "মায়ের মানসিক অবসাদ দূর করতে পরিবারের ভূমিকা এবং কিছু কার্যকরী টিপস।"
-              : "Tips on managing stress and preserving mental well-being for expecting mothers.",
-          "source": isBangla ? "আইসিডিডিআর,বি" : "icddr,b",
-          "date": isBangla ? "জুলাই ২০২৬" : "July 2026",
-          "images": ["assets/images/pf2.jpg"],
-          "url": "https://www.icddrb.org"
-        }
-      ];
-    } else if (category == "prevention") {
-      return [
-        {
-          "title": isBangla ? "ঝুঁকিপূর্ণ লক্ষণ ও জটিলতা প্রতিরোধ" : "Preventing High-Risk Pregnancy Symptoms",
-          "summary": isBangla
-              ? "গর্ভাবস্থায় কোন কোন লক্ষণ দেখা দিলে অবিলম্বে হাসপাতালের শরণাপন্ন হতে হবে তার তালিকা।"
-              : "Be aware of early warning signals and how to react promptly to avoid pregnancy complications.",
-          "source": isBangla ? "ডাব্লিউএইচও" : "WHO",
-          "date": isBangla ? "জুন ২০২৬" : "June 2026",
-          "images": ["assets/images/pf2.jpg"],
-          "url": "https://www.who.int"
-        }
-      ];
+  Widget _buildSectionHeader(String title) {
+    return Text(
+      title,
+      style: GoogleFonts.gentiumBookPlus(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: _accent,
+      ),
+    );
+  }
+
+  String _getCategoryName(String cat, bool isBangla) {
+    if (!isBangla) return cat;
+    switch (cat) {
+      case 'All': return 'সব';
+      case 'Trimester': return 'ত্রৈমাসিক';
+      case 'Nutrition': return 'পুষ্টি';
+      case 'Exercise': return 'ব্যায়াম';
+      case 'Baby': return 'শিশু';
+      case 'Maternal': return 'মা';
+      case 'Mental Health': return 'মানসিক স্বাস্থ্য';
+      case 'Emergency': return 'জরুরি';
+      case 'Medication': return 'ওষুধ';
+      case 'Checkups': return 'চেকআপ';
+      default: return cat;
     }
-    return [];
   }
 }

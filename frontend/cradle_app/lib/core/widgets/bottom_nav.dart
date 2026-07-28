@@ -79,12 +79,12 @@ class DashboardBottomNav extends StatelessWidget {
   }
 
   Widget _buildNavItem(
-    BuildContext context, {
-    required String icon,
-    required String label,
-    required int index,
-    required String route,
-  }) {
+      BuildContext context, {
+        required String icon,
+        required String label,
+        required int index,
+        required String route,
+      }) {
     final bool selected = selectedIndex == index;
 
     return InkWell(

@@ -29,9 +29,9 @@ class Symptom {
     this.isMeasurable = false,
     this.measurementType,
   }) : assert(
-          isMeasurable == (measurementType != null),
-          'measurementType must be set if and only if isMeasurable is true',
-        );
+  isMeasurable == (measurementType != null),
+  'measurementType must be set if and only if isMeasurable is true',
+  );
 }
 
 extension SymptomLocalization on Symptom {
@@ -62,6 +62,7 @@ extension SymptomLocalization on Symptom {
     }
   }
 }
+
 
 /// The full symptom pool the input screen draws from.
 ///

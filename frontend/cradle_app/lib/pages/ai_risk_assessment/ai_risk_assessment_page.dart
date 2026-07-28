@@ -26,7 +26,7 @@ class AiRiskAssessmentPage extends StatelessWidget {
 
     return GradientScaffold(
       bottomNavigationBar: const DashboardBottomNav(
-      selectedIndex: 1,
+        selectedIndex: 1,
       ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 24),

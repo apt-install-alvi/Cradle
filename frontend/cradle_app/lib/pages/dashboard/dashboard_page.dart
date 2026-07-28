@@ -22,9 +22,9 @@ class DashboardScreen extends StatelessWidget {
     final bool isBangla = languageProvider.isBangla;
 
     return Scaffold(
-      bottomNavigationBar: const DashboardBottomNav(),
-      backgroundColor: Colors.transparent,
-      extendBody: true,
+        bottomNavigationBar: const DashboardBottomNav(),
+        backgroundColor: Colors.transparent,
+        extendBody: true,
 
       body: Stack(
         children: [

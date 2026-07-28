@@ -241,7 +241,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     final bool isBangla = languageProvider.isBangla;
 
     return Scaffold(
-      bottomNavigationBar: const DashboardBottomNav(),
+      bottomNavigationBar: const DashboardBottomNav(selectedIndex: 3),
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,

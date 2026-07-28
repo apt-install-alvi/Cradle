@@ -76,7 +76,7 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
       riskLevel: RiskLevel.high,
       reportedSymptoms: entries,
       warningMessage:
-          'Your symptoms suggest a condition that can affect you and your '
+      'Your symptoms suggest a condition that can affect you and your '
           'baby quickly. Please see a doctor today.',
       timestamp: DateTime.now(),
     );
@@ -99,7 +99,7 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
 
     return GradientScaffold(
       bottomNavigationBar: const DashboardBottomNav(
-      selectedIndex: 1,
+        selectedIndex: 1,
       ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 24),
@@ -209,7 +209,7 @@ class _SymptomGrid extends StatelessWidget {
   final Map<String, Map<String, String>> measurementValues;
   final ValueChanged<Symptom> onTap;
   final void Function(String symptomId, Map<String, String> values)
-      onMeasurementChanged;
+  onMeasurementChanged;
 
   const _SymptomGrid({
     required this.symptoms,
@@ -230,7 +230,7 @@ class _SymptomGrid extends StatelessWidget {
               builder: (_) {
                 final left = symptoms[i];
                 final Symptom? right =
-                    i + 1 < symptoms.length ? symptoms[i + 1] : null;
+                i + 1 < symptoms.length ? symptoms[i + 1] : null;
 
                 return Column(
                   children: [
@@ -251,10 +251,10 @@ class _SymptomGrid extends StatelessWidget {
                           child: right == null
                               ? const SizedBox()
                               : SymptomCard(
-                                  symptom: right,
-                                  selected: selectedIds.contains(right.id),
-                                  onTap: () => onTap(right),
-                                ),
+                            symptom: right,
+                            selected: selectedIds.contains(right.id),
+                            onTap: () => onTap(right),
+                          ),
                         ),
                       ],
                     ),
@@ -266,7 +266,7 @@ class _SymptomGrid extends StatelessWidget {
                       MeasurementInputCard(
                         symptom: left,
                         values:
-                            measurementValues[left.id] ?? const {},
+                        measurementValues[left.id] ?? const {},
                         onChanged: (values) =>
                             onMeasurementChanged(left.id, values),
                       ),
@@ -277,7 +277,7 @@ class _SymptomGrid extends StatelessWidget {
                       MeasurementInputCard(
                         symptom: right,
                         values:
-                            measurementValues[right.id] ?? const {},
+                        measurementValues[right.id] ?? const {},
                         onChanged: (values) =>
                             onMeasurementChanged(right.id, values),
                       ),
