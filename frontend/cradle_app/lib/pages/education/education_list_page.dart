@@ -17,21 +17,29 @@ class EducationListPage extends StatefulWidget {
 
 class _EducationListPageState extends State<EducationListPage> {
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController(); // Added
   bool _showBackToTop = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      setState(() {
-        _showBackToTop = _scrollController.offset > 400;
-      });
+      if (mounted) {
+        setState(() {
+          _showBackToTop = _scrollController.offset > 400;
+        });
+      }
+    });
+    // Sync controller with provider state in case of rebuilds
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _searchController.text = context.read<EducationProvider>().searchQuery;
     });
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose(); // Added
     super.dispose();
   }
 
@@ -91,10 +99,20 @@ class _EducationListPageState extends State<EducationListPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: TextField(
+                  controller: _searchController, // Added
                   onChanged: (val) => eduProvider.setSearchQuery(val),
                   decoration: InputDecoration(
                     hintText: isBangla ? "আর্টিকেল বা সাধারণ জিজ্ঞাসা খুঁজুন..." : "Search articles or FAQs...",
                     prefixIcon: const Icon(Icons.search, color: _accent),
+                    suffixIcon: _searchController.text.isNotEmpty // Added
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, color: _accent),
+                            onPressed: () {
+                              _searchController.clear();
+                              eduProvider.setSearchQuery('');
+                            },
+                          )
+                        : null,
                     filled: true,
                     fillColor: Colors.white.withValues(alpha: 0.8),
                     border: OutlineInputBorder(

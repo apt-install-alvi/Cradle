@@ -21,12 +21,13 @@ class EducationProvider with ChangeNotifier {
   // Getters
   List<Article> get filteredArticles {
     return _articles.where((article) {
-      // If searching, we ignore the category chip to provide global search results
-      final matchesCategory = _searchQuery.isNotEmpty || _selectedCategory == 'All' || article.category == _selectedCategory;
+      // Always respect the category filter
+      final matchesCategory = _selectedCategory == 'All' || article.category == _selectedCategory;
+      if (!matchesCategory) return false;
       
-      if (_searchQuery.isEmpty) return matchesCategory;
+      if (_searchQuery.isEmpty) return true;
 
-      final query = _searchQuery.toLowerCase();
+      final query = _searchQuery.toLowerCase().trim();
       
       // Prefix matching on Title, Category, Description, and Content
       bool matchesTitle = article.title.values.any((t) {
@@ -43,15 +44,23 @@ class EducationProvider with ChangeNotifier {
       bool matchesDesc = article.description.values.any((d) => d.toLowerCase().contains(query));
       bool matchesContent = article.content.values.any((c) => c.toLowerCase().contains(query));
 
-      return matchesCategory && (matchesTitle || matchesCat || matchesDesc || matchesContent);
+      return matchesTitle || matchesCat || matchesDesc || matchesContent;
     }).toList();
   }
 
   List<FAQ> get filteredFAQs {
-    if (_searchQuery.isEmpty) return _faqs;
-    final query = _searchQuery.toLowerCase().trim();
-    
     return _faqs.where((faq) {
+      // Filter FAQs by category as well for consistency
+      final matchesCategory = _selectedCategory == 'All' || 
+                              faq.category == _selectedCategory ||
+                              (_selectedCategory == 'Maternal' && faq.category == 'Health') ||
+                              (_selectedCategory == 'Emergency' && faq.category == 'Safety');
+      
+      if (!matchesCategory) return false;
+
+      if (_searchQuery.isEmpty) return true;
+      final query = _searchQuery.toLowerCase().trim();
+      
       bool matchesQuestion = faq.question.values.any((q) {
         final cleanText = q.toLowerCase().trim();
         final words = cleanText.split(' ');
@@ -91,6 +100,7 @@ class EducationProvider with ChangeNotifier {
 
   String get selectedCategory => _selectedCategory;
   int? get expandedFaqIndex => _expandedFaqIndex;
+  String get searchQuery => _searchQuery;
   
   bool isBookmarked(String id) => _bookmarkedArticleIds.contains(id);
   double getProgress(String id) => _readingProgress[id] ?? 0.0;
@@ -102,7 +112,13 @@ class EducationProvider with ChangeNotifier {
   }
 
   void setCategory(String category) {
-    _selectedCategory = category;
+    // If selecting the same category, toggle back to 'All'
+    if (_selectedCategory == category && category != 'All') {
+      _selectedCategory = 'All';
+    } else {
+      _selectedCategory = category;
+    }
+    _expandedFaqIndex = null; // Collapse FAQs when changing category
     notifyListeners();
   }
 
