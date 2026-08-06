@@ -5,6 +5,8 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../models/education.dart';
 import '../../providers/education_provider.dart';
+import '../../core/widgets/gradient_scaffold.dart';
+import '../../core/widgets/bottom_nav.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Article article;
@@ -108,47 +110,79 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
+  return GradientScaffold(
+    padding: EdgeInsets.zero,
+      bottomNavigationBar: const DashboardBottomNav(
+      selectedIndex: 1,
+    ),
+     child: Stack(
         children: [
           CustomScrollView(
             controller: _scrollController,
             slivers: [
               // Header with Image
-              SliverAppBar(
-                expandedHeight: 300,
-                pinned: true,
-                backgroundColor: _accent,
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                actions: [
-                  IconButton(
-                    icon: Icon(_isPlaying ? Icons.stop_circle : Icons.volume_up, color: Colors.white),
-                    onPressed: _speak,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.share, color: Colors.white),
-                    onPressed: () {
-                      Share.share('${widget.article.getTitle(widget.isBangla)}\n\n${widget.article.getContent(widget.isBangla)}');
-                    },
-                  ),
-                ],
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Image.asset(
-                    widget.article.imageUrl,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+            SliverAppBar(
+              expandedHeight: 300,
+              pinned: true,
+              stretch: true,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              backgroundColor: _accent,
+              surfaceTintColor: Colors.transparent,
+
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
               ),
 
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+              actions: [
+                IconButton(
+                  icon: Icon(
+                    _isPlaying ? Icons.stop_circle : Icons.volume_up,
+                    color: Colors.white,
+                  ),
+                  onPressed: _speak,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.share, color: Colors.white),
+                  onPressed: () {
+                    Share.share(
+                      '${widget.article.getTitle(widget.isBangla)}\n\n'
+                      '${widget.article.getContent(widget.isBangla)}',
+                    );
+                  },
+                ),
+              ],
+
+              flexibleSpace: FlexibleSpaceBar(
+                background: Image.asset(
+                widget.article.imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+                ),
+              ),
+            ),
+
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 30),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.72),
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                       // Category & Meta
                       Row(
                         children: [
@@ -213,9 +247,18 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                       if (widget.article.contactDoctor != null) ...[
                         _buildSectionHeader(widget.isBangla ? "কখন ডাক্তারের সাথে যোগাযোগ করবেন" : "When to Contact a Doctor", Icons.local_hospital_outlined),
                         const SizedBox(height: 12),
-                        Text(
-                          widget.article.contactDoctor!,
-                          style: const TextStyle(fontSize: 15, color: Colors.black87),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            widget.article.contactDoctor!,
+                            softWrap: true,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              height: 1.6,
+                              color: Color(0xFF333333),
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 32),
                       ],
@@ -224,20 +267,25 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: const Color.fromARGB(255, 255, 246, 248),
                           borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.pink.shade100,
+                            width: 1.2
+                            )
                         ),
                         child: Text(
                           widget.isBangla 
                             ? "এই অ্যাপ্লিকেশনটি শুধুমাত্র শিক্ষামূলক তথ্য প্রদান করে এবং পেশাদার চিকিৎসা পরামর্শের বিকল্প নয়। রোগ নির্ণয় এবং চিকিৎসার জন্য সর্বদা একজন যোগ্য স্বাস্থ্যসেবা প্রদানকারীর সাথে পরামর্শ করুন।"
                             : "This application provides educational information only and does not replace professional medical advice. Always consult a qualified healthcare provider for diagnosis and treatment.",
-                          style: const TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic),
+                          style: TextStyle(fontSize: 13, color: Colors.pink.shade500, fontStyle: FontStyle.italic),
                         ),
                       ),
                       const SizedBox(height: 40),
                     ],
                   ),
                 ),
+              ),
               ),
             ],
           ),
@@ -261,12 +309,20 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
   Widget _buildSectionHeader(String title, IconData icon) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, color: _accent, size: 24),
         const SizedBox(width: 8),
-        Text(
-          title,
-          style: GoogleFonts.gentiumBookPlus(fontSize: 20, fontWeight: FontWeight.bold, color: _accent),
+        Expanded(
+          child: Text(
+            title,
+            softWrap: true,
+            style: GoogleFonts.gentiumBookPlus(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: _accent,
+            ),
+          ),
         ),
       ],
     );
@@ -279,7 +335,16 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text("• ", style: TextStyle(fontSize: 20, color: _accent)),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 15))),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 15,
+                height: 1.5,
+                color: Color(0xFF333333),
+              ),
+            ),
+          ),
         ],
       ),
     );
