@@ -158,7 +158,7 @@ class _MedicationTrackerPageState extends State<MedicationTrackerPage> {
     return GradientScaffold(
       // None of the four core tabs represent this screen, so no item is
       // highlighted; pass an out-of-range index to keep all inactive.
-      bottomNavigationBar: const DashboardBottomNav(selectedIndex: -1),
+      bottomNavigationBar: const DashboardBottomNav(selectedIndex: 3),
       child: Stack(
         children: [
           SingleChildScrollView(

@@ -121,7 +121,7 @@ class DashboardBottomNav extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(width: _fabDiameter + 10),
+                    SizedBox(width: _fabDiameter + 25),
 
                     Expanded(
                       child: Row(
@@ -263,12 +263,18 @@ class _NavItem extends StatelessWidget {
 @override
 Widget build(BuildContext context) {
   return InkWell(
-    borderRadius: BorderRadius.circular(18),
+    borderRadius: BorderRadius.circular(20),
     onTap: onTap,
-    child: Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 2,
-        vertical: 6,
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+      margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+      decoration: BoxDecoration(
+        color: selected
+            ? DashboardBottomNav.primaryPink.withValues(alpha: 0.12)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -292,7 +298,7 @@ Widget build(BuildContext context) {
           AnimatedDefaultTextStyle(
             duration: const Duration(milliseconds: 200),
             style: GoogleFonts.gentiumBookPlus(
-              fontWeight: FontWeight.bold,
+              fontWeight: selected ? FontWeight.w800 : FontWeight.bold,
               fontSize: 9.5,
               height: 1.1,
               color: selected
@@ -329,45 +335,54 @@ class _DiagnosisFab extends StatelessWidget {
     return SizedBox(
       width: DashboardBottomNav._fabDiameter,
       height: DashboardBottomNav._fabDiameter,
-      child: Material(
-        // the transparent gap in the notch is what visually separates it from the bar.
-        color: const Color(0xFFFFE8F2),
-        shape: const CircleBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SvgPicture.asset(
-                  "assets/icons/diagnosis.svg",
-                  width: 24,
-                  height: 24,
-                  colorFilter: ColorFilter.mode(
-                    selected
-                        ? DashboardBottomNav.primaryPink
-                        : DashboardBottomNav.primaryPink.withValues(alpha: .8),
-                    BlendMode.srcIn,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+        child: Material(
+          color: selected
+              ? DashboardBottomNav.primaryPink.withValues(alpha: .2)
+              : const Color(0xFFFFE8F2),
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(
+                    "assets/icons/diagnosis.svg",
+                    width: 24,
+                    height: 24,
+                    colorFilter: ColorFilter.mode(
+                      selected
+                          ? DashboardBottomNav.primaryPink
+                          : DashboardBottomNav.primaryPink.withValues(alpha: .8),
+                      BlendMode.srcIn,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.gentiumBookPlus(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 9.5,
-                    color: selected
-                        ? DashboardBottomNav.primaryPink
-                        : DashboardBottomNav.primaryPink.withValues(alpha: .8),
+                  const SizedBox(height: 3),
+                  Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.gentiumBookPlus(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 9.5,
+                      color: selected
+                          ? DashboardBottomNav.primaryPink
+                          : DashboardBottomNav.primaryPink.withValues(alpha: .8),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
