@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../pages/medication_tracker/medication_tracker_page.dart';
 import '../../pages/splash/splash_page.dart';
 import '../../pages/auth/login_page.dart';
 import '../../pages/otp_verification/otp_verification_page.dart';
@@ -67,8 +68,8 @@ switch (routeName) {
         return MaterialPageRoute(builder: (_) => const NotificationsPage());
       case AppRoutes.settings:
         return MaterialPageRoute(builder: (_) => const SettingsPage());
-      // case AppRoutes.medicationTracker:
-      //   return MaterialPageRoute(builder: (_) => const MedicationTrackerPage());
+      case AppRoutes.medicationTracker:
+        return MaterialPageRoute(builder: (_) => const MedicationTrackerPage());
       default:
         return MaterialPageRoute(
           builder: (_) =>  Scaffold(
