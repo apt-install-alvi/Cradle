@@ -3,6 +3,9 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/bottom_nav.dart';
 import '../models/scheduled_dose.dart';
 import 'med_icon_avatar.dart';
+import '../../../core/utils/bangla_numerals.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/language_provider.dart';
 
 /// A single row in the "Today's Schedule" timeline: shows the
 /// medication's icon, name, dose amount, and scheduled time, with a
@@ -17,6 +20,7 @@ class DoseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final med = dose.medication;
     final taken = dose.taken;
+    final isBangla = context.watch<LanguageProvider>().isBangla;
 
     return Opacity(
       opacity: taken ? 0.55 : 1,
@@ -44,7 +48,9 @@ class DoseCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${med.formattedAmount} ${med.doseUnit} · ${dose.time.format(context)}',
+                    '${isBangla ? toBanglaDigits(med.formattedAmount) : med.formattedAmount} '
+                    '${med.doseUnit} · '
+                    '${isBangla ? toBanglaDigits(dose.time.format(context)) : dose.time.format(context)}',
                     style: AppText.subtext,
                   ),
                 ],

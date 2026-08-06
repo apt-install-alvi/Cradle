@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/bottom_nav.dart';
 import '../../../providers/language_provider.dart';
+import '../../../core/utils/bangla_numerals.dart';
 
 /// A month-view calendar card showing medication adherence per day.
 ///
@@ -111,10 +112,12 @@ class _AdherenceCalendarCardState extends State<AdherenceCalendarCard> {
                 icon: Icons.chevron_left,
                 onTap: _goToPreviousMonth,
               ),
-              Text(
-                '$monthName ${_visibleMonth.year}',
-                style: AppText.sectionHeading.copyWith(fontSize: 16),
-              ),
+            Text(
+              isBangla
+                  ? '$monthName ${toBanglaDigits(_visibleMonth.year)}'
+                  : '$monthName ${_visibleMonth.year}',
+              style: AppText.sectionHeading.copyWith(fontSize: 16),
+            ),
               _CalendarNavButton(
                 icon: Icons.chevron_right,
                 onTap: _goToNextMonth,
@@ -153,8 +156,8 @@ class _AdherenceCalendarCardState extends State<AdherenceCalendarCard> {
                   height: 32,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(color: _bgFor(pct), shape: BoxShape.circle),
-                  child: Text(
-                    '$day',
+                child: Text(
+                    isBangla ? toBanglaDigits(day) : '$day',
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w700,
@@ -171,10 +174,22 @@ class _AdherenceCalendarCardState extends State<AdherenceCalendarCard> {
             runSpacing: 6,
             alignment: WrapAlignment.center,
             children: [
-              _LegendItem(color: _bgFor(100), label: '100%'),
-              _LegendItem(color: _bgFor(75), label: '75%'),
-              _LegendItem(color: _bgFor(50), label: '50%'),
-              _LegendItem(color: _bgFor(25), label: '25%'),
+              _LegendItem(
+                color: _bgFor(100),
+                label: isBangla ? '${toBanglaDigits(100)}%' : '100%',
+              ),
+              _LegendItem(
+                color: _bgFor(75),
+                label: isBangla ? '${toBanglaDigits(75)}%' : '75%',
+              ),
+              _LegendItem(
+                color: _bgFor(50),
+                label: isBangla ? '${toBanglaDigits(50)}%' : '50%',
+              ),
+              _LegendItem(
+                color: _bgFor(25),
+                label: isBangla ? '${toBanglaDigits(25)}%' : '25%',
+              ),
             ],
           ),
         ],

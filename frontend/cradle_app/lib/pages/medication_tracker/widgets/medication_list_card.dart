@@ -5,6 +5,7 @@ import '../../../core/widgets/bottom_nav.dart';
 import '../models/medication.dart';
 import '../../../providers/language_provider.dart';
 import 'med_icon_avatar.dart';
+import '../../../core/utils/bangla_numerals.dart';
 
 /// A card in the "My Medications" list, showing the medication's icon,
 /// name, dose, frequency, and its scheduled time(s), with edit/delete
@@ -24,7 +25,12 @@ class MedicationListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isBangla = context.watch<LanguageProvider>().isBangla;
-    final scheduleTag = medication.times.map((t) => t.format(context)).join(' · ');
+    final scheduleTag = medication.times
+      .map((t) {
+        final formatted = t.format(context);
+        return isBangla ? toBanglaDigits(formatted) : formatted;
+      })
+      .join(' · ');
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -46,7 +52,8 @@ class MedicationListCard extends StatelessWidget {
                 Text(medication.name, style: AppText.cardLabel.copyWith(fontSize: 15)),
                 const SizedBox(height: 3),
                 Text(
-                  '${medication.formattedAmount} ${medication.doseUnit} · ${medication.frequencyLabel(isBangla)}',
+                  '${isBangla ? toBanglaDigits(medication.formattedAmount) : medication.formattedAmount} '
+                  '${medication.doseUnit} · ${medication.frequencyLabel(isBangla)}',
                   style: AppText.subtext,
                 ),
                 const SizedBox(height: 6),
