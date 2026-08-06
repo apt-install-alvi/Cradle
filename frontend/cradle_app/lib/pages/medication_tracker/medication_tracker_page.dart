@@ -136,12 +136,64 @@ class _MedicationTrackerPageState extends State<MedicationTrackerPage> {
     });
   }
 
-  void _deleteMedication(Medication medication) {
-    setState(() {
-      _medications.removeWhere((m) => m.id == medication.id);
-      _todayDoses = _buildTodayDoses(_medications);
-    });
-  }
+Future<void> _deleteMedication(Medication medication) async {
+  final isBangla = context.read<LanguageProvider>().isBangla;
+
+  final shouldDelete = await showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          isBangla ? 'ওষুধ মুছে ফেলবেন?' : 'Delete Medication?',
+          style: AppText.sectionHeading,
+        ),
+        content: Text(
+          isBangla
+              ? '"${medication.name}" তালিকা থেকে সরানো হবে। আপনি কি নিশ্চিত?'
+              : '"${medication.name}" will be removed from your medication list.\n\nAre you sure?',
+          style: AppText.subtext,
+        ),
+        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        actions: [
+          OutlinedButton(
+            onPressed: () => Navigator.pop(context, false),
+            style: OutlinedButton.styleFrom(
+              backgroundColor: const Color(0xFFFDEAF1),
+              foregroundColor: DashboardBottomNav.primaryPink,
+              side: BorderSide.none,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            child: Text(isBangla ? 'বাতিল' : 'Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade600,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            child: Text(isBangla ? 'মুছুন' : 'Delete'),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (shouldDelete != true) return;
+
+  setState(() {
+    _medications.removeWhere((m) => m.id == medication.id);
+    _todayDoses = _buildTodayDoses(_medications);
+  });
+}
 
   // ---------------------------------------------------------------------
   // Build
