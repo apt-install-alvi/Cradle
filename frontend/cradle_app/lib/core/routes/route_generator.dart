@@ -67,6 +67,8 @@ switch (routeName) {
         return MaterialPageRoute(builder: (_) => const NotificationsPage());
       case AppRoutes.settings:
         return MaterialPageRoute(builder: (_) => const SettingsPage());
+      // case AppRoutes.medicationTracker:
+      //   return MaterialPageRoute(builder: (_) => const MedicationTrackerPage());
       default:
         return MaterialPageRoute(
           builder: (_) =>  Scaffold(

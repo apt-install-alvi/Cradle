@@ -59,7 +59,7 @@ class _EducationListPageState extends State<EducationListPage> {
     ];
 
     return Scaffold(
-      bottomNavigationBar: const DashboardBottomNav(selectedIndex: 2),
+      bottomNavigationBar: const DashboardBottomNav(selectedIndex: 1),
       floatingActionButton: _showBackToTop
           ? FloatingActionButton(
               onPressed: () => _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut),

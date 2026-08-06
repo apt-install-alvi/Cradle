@@ -99,7 +99,7 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
 
     return GradientScaffold(
       bottomNavigationBar: const DashboardBottomNav(
-        selectedIndex: 1,
+        selectedIndex: 2,
       ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 24),
