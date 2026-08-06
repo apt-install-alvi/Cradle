@@ -68,7 +68,7 @@ class _AdherenceCalendarCardState extends State<AdherenceCalendarCard> {
       case 75:
         return DashboardBottomNav.primaryPink.withValues(alpha: .7);
       case 50:
-        return DashboardBottomNav.primaryPink.withValues(alpha: .35);
+        return DashboardBottomNav.primaryPink.withValues(alpha: .25);
       case 25:
         return DashboardBottomNav.primaryPink.withValues(alpha: .15);
       default:
@@ -169,29 +169,44 @@ class _AdherenceCalendarCardState extends State<AdherenceCalendarCard> {
             },
           ),
           const SizedBox(height: 14),
-          Wrap(
-            spacing: 12,
-            runSpacing: 6,
-            alignment: WrapAlignment.center,
+          Column(
             children: [
-              _LegendItem(
-                color: _bgFor(100),
-                label: isBangla ? '${toBanglaDigits(100)}%' : '100%',
+              Text(
+                isBangla ? '% ওষুধ গ্রহণ সম্পন্ন' : '% Medication Completed',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.muted,
+                ),
               ),
-              _LegendItem(
-                color: _bgFor(75),
-                label: isBangla ? '${toBanglaDigits(75)}%' : '75%',
-              ),
-              _LegendItem(
-                color: _bgFor(50),
-                label: isBangla ? '${toBanglaDigits(50)}%' : '50%',
-              ),
-              _LegendItem(
-                color: _bgFor(25),
-                label: isBangla ? '${toBanglaDigits(25)}%' : '25%',
+
+              const SizedBox(height: 8),
+
+              Wrap(
+                spacing: 12,
+                runSpacing: 6,
+                alignment: WrapAlignment.center,
+                children: [
+                  _LegendItem(
+                    color: _bgFor(100),
+                    label: isBangla ? '${toBanglaDigits(100)}%' : '100%',
+                  ),
+                  _LegendItem(
+                    color: _bgFor(75),
+                    label: isBangla ? '${toBanglaDigits(75)}%' : '75%',
+                  ),
+                  _LegendItem(
+                    color: _bgFor(50),
+                    label: isBangla ? '${toBanglaDigits(50)}%' : '50%',
+                  ),
+                  _LegendItem(
+                    color: _bgFor(25),
+                    label: isBangla ? '${toBanglaDigits(25)}%' : '25%',
+                  ),
+                ],
               ),
             ],
-          ),
+          )
         ],
       ),
     );
@@ -222,9 +237,9 @@ class _CalendarNavButton extends StatelessWidget {
 }
 
 class _LegendItem extends StatelessWidget {
-  final Color color;
+  final Color? color;
   final String label;
-  const _LegendItem({required this.color, required this.label});
+  const _LegendItem({this.color, required this.label});
 
   @override
   Widget build(BuildContext context) {

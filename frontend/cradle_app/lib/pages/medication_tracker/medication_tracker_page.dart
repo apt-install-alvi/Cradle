@@ -166,7 +166,7 @@ class _MedicationTrackerPageState extends State<MedicationTrackerPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
                 Text(
                   isBangla ? 'ওষুধ ট্র্যাকার' : 'Medication Tracker',
                   style: AppText.headerTitle,
@@ -183,7 +183,7 @@ class _MedicationTrackerPageState extends State<MedicationTrackerPage> {
                   adherenceByDate: _adherenceByDate,
                   initialMonth: DateTime.now(),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 30),
                 Text(
                   isBangla ? "আজকের সময়সূচী" : "Today's Schedule",
                   style: AppText.sectionHeading,

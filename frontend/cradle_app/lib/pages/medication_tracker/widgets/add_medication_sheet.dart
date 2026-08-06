@@ -62,6 +62,18 @@ const List<_MedIconOption> _iconOptions = [
     ),
 ];
 
+const List<MapEntry<String, String>> _medicineUnits = [
+  MapEntry('mg', 'মি.গ্রা.'),
+  MapEntry('mcg', 'মাইক্রোগ্রাম'),
+  MapEntry('g', 'গ্রাম'),
+  MapEntry('mL', 'মি.লি.'),
+  MapEntry('L', 'লিটার'),
+  MapEntry('tablet', 'ট্যাবলেট'),
+  MapEntry('capsule', 'ক্যাপসুল'),
+  MapEntry('drops', 'ড্রপ'),
+  MapEntry('puff', 'পাফ'),
+];
+
 /// Su-first weekday chips for the Custom frequency day picker, paired
 /// with their [DateTime.weekday] values (Monday=1 ... Sunday=7).
 const List<MapEntry<String, int>> _weekdayChips = [
@@ -109,8 +121,7 @@ class AddMedicationSheet extends StatefulWidget {
 class _AddMedicationSheetState extends State<AddMedicationSheet> {
   late final TextEditingController _nameController;
   late final TextEditingController _amountController;
-  late final TextEditingController _unitController;
-
+  late String _selectedUnit;
   late String _selectedIconId;
   late MedicationFrequency _frequency;
   late List<TimeOfDay> _times;
@@ -128,8 +139,7 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
     final existing = widget.existing;
     _nameController = TextEditingController(text: existing?.name ?? '');
     _amountController = TextEditingController(text: existing?.doseAmount.toString() ?? '');
-    _unitController = TextEditingController(text: existing?.doseUnit ?? '');
-    _selectedIconId = existing == null
+    _selectedUnit = existing?.doseUnit ?? 'mg';    _selectedIconId = existing == null
     ? _iconOptions.first.id
     : _iconOptions.firstWhere(
         (o) => o.assetPath == existing.iconAsset,
@@ -144,7 +154,6 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
   void dispose() {
     _nameController.dispose();
     _amountController.dispose();
-    _unitController.dispose();
     super.dispose();
   }
 
@@ -215,7 +224,7 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
       name: _nameController.text.trim(),
       iconAsset: iconOption.assetPath,
       doseAmount: amount,
-      doseUnit: _unitController.text.trim().isEmpty ? (isBangla ? 'ট্যাবলেট' : 'tablet') : _unitController.text.trim(),
+      doseUnit: _selectedUnit,
       frequency: _frequency,
       times: List.of(_times),
       customDays: _frequency == MedicationFrequency.custom ? _customDays.toList() : const [],
@@ -334,7 +343,7 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
                                   ),
                                 ),
 
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 8),
 
                                 Text(
                                   isBangla ? option.labelBn : option.labelEn,
@@ -371,10 +380,100 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
                         ),
                         const SizedBox(width: 10),
                         SizedBox(
-                          width: 110,
-                          child: _AppTextField(
-                            controller: _unitController,
-                            hint: isBangla ? 'একক' : 'Unit (e.g. mcg)',
+                          width: 140,
+                          child: DropdownMenu<String>(
+                            key: ValueKey(_selectedUnit),
+                            initialSelection: _selectedUnit,
+                            
+
+                            onSelected: (value) {
+                              if (value != null) {
+                                setState(() => _selectedUnit = value);
+                              }
+                            },
+
+                            dropdownMenuEntries: _medicineUnits.map((unit) {
+                              return DropdownMenuEntry<String>(
+                                value: unit.key,
+                                label: isBangla ? unit.value : unit.key,
+                                labelWidget: Text(
+                                  isBangla ? unit.value : unit.key,
+                                  style: const TextStyle(
+                                    color: DashboardBottomNav.primaryPink,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
+                                )
+                              );
+                            }).toList(),
+
+                            menuHeight: 250,
+
+                            menuStyle: MenuStyle(
+                              backgroundColor: const WidgetStatePropertyAll(Colors.white),
+                              elevation: const WidgetStatePropertyAll(8),
+                              shadowColor: WidgetStatePropertyAll(
+                                Colors.black.withValues(alpha: 0.15),
+                              ),
+                              shape: WidgetStatePropertyAll(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                              ),
+                            ),
+
+                            inputDecorationTheme: InputDecorationTheme(
+                              filled: true,
+                              fillColor: const Color(0xFFFFFBFC),
+                              isDense: true,
+                                constraints: const BoxConstraints(
+                                  minHeight: 48,
+                                ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 12,
+                              ),
+
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFF5D9E4),
+                                  width: 1.5,
+                                ),
+                              ),
+
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFF5D9E4),
+                                  width: 1.5,
+                                ),
+                              ),
+
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(
+                                  color: DashboardBottomNav.primaryPink,
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+
+                            textStyle: const TextStyle(
+                              fontSize: 14,
+                              color: DashboardBottomNav.primaryPink,
+                              fontWeight: FontWeight.w500,
+                            ),
+
+                            trailingIcon: const Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: DashboardBottomNav.primaryPink,
+                            ),
+
+                            selectedTrailingIcon: const Icon(
+                              Icons.keyboard_arrow_up_rounded,
+                              color: DashboardBottomNav.primaryPink,
+                            ),
                           ),
                         ),
                       ],
