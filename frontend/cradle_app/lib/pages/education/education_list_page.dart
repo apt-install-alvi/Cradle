@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
 import '../../providers/education_provider.dart';
-import '../../widgets/education/article_card.dart';
-import '../../widgets/education/faq_accordion.dart';
+import 'widgets/article_card.dart';
+import 'widgets/faq_accordion.dart';
 import 'article_detail_page.dart';
+import '../../core/widgets/gradient_scaffold.dart';
 
 class EducationListPage extends StatefulWidget {
   const EducationListPage({super.key});
@@ -44,8 +44,6 @@ class _EducationListPageState extends State<EducationListPage> {
     super.dispose();
   }
 
-  static const Color _topGradient = Color(0xFFFFCAE1);
-  static const Color _bottomGradient = Color(0xFFFFE8F2);
   static const Color _accent = Color(0xFFAB0A65);
 
   @override
@@ -58,201 +56,266 @@ class _EducationListPageState extends State<EducationListPage> {
       'All', 'Trimester', 'Nutrition', 'Exercise', 'Baby', 'Maternal', 'Mental Health', 'Emergency', 'Medication', 'Checkups'
     ];
 
-    return Scaffold(
-      bottomNavigationBar: const DashboardBottomNav(selectedIndex: 1),
-      floatingActionButton: _showBackToTop
-          ? FloatingActionButton(
-              onPressed: () => _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut),
-              backgroundColor: _accent,
-              child: const Icon(Icons.arrow_upward, color: Colors.white),
-            )
-          : null,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [_topGradient, _bottomGradient],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: Row(
-                  children: [
-                    Text(
-                      isBangla ? "শিক্ষামূলক গাইড" : "Education Guides",
-                      style: GoogleFonts.gentiumBookPlus(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: _accent,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Search Bar
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TextField(
-                  controller: _searchController, // Added
-                  onChanged: (val) => eduProvider.setSearchQuery(val),
-                  decoration: InputDecoration(
-                    hintText: isBangla ? "আর্টিকেল বা সাধারণ জিজ্ঞাসা খুঁজুন..." : "Search articles or FAQs...",
-                    prefixIcon: const Icon(Icons.search, color: _accent),
-                    suffixIcon: _searchController.text.isNotEmpty // Added
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, color: _accent),
-                            onPressed: () {
-                              _searchController.clear();
-                              eduProvider.setSearchQuery('');
-                            },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: Colors.white.withValues(alpha: 0.8),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
+    return GradientScaffold(
+  bottomNavigationBar: const DashboardBottomNav(selectedIndex: 1),
+  padding: EdgeInsets.zero,
+  child: Stack(
+    children: [
+      Column(
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Row(
+              children: [
+                Text(
+                  isBangla ? "শিক্ষামূলক গাইড" : "Education Guides",
+                  style: GoogleFonts.gentiumBookPlus(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: _accent,
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
 
-              // Category Chips
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: categories.map((cat) {
-                    final isSelected = eduProvider.selectedCategory == cat;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: FilterChip(
-                        selected: isSelected,
-                        label: Text(
-                          _getCategoryName(cat, isBangla),
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : _accent,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                        onSelected: (val) => eduProvider.setCategory(cat),
-                        selectedColor: _accent,
-                        backgroundColor: Colors.white.withValues(alpha: 0.6),
-                        checkmarkColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      ),
-                    );
-                  }).toList(),
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (val) => eduProvider.setSearchQuery(val),
+              decoration: InputDecoration(
+                hintText: isBangla
+                    ? "আর্টিকেল বা সাধারণ জিজ্ঞাসা খুঁজুন..."
+                    : "Search articles or FAQs...",
+                prefixIcon: const Icon(Icons.search, color: _accent),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, color: _accent),
+                        onPressed: () {
+                          _searchController.clear();
+                          eduProvider.setSearchQuery('');
+                        },
+                      )
+                    : null,
+                filled: true,
+                fillColor: Colors.white.withValues(alpha: 0.8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
                 ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
               ),
-              const SizedBox(height: 12),
+            ),
+          ),
+          const SizedBox(height: 12),
 
-              Expanded(
-                child: ListView(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  children: [
-                    // Saved Articles Section (if any)
-                    if (eduProvider.bookmarkedArticles.isNotEmpty && eduProvider.selectedCategory == 'All') ...[
-                      _buildSectionHeader(isBangla ? "⭐ সংরক্ষিত আর্টিকেল" : "⭐ Saved Articles"),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        height: 280,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: eduProvider.bookmarkedArticles.length,
-                          itemBuilder: (context, index) {
-                            final article = eduProvider.bookmarkedArticles[index];
-                            return Container(
-                              width: 300,
-                              margin: const EdgeInsets.only(right: 16),
-                              child: ArticleCard(
-                                article: article,
-                                isBangla: isBangla,
-                                isBookmarked: true,
-                                progress: eduProvider.getProgress(article.id),
-                                onBookmarkToggle: () => eduProvider.toggleBookmark(article.id),
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => ArticleDetailPage(article: article, isBangla: isBangla)),
+          // Category Chips
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: categories.map((cat) {
+                final isSelected = eduProvider.selectedCategory == cat;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    selected: isSelected,
+                    label: Text(
+                      _getCategoryName(cat, isBangla),
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : _accent,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                    onSelected: (val) => eduProvider.setCategory(cat),
+                    surfaceTintColor: Colors.transparent,
+                    selectedColor: _accent,
+                    disabledColor: Colors.white.withValues(alpha: 0.7),
+                    backgroundColor: Colors.white.withValues(alpha: 0.6),
+                    checkmarkColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          Expanded(
+            child: ListView(
+              controller: _scrollController,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
+              children: [
+                if (eduProvider.bookmarkedArticles.isNotEmpty &&
+                    eduProvider.selectedCategory == 'All') ...[
+                  _buildSectionHeader(
+                    isBangla
+                        ? "⭐ সংরক্ষিত আর্টিকেল"
+                        : "⭐ Saved Articles",
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 280,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: eduProvider.bookmarkedArticles.length,
+                      itemBuilder: (context, index) {
+                        final article =
+                            eduProvider.bookmarkedArticles[index];
+                        return Container(
+                          width: 300,
+                          margin: const EdgeInsets.only(right: 16),
+                          child: ArticleCard(
+                            article: article,
+                            isBangla: isBangla,
+                            isBookmarked: true,
+                            progress: eduProvider.getProgress(article.id),
+                            onBookmarkToggle: () =>
+                                eduProvider.toggleBookmark(article.id),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ArticleDetailPage(
+                                  article: article,
+                                  isBangla: isBangla,
                                 ),
                               ),
-                            );
-                          },
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+
+                _buildSectionHeader(
+                  isBangla
+                      ? "📚 গর্ভাবস্থা শিক্ষা"
+                      : "📚 Pregnancy Education",
+                ),
+                const SizedBox(height: 12),
+
+                if (eduProvider.filteredArticles.isEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        isBangla
+                            ? "কোন আর্টিকেল পাওয়া যায়নি"
+                            : "No articles found",
+                      ),
+                    ),
+                  )
+                else
+                  ...eduProvider.filteredArticles.map(
+                    (article) => ArticleCard(
+                      article: article,
+                      isBangla: isBangla,
+                      isBookmarked:
+                          eduProvider.isBookmarked(article.id),
+                      progress:
+                          eduProvider.getProgress(article.id),
+                      onBookmarkToggle: () =>
+                          eduProvider.toggleBookmark(article.id),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ArticleDetailPage(
+                            article: article,
+                            isBangla: isBangla,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 24),
-                    ],
+                    ),
+                  ),
 
-                    // Main Articles List
-                    _buildSectionHeader(isBangla ? "📚 গর্ভাবস্থা শিক্ষা" : "📚 Pregnancy Education"),
-                    const SizedBox(height: 12),
-                    if (eduProvider.filteredArticles.isEmpty)
-                      Center(child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Text(isBangla ? "কোন আর্টিকেল পাওয়া যায়নি" : "No articles found"),
-                      ))
-                    else
-                      ...eduProvider.filteredArticles.map((article) => ArticleCard(
-                        article: article,
-                        isBangla: isBangla,
-                        isBookmarked: eduProvider.isBookmarked(article.id),
-                        progress: eduProvider.getProgress(article.id),
-                        onBookmarkToggle: () => eduProvider.toggleBookmark(article.id),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => ArticleDetailPage(article: article, isBangla: isBangla)),
-                        ),
-                      )),
+                const SizedBox(height: 24),
 
-                    const SizedBox(height: 24),
+                _buildSectionHeader(
+                  isBangla
+                      ? "❓ সাধারণ জিজ্ঞাসা"
+                      : "❓ Frequently Asked Questions",
+                ),
+                const SizedBox(height: 12),
 
-                    // FAQ Section
-                    _buildSectionHeader(isBangla ? "❓ সাধারণ জিজ্ঞাসা" : "❓ Frequently Asked Questions"),
-                    const SizedBox(height: 12),
-                    if (eduProvider.filteredFAQs.isEmpty)
-                      Center(child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Text(isBangla ? "কোন প্রশ্ন পাওয়া যায়নি" : "No questions found"),
-                      ))
-                    else
-                      ...eduProvider.filteredFAQs.asMap().entries.map((entry) {
-                        return FAQAccordion(
+                if (eduProvider.filteredFAQs.isEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        isBangla
+                            ? "কোন প্রশ্ন পাওয়া যায়নি"
+                            : "No questions found",
+                      ),
+                    ),
+                  )
+                else
+                  ...eduProvider.filteredFAQs
+                      .asMap()
+                      .entries
+                      .map(
+                        (entry) => FAQAccordion(
                           faq: entry.value,
                           isBangla: isBangla,
-                          isExpanded: eduProvider.expandedFaqIndex == entry.key,
-                          onToggle: () => eduProvider.toggleFaq(entry.key),
-                        );
-                      }),
-                    
-                    const SizedBox(height: 20),
-                    // Medical Disclaimer
-                    Text(
-                      isBangla 
-                        ? "এই অ্যাপ্লিকেশনটি শুধুমাত্র শিক্ষামূলক তথ্য প্রদান করে এবং পেশাদার চিকিৎসা পরামর্শের বিকল্প নয়।"
-                        : "This application provides educational information only and does not replace professional medical advice.",
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 10, color: Colors.grey, fontStyle: FontStyle.italic),
-                    ),
-                    const SizedBox(height: 40),
-                  ],
+                          isExpanded:
+                              eduProvider.expandedFaqIndex ==
+                                  entry.key,
+                          onToggle: () =>
+                              eduProvider.toggleFaq(entry.key),
+                        ),
+                      ),
+
+                const SizedBox(height: 20),
+
+                Text(
+                  isBangla
+                      ? "এই অ্যাপ্লিকেশনটি শুধুমাত্র শিক্ষামূলক তথ্য প্রদান করে এবং পেশাদার চিকিৎসা পরামর্শের বিকল্প নয়।"
+                      : "This application provides educational information only and does not replace professional medical advice.",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+        ],
+      ),
+
+      if (_showBackToTop)
+        Positioned(
+          right: 16,
+          bottom: 16,
+          child: FloatingActionButton(
+            onPressed: () => _scrollController.animateTo(
+              0,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+            ),
+            backgroundColor: _accent,
+            child: const Icon(
+              Icons.arrow_upward,
+              color: Colors.white,
+            ),
           ),
         ),
-      ),
-    );
+    ],
+  ),
+);
   }
 
   Widget _buildSectionHeader(String title) {

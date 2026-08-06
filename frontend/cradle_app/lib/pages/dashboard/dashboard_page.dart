@@ -197,7 +197,7 @@ class DashboardScreen extends StatelessWidget {
 
                       Flexible(
                         child: Consumer<LanguageProvider>(
-                          builder: (_, languageProvider, __) {
+                          builder: (_, languageProvider, _) {
                             return Text(
                               languageProvider.isBangla
                                   ? "জরুরি অ্যাম্বুলেন্স সেবা(৯৯৯)"

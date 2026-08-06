@@ -10,7 +10,7 @@ class EducationProvider with ChangeNotifier {
   String _searchQuery = '';
   String _selectedCategory = 'All';
   Set<String> _bookmarkedArticleIds = {};
-  Map<String, double> _readingProgress = {}; // articleId -> progress (0.0 to 1.0)
+  final Map<String, double> _readingProgress = {}; // articleId -> progress (0.0 to 1.0)
   int? _expandedFaqIndex;
 
   EducationProvider() {

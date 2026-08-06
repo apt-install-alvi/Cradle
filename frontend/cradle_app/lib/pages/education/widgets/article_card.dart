@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../models/education.dart';
+import '../../../models/education.dart';
 
 class ArticleCard extends StatelessWidget {
   final Article article;
@@ -27,6 +27,8 @@ class ArticleCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
+      color: Colors.white,
+      surfaceTintColor: Colors.transparent,
       shadowColor: _accent.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: InkWell(

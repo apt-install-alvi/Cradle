@@ -178,7 +178,7 @@ class _Header extends StatelessWidget {
           ),
         ),
         Material(
-          color: Colors.white.withOpacity(0.65),
+          color: Colors.white.withValues(alpha: 0.65),
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
