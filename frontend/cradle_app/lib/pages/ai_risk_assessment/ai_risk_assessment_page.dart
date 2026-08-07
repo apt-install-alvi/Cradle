@@ -54,7 +54,6 @@ class AiRiskAssessmentPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            // const SizedBox(height: 4),
             _RiskHero(result: result, isBangla: isBangla),
             const SizedBox(height: 16),
             _SymptomsSection(result: result, isBangla: isBangla),
@@ -126,7 +125,7 @@ class _RiskHero extends StatelessWidget {
                 ? 'আপনার প্রদত্ত উপসর্গের ভিত্তিতে এই ঝুঁকির মাত্রা নির্ধারণ করা হয়েছে।'
                 : 'Based on your reported symptoms, your pregnancy risk level is shown above.',
             textAlign: TextAlign.center,
-            style: AppText.subtext,
+            style: AppText.subtext.copyWith(fontSize: 14),
           ),
         ],
       ),
@@ -156,7 +155,7 @@ class _SymptomsSection extends StatelessWidget {
           Text(
             isBangla ? 'উপসর্গসমূহ' : 'REPORTED SYMPTOMS',
             style: const TextStyle(
-              fontSize: 13,
+              fontSize: 18,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.5,
               color: AppColors.roseDark,
@@ -176,7 +175,7 @@ class _SymptomsSection extends StatelessWidget {
                 child: Text(
                   entry.displayLabel(isBangla),
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF8A4A5F),
                   ),
@@ -202,17 +201,21 @@ class _WarningBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: riskLevel.backgroundColor,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.high,
+          width: 0.5
+        )
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.warning_amber_rounded, color: riskLevel.color, size: 20),
+          Icon(Icons.warning_amber_rounded, color: riskLevel.color, size: 24),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               message,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: riskLevel.color,
                 height: 1.5,

@@ -44,6 +44,7 @@ class DoseCard extends StatelessWidget {
                     med.name,
                     style: AppText.cardLabel.copyWith(
                       decoration: taken ? TextDecoration.lineThrough : null,
+                      fontSize: 16
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -51,7 +52,7 @@ class DoseCard extends StatelessWidget {
                     '${isBangla ? toBanglaDigits(med.formattedAmount) : med.formattedAmount} '
                     '${med.doseUnit} · '
                     '${isBangla ? toBanglaDigits(dose.time.format(context)) : dose.time.format(context)}',
-                    style: AppText.subtext,
+                    style: AppText.subtext.copyWith(fontSize: 14),
                   ),
                 ],
               ),

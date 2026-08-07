@@ -218,7 +218,7 @@ Future<void> _deleteMedication(Medication medication) async {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 Text(
                   isBangla ? 'ওষুধ ট্র্যাকার' : 'Medication Tracker',
                   style: AppText.headerTitle,
@@ -238,7 +238,7 @@ Future<void> _deleteMedication(Medication medication) async {
                 const SizedBox(height: 30),
                 Text(
                   isBangla ? "আজকের সময়সূচী" : "Today's Schedule",
-                  style: AppText.sectionHeading,
+                  style: AppText.sectionHeading.copyWith(fontSize: 20),
                 ),
                 if (morningDoses.isNotEmpty)
                   _DoseTimelineGroup(
@@ -261,7 +261,7 @@ Future<void> _deleteMedication(Medication medication) async {
                 const SizedBox(height: 6),
                 Text(
                   isBangla ? 'আমার ওষুধসমূহ' : 'My Medications',
-                  style: AppText.sectionHeading,
+                  style: AppText.sectionHeading.copyWith(fontSize: 20),
                 ),
                 const SizedBox(height: 12),
                 for (final med in _medications)
@@ -317,7 +317,7 @@ class _DoseTimelineGroup extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 16, bottom: 10),
+            padding: const EdgeInsets.only(top: 4, bottom: 10),
             child: Row(
               children: [
                 Container(
@@ -332,7 +332,7 @@ class _DoseTimelineGroup extends StatelessWidget {
                 Text(
                   label.toUpperCase(),
                   style: TextStyle(
-                    fontSize: 12.5,
+                    fontSize: 16,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.5,
                     color: DashboardBottomNav.primaryPink,

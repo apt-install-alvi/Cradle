@@ -114,7 +114,7 @@ void _onDone() {
               isBangla
                   ? 'যেগুলো প্রযোজ্য সবগুলো নির্বাচন করুন — পরে আরও বিস্তারিত যোগ করতে পারবেন।'
                   : 'Select all that apply — you can add details next.',
-              style: AppText.subtext,
+              style: AppText.subtext.copyWith(fontSize: 16),
             ),
             const SizedBox(height: 16),
             for (var i = 0; i < _batches.length; i++) ...[

@@ -116,7 +116,7 @@ class _AdherenceCalendarCardState extends State<AdherenceCalendarCard> {
               isBangla
                   ? '$monthName ${toBanglaDigits(_visibleMonth.year)}'
                   : '$monthName ${_visibleMonth.year}',
-              style: AppText.sectionHeading.copyWith(fontSize: 16),
+              style: AppText.sectionHeading.copyWith(fontSize: 20),
             ),
               _CalendarNavButton(
                 icon: Icons.chevron_right,
@@ -130,7 +130,7 @@ class _AdherenceCalendarCardState extends State<AdherenceCalendarCard> {
                 .map(
                   (d) => Expanded(
                     child: Center(
-                      child: Text(d, style: AppText.eyebrow.copyWith(fontSize: 10.5)),
+                      child: Text(d, style: AppText.eyebrow.copyWith(fontSize: 14)),
                     ),
                   ),
                 )
@@ -159,7 +159,7 @@ class _AdherenceCalendarCardState extends State<AdherenceCalendarCard> {
                 child: Text(
                     isBangla ? toBanglaDigits(day) : '$day',
                     style: TextStyle(
-                      fontSize: 12.5,
+                      fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: pct == null ? AppColors.ink : _textFor(pct),
                     ),
@@ -174,7 +174,7 @@ class _AdherenceCalendarCardState extends State<AdherenceCalendarCard> {
               Text(
                 isBangla ? '% ওষুধ গ্রহণ সম্পন্ন' : '% Medication Completed',
                 style: const TextStyle(
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: AppColors.muted,
                 ),
@@ -259,7 +259,7 @@ class _LegendItem extends StatelessWidget {
         const SizedBox(width: 5),
         Text(
           label,
-          style: const TextStyle(fontSize: 10.5, color: AppColors.muted, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 12, color: AppColors.muted, fontWeight: FontWeight.w600),
         ),
       ],
     );

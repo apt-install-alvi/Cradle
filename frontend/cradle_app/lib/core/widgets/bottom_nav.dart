@@ -299,7 +299,6 @@ Widget build(BuildContext context) {
             duration: const Duration(milliseconds: 200),
             style: GoogleFonts.gentiumBookPlus(
               fontWeight: selected ? FontWeight.w800 : FontWeight.bold,
-              fontSize: 9.5,
               height: 1.1,
               color: selected
                   ? DashboardBottomNav.primaryPink
@@ -309,6 +308,7 @@ Widget build(BuildContext context) {
               label,
               textAlign: TextAlign.center,
               maxLines: 2,
+              style: GoogleFonts.gentiumBookPlus(fontSize: 10),
               overflow: TextOverflow.ellipsis,
             ),
           ),

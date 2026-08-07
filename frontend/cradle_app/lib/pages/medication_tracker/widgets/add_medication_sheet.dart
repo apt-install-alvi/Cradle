@@ -283,7 +283,7 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
                       child: SizedBox(
                         width: 32,
                         height: 32,
-                        child: Icon(Icons.close, size: 16, color: DashboardBottomNav.primaryPink),
+                        child: Icon(Icons.close, size: 18, color: DashboardBottomNav.primaryPink),
                       ),
                     ),
                   ),
@@ -335,8 +335,8 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
                               children: [
                                 SvgPicture.asset(
                                   option.assetPath,
-                                  width: 20,
-                                  height: 20,
+                                  width: 24,
+                                  height: 24,
                                   colorFilter: const ColorFilter.mode(
                                     DashboardBottomNav.primaryPink,
                                     BlendMode.srcIn,
@@ -349,7 +349,7 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
                                   isBangla ? option.labelBn : option.labelEn,
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color: DashboardBottomNav.primaryPink,
                                   ),
@@ -614,12 +614,12 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.add_circle_outline, size: 16, color: DashboardBottomNav.primaryPink),
+                            Icon(Icons.add_circle_outline, size: 20, color: DashboardBottomNav.primaryPink),
                             const SizedBox(width: 6),
                             Text(
                               isBangla ? 'আরেকটি সময় যোগ করুন' : 'Add another time',
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: DashboardBottomNav.primaryPink,
                               ),
@@ -651,7 +651,7 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
                       ),
                       child: Text(
                         isBangla ? 'বাতিল' : 'Cancel',
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                       ),
                     ),
                   ),
@@ -669,7 +669,7 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
                       ),
                       child: Text(
                         isBangla ? 'সংরক্ষণ করুন' : 'Save Medication',
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                       ),
                     ),
                   ),
@@ -694,7 +694,7 @@ class _FormLabel extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 12.5,
+          fontSize: 16,
           fontWeight: FontWeight.w800,
           letterSpacing: 0.3,
           color: DashboardBottomNav.primaryPink,
@@ -761,7 +761,7 @@ class _FrequencyChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 12.5,
+            fontSize: 14.5,
             fontWeight: FontWeight.w700,
             color: selected ? Colors.white : DashboardBottomNav.primaryPink,
           ),

@@ -49,12 +49,12 @@ class MedicationListCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(medication.name, style: AppText.cardLabel.copyWith(fontSize: 15)),
+                Text(medication.name, style: AppText.cardLabel.copyWith(fontSize: 16)),
                 const SizedBox(height: 3),
                 Text(
                   '${isBangla ? toBanglaDigits(medication.formattedAmount) : medication.formattedAmount} '
                   '${medication.doseUnit} · ${medication.frequencyLabel(isBangla)}',
-                  style: AppText.subtext,
+                  style: AppText.subtext.copyWith(fontSize: 14),
                 ),
                 const SizedBox(height: 6),
                 Container(
@@ -66,7 +66,7 @@ class MedicationListCard extends StatelessWidget {
                   child: Text(
                     scheduleTag,
                     style: TextStyle(
-                      fontSize: 10.5,
+                      fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: DashboardBottomNav.primaryPink,
                     ),
@@ -104,7 +104,7 @@ class _ActionIcon extends StatelessWidget {
         child: SizedBox(
           width: 30,
           height: 30,
-          child: Icon(icon, size: 15, color: DashboardBottomNav.primaryPink),
+          child: Icon(icon, size: 20, color: DashboardBottomNav.primaryPink),
         ),
       ),
     );

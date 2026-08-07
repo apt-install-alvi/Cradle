@@ -1,3 +1,4 @@
+import 'package:cradle_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -63,6 +64,7 @@ class _EducationListPageState extends State<EducationListPage> {
         children: [
           Column(
             children: [
+              const SizedBox(height: 20),
               // Header
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -70,11 +72,7 @@ class _EducationListPageState extends State<EducationListPage> {
                   children: [
                     Text(
                       isBangla ? "শিক্ষামূলক গাইড" : "Education Guides",
-                      style: GoogleFonts.gentiumBookPlus(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: _accent,
-                      ),
+                      style: AppText.headerTitle.copyWith(fontSize: 24)
                     ),
                   ],
                 ),

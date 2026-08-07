@@ -29,7 +29,7 @@ class ArticleCard extends StatelessWidget {
       elevation: 2,
       color: Colors.white,
       surfaceTintColor: Colors.transparent,
-      shadowColor: _accent.withValues(alpha: 0.1),
+      shadowColor: _accent.withValues(alpha: 0.4),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: InkWell(
         onTap: onTap,
