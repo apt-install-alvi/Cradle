@@ -7,13 +7,10 @@ import '../../core/widgets/risk_pill.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
 import 'package:provider/provider.dart';
-/// Shows the AI-recommended diagnosis, the symptoms it was based on, and
-/// a risk-appropriate call to action — escalating to emergency actions
-/// for high-risk results.
-///
-/// Order on screen: 1) recommended diagnosis, 2) reported symptoms,
-/// 3) the risk warning banner (medium/high only), 4) emergency actions
-/// (high risk only).
+
+
+/// Shows the AI-generated pregnancy risk assessment based on
+/// the user's reported symptoms.
 class AiRiskAssessmentPage extends StatelessWidget {
   final DiagnosisResult result;
 
@@ -33,22 +30,32 @@ class AiRiskAssessmentPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Color(0xFFAB0A65),
-                  size: 28,
+            const SizedBox(height: 20),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Color(0xFFAB0A65),
+                    size: 28,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    isBangla ? 'ঝুঁকি মূল্যায়ন' : 'Risk Assessment',
+                    style: AppText.headerTitle.copyWith(fontSize: 24),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             // const SizedBox(height: 4),
-            _DiagnosisHero(result: result, isBangla: isBangla),
+            _RiskHero(result: result, isBangla: isBangla),
             const SizedBox(height: 16),
             _SymptomsSection(result: result, isBangla: isBangla),
             const SizedBox(height: 16),
@@ -85,11 +92,11 @@ class AiRiskAssessmentPage extends StatelessWidget {
   }
 }
 
-class _DiagnosisHero extends StatelessWidget {
+class _RiskHero extends StatelessWidget {
   final DiagnosisResult result;
   final bool isBangla;
 
-  const _DiagnosisHero({required this.result, required this.isBangla});
+  const _RiskHero({required this.result, required this.isBangla});
 
   @override
   Widget build(BuildContext context) {
@@ -104,17 +111,23 @@ class _DiagnosisHero extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            isBangla ? 'প্রস্তাবিত রোগনির্ণয়' : 'RECOMMENDED DIAGNOSIS',
-            style: AppText.eyebrow,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            result.localizedDiagnosisName(isBangla),
+            result.riskLevel.displayLabel(isBangla),
             textAlign: TextAlign.center,
-            style: AppText.diagnosisTitle,
+            style: TextStyle(
+              fontSize: 34,              // <-- Change this to any size you want
+              fontWeight: FontWeight.w800,
+              color: result.riskLevel.color,
+              height: 1.1,
+            ),
           ),
-          const SizedBox(height: 12),
-          RiskPill(riskLevel: result.riskLevel),
+          const SizedBox(height: 16),
+          Text(
+            isBangla
+                ? 'আপনার প্রদত্ত উপসর্গের ভিত্তিতে এই ঝুঁকির মাত্রা নির্ধারণ করা হয়েছে।'
+                : 'Based on your reported symptoms, your pregnancy risk level is shown above.',
+            textAlign: TextAlign.center,
+            style: AppText.subtext,
+          ),
         ],
       ),
     );

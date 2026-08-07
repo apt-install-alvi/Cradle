@@ -9,9 +9,10 @@ import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
 import 'package:provider/provider.dart';
 
-/// Lists past symptom check-ins with their diagnosis and risk level.
-/// In a real app, [_entries] would be loaded from local storage or a
+/// Lists previous symptom check-ins and their assessed risk level.
+/// /// In a real app, [_entries] would be loaded from local storage or a
 /// backend rather than hard-coded here.
+
 class HealthHistoryPage extends StatefulWidget {
   const HealthHistoryPage({super.key});
 
@@ -24,56 +25,70 @@ class _HealthHistoryPageState extends State<HealthHistoryPage> {
   String _query = '';
 
   // TODO: replace with entries loaded from persistent storage / an API.
-  final List<DiagnosisResult> _entries = [
-    DiagnosisResult(
-      diagnosisName: 'Possible Preeclampsia',
-      riskLevel: RiskLevel.high,
-      reportedSymptoms: [
-        SymptomEntry(
-          symptom: kAllSymptoms.firstWhere((s) => s.id == 'fever'),
-          measurements: const {'value': '101.2'},
-        ),
-        SymptomEntry(symptom: kAllSymptoms.firstWhere((s) => s.id == 'headache')),
-        SymptomEntry(
-          symptom: kAllSymptoms.firstWhere((s) => s.id == 'blurred_vision'),
-        ),
-        SymptomEntry(symptom: kAllSymptoms.firstWhere((s) => s.id == 'swelling')),
-      ],
-      warningMessage:
-      'Your symptoms suggest a condition that can affect you and your '
-          'baby quickly. Please see a doctor today.',
-      timestamp: DateTime.now(),
-    ),
-    DiagnosisResult(
-      diagnosisName: 'Mild Dehydration',
-      riskLevel: RiskLevel.medium,
-      reportedSymptoms: [
-        SymptomEntry(symptom: kAllSymptoms.firstWhere((s) => s.id == 'loose_motion')),
-        SymptomEntry(symptom: kAllSymptoms.firstWhere((s) => s.id == 'nausea')),
-      ],
-      warningMessage:
-      'Drink fluids and monitor your symptoms; see a doctor if they '
-          'persist beyond a day.',
-      timestamp: DateTime.now().subtract(const Duration(days: 3)),
-    ),
-    DiagnosisResult(
-      diagnosisName: 'Normal Pregnancy Fatigue',
-      riskLevel: RiskLevel.low,
-      reportedSymptoms: [
-        SymptomEntry(symptom: kAllSymptoms.firstWhere((s) => s.id == 'headache')),
-      ],
-      warningMessage: 'No action needed — rest and stay hydrated.',
-      timestamp: DateTime.now().subtract(const Duration(days: 8)),
-    ),
-  ];
+ final List<DiagnosisResult> _entries = [
+  DiagnosisResult(
+    riskLevel: RiskLevel.high,
+    reportedSymptoms: [
+      SymptomEntry(
+        symptom: kAllSymptoms.firstWhere((s) => s.id == 'fever'),
+        measurements: const {'value': '101.2'},
+      ),
+      SymptomEntry(
+        symptom: kAllSymptoms.firstWhere((s) => s.id == 'headache'),
+      ),
+      SymptomEntry(
+        symptom: kAllSymptoms.firstWhere((s) => s.id == 'blurred_vision'),
+      ),
+      SymptomEntry(
+        symptom: kAllSymptoms.firstWhere((s) => s.id == 'swelling'),
+      ),
+    ],
+    warningMessage:
+        'Your symptoms suggest a condition that can affect you and your baby quickly. Please see a doctor today.',
+    warningMessageBn:
+        'আপনার উপসর্গগুলো মা ও শিশুর জন্য গুরুতর ঝুঁকির ইঙ্গিত দিচ্ছে। অনুগ্রহ করে আজই একজন চিকিৎসকের সঙ্গে যোগাযোগ করুন।',
+    timestamp: DateTime.now(),
+  ),
 
+  DiagnosisResult(
+    riskLevel: RiskLevel.medium,
+    reportedSymptoms: [
+      SymptomEntry(
+        symptom: kAllSymptoms.firstWhere((s) => s.id == 'loose_motion'),
+      ),
+      SymptomEntry(
+        symptom: kAllSymptoms.firstWhere((s) => s.id == 'nausea'),
+      ),
+    ],
+    warningMessage:
+        'Drink fluids and monitor your symptoms; see a doctor if they persist beyond a day.',
+    warningMessageBn:
+        'পর্যাপ্ত তরল পান করুন এবং আপনার উপসর্গ পর্যবেক্ষণ করুন। এক দিনের বেশি স্থায়ী হলে চিকিৎসকের পরামর্শ নিন।',
+    timestamp: DateTime.now().subtract(const Duration(days: 3)),
+  ),
+
+  DiagnosisResult(
+    riskLevel: RiskLevel.low,
+    reportedSymptoms: [
+      SymptomEntry(
+        symptom: kAllSymptoms.firstWhere((s) => s.id == 'headache'),
+      ),
+    ],
+    warningMessage:
+        'No action needed — rest and stay hydrated.',
+    warningMessageBn:
+        'এই মুহূর্তে কোনো তাৎক্ষণিক ঝুঁকি দেখা যাচ্ছে না। বিশ্রাম নিন এবং পর্যাপ্ত পানি পান করুন।',
+    timestamp: DateTime.now().subtract(const Duration(days: 8)),
+  ),
+];
   List<DiagnosisResult> get _filtered {
     if (_query.trim().isEmpty) return _entries;
     final q = _query.toLowerCase();
     return _entries.where((e) {
-      return e.diagnosisName.toLowerCase().contains(q) ||
-          e.reportedSymptoms
-              .any((s) => s.symptom.label.toLowerCase().contains(q));
+    return e.riskLevel.name.toLowerCase().contains(q) ||
+      e.reportedSymptoms.any(
+      (s) => s.symptom.label.toLowerCase().contains(q),
+      );
     }).toList();
   }
 
@@ -95,24 +110,29 @@ class _HealthHistoryPageState extends State<HealthHistoryPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-      Align(
-      alignment: Alignment.centerLeft,
-      child: IconButton(
-        padding: EdgeInsets.zero,
-        constraints: const BoxConstraints(),
-        icon: const Icon(
-          Icons.arrow_back,
-          color: Color(0xFFAB0A65),
-          size: 28,
-        ),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-    ),
-    const SizedBox(width: 8),
-          Text(
-            isBangla ? 'আপনার স্বাস্থের রেকর্ড' : 'Your Health Records',
-            style: AppText.headerTitle.copyWith(fontSize: 24),
+        const SizedBox(height: 20),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Color(0xFFAB0A65),
+              size: 28,
+            ),
+            onPressed: () => Navigator.of(context).pop(),
           ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              isBangla ? 'আপনার স্বাস্থ্যের রেকর্ড' : 'Your Health Records',
+              style: AppText.headerTitle.copyWith(fontSize: 24),
+            ),
+          ),
+        ],
+      ),
           const SizedBox(height: 14),
           _SearchField(
             controller: _searchController,

@@ -60,31 +60,32 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
     });
   }
 
-  void _onDone() {
-    final entries = _selectedIds.map((id) {
-      final symptom = kAllSymptoms.firstWhere((s) => s.id == id);
-      return SymptomEntry(
-        symptom: symptom,
-        measurements: _measurementValues[id] ?? const {},
-      );
-    }).toList();
-
-    // NOTE: This mock result stands in for a real backend/AI call, which
-    // would take `entries` and return an actual diagnosis + risk level.
-    final result = DiagnosisResult(
-      diagnosisName: 'Possible Preeclampsia',
-      riskLevel: RiskLevel.high,
-      reportedSymptoms: entries,
-      warningMessage:
-      'Your symptoms suggest a condition that can affect you and your '
-          'baby quickly. Please see a doctor today.',
-      timestamp: DateTime.now(),
+void _onDone() {
+  final entries = _selectedIds.map((id) {
+    final symptom = kAllSymptoms.firstWhere((s) => s.id == id);
+    return SymptomEntry(
+      symptom: symptom,
+      measurements: _measurementValues[id] ?? const {},
     );
+  }).toList();
 
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => AiRiskAssessmentPage(result: result)),
-    );
-  }
+  // TODO: Replace this mock logic with your AI risk prediction model.
+  final result = DiagnosisResult(
+    riskLevel: RiskLevel.high,
+    reportedSymptoms: entries,
+    warningMessage:
+        'Your symptoms suggest a condition that can affect you and your baby quickly. Please see a doctor today.',
+    warningMessageBn:
+        'আপনার উপসর্গগুলো মা ও শিশুর জন্য গুরুতর ঝুঁকির ইঙ্গিত দিচ্ছে। অনুগ্রহ করে আজই একজন চিকিৎসকের সঙ্গে যোগাযোগ করুন।',
+    timestamp: DateTime.now(),
+  );
+
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => AiRiskAssessmentPage(result: result),
+    ),
+  );
+}
 
   void _openHistory() {
     Navigator.of(context).push(
@@ -178,7 +179,7 @@ class _Header extends StatelessWidget {
           ),
         ),
         Material(
-          color: Colors.white.withValues(alpha: 0.65),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
@@ -191,7 +192,7 @@ class _Header extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: appCardShadow,
               ),
-              child: const Icon(Icons.history, size: 19, color: AppColors.roseDark),
+              child: const Icon(Icons.history, size: 24, color: AppColors.roseDark),
             ),
           ),
         ),
