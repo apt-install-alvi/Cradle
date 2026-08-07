@@ -1,3 +1,4 @@
+import 'package:cradle_app/pages/health_monitor/health_logging_page.dart';
 import 'package:flutter/material.dart';
 import '../../pages/medication_tracker/medication_tracker_page.dart';
 import '../../pages/splash/splash_page.dart';
@@ -70,6 +71,8 @@ switch (routeName) {
         return MaterialPageRoute(builder: (_) => const SettingsPage());
       case AppRoutes.medicationTracker:
         return MaterialPageRoute(builder: (_) => const MedicationTrackerPage());
+      case AppRoutes.healthMonitor:
+        return MaterialPageRoute(builder: (_) => const HealthLoggingPage());
       default:
         return MaterialPageRoute(
           builder: (_) =>  Scaffold(
