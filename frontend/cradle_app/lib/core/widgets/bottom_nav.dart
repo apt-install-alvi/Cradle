@@ -50,10 +50,6 @@ class DashboardBottomNav extends StatelessWidget {
   static const double _notchCenterY =
       (_barBottomOffset + _barHeight) - (_fabBottomOffset + _fabRadius);
 
-  // TODO: '/medication-tracker' and '/health-monitor' are not yet defined
-  // in app_routes.dart. That file is a read-only reference for this
-  // feature, so add the corresponding constants there (and wire them up in
-  // route_generator.dart) before this nav can navigate to them.
   static const String _medicationTrackerRoute = '/medication-tracker';
   static const String _healthMonitorRoute = '/health-monitor';
 
