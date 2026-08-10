@@ -137,13 +137,13 @@ FadeTransition(
       height: 140,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: secondaryColor.withValues(alpha: 0.2),
-            blurRadius: 30,
-            spreadRadius: 8,
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: secondaryColor.withValues(alpha: 0.2),
+        //     blurRadius: 30,
+        //     spreadRadius: 8,
+        //   ),
+        // ],
       ),
       child: ClipRRect(
         // borderRadius: BorderRadius.circular(70),
@@ -199,7 +199,7 @@ FadeTransition(
 
             // 3. Subtle Animated Progress indicator at the bottom
             Positioned(
-              bottom: 48,
+              bottom: 100,
               left: 0,
               right: 0,
               child: Center(

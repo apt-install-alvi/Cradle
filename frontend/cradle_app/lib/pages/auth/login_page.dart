@@ -123,20 +123,20 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 25),
                   // Logo from Splash Screen
                   Container(
                     width: 110,
                     height: 110,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: secondaryColor.withValues(alpha: 0.2),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //     color: secondaryColor.withValues(alpha: 0.2),
+                      //     blurRadius: 20,
+                      //     spreadRadius: 5,
+                      //   ),
+                      // ],
                     ),
                     child: ClipRRect(
                       child: SvgPicture.asset(

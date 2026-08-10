@@ -149,20 +149,20 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 25),
                   // Logo at the same position
                   Container(
                     width: 110,
                     height: 110,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: secondaryColor.withValues(alpha: 0.2),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //     color: secondaryColor.withValues(alpha: 0.2),
+                      //     blurRadius: 20,
+                      //     spreadRadius: 5,
+                      //   ),
+                      // ],
                     ),
                     child: ClipRRect(
                       child: SvgPicture.asset(
