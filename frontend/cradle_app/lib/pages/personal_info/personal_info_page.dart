@@ -135,33 +135,49 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   }
 
   Future<void> _pickLmpDate() async {
-    final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
-    final DateTime now = DateTime.now();
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _lmpDate ?? now,
-      firstDate: DateTime(now.year - 2),
-      lastDate: now,
-      helpText: isBangla ? 'শেষ মাসিকের সময়কাল নির্বাচন করুন' : 'Select Last Menstrual Period Date',
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(
-                  primary: _accent,
-                  onPrimary: _secondaryWhite,
-                  surface: _bottomGradient,
-                  onSurface: _accent,
-                ),
+  final isBangla =
+      Provider.of<LanguageProvider>(context, listen: false).isBangla;
+
+  final DateTime now = DateTime.now();
+
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: _lmpDate ?? now,
+    firstDate: DateTime(now.year - 2),
+    lastDate: now,
+    helpText: isBangla
+        ? 'শেষ মাসিকের সময়কাল নির্বাচন করুন'
+        : 'Select Last Menstrual Period Date',
+
+    builder: (context, child) {
+      return Theme(
+        data: Theme.of(context).copyWith(
+          brightness: Brightness.light,
+
+          colorScheme: const ColorScheme.light(
+            primary: _accent,
+            onPrimary: _secondaryWhite,
+            surface: _secondaryWhite,
+            onSurface: Color(0xFF3A2C33),
           ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null) {
-      setState(() => _lmpDate = picked);
-      calculatePregnancy();
-    }
+
+          dialogTheme: DialogThemeData(
+            backgroundColor: _secondaryWhite,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+          ),
+        ),
+        child: child!,
+      );
+    },
+  );
+
+  if (picked != null) {
+    setState(() => _lmpDate = picked);
+    calculatePregnancy();
   }
+}
 
   Future<void> saveProfile() async {
     final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
@@ -243,34 +259,34 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     return Scaffold(
       bottomNavigationBar: const DashboardBottomNav(selectedIndex: -1),
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: _accent),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          isBangla ? 'ব্যক্তিগত তথ্য' : 'Personal Info',
-          style: GoogleFonts.gentiumBookPlus(
-            fontWeight: FontWeight.bold,
-            color: _accent,
-            fontSize: 22,
-          ),
-        ),
-        centerTitle: true,
-        // --- ADDED LOGOUT BUTTON HERE ---
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: _accent),
-            tooltip: isBangla ? 'লগ আউট' : 'Log Out',
-            onPressed: () {
-              // Clear session and return to login
-              Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
-            },
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: Colors.transparent,
+      //   elevation: 0,
+      //   leading: IconButton(
+      //     icon: const Icon(Icons.arrow_back, color: _accent),
+      //     onPressed: () => Navigator.pop(context),
+      //   ),
+      //   title: Text(
+      //     isBangla ? 'ব্যক্তিগত তথ্য' : 'Personal Info',
+      //     style: GoogleFonts.gentiumBookPlus(
+      //       fontWeight: FontWeight.bold,
+      //       color: _accent,
+      //       fontSize: 22,
+      //     ),
+      //   ),
+      //   centerTitle: true,
+      //   // --- ADDED LOGOUT BUTTON HERE ---
+      //   actions: [
+      //     IconButton(
+      //       icon: const Icon(Icons.logout, color: _accent),
+      //       tooltip: isBangla ? 'লগ আউট' : 'Log Out',
+      //       onPressed: () {
+      //         // Clear session and return to login
+      //         Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+      //       },
+      //     ),
+      //   ],
+      // ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -293,6 +309,54 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        icon: const Icon(
+                                          Icons.arrow_back,
+                                          color: _accent,
+                                          size: 28,
+                                        ),
+                                        onPressed: () => Navigator.of(context).pop(),
+                                      ),
+
+                                      const SizedBox(width: 8),
+
+                                      Expanded(
+                                        child: Text(
+                                          isBangla ? 'ব্যক্তিগত তথ্য' : 'Personal Info',
+                                          style: AppText.headerTitle.copyWith(
+                                            fontSize: 24,
+                                          ),
+                                        ),
+                                      ),
+
+                                      IconButton(
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        icon: const Icon(
+                                          Icons.logout,
+                                          color: _accent,
+                                          size: 24,
+                                        ),
+                                        tooltip: isBangla ? 'লগ আউট' : 'Log Out',
+                                        onPressed: () {
+                                          Navigator.pushNamedAndRemoveUntil(
+                                            context,
+                                            AppRoutes.login,
+                                            (route) => false,
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 20,),
                                 _buildProfileHeader(isBangla),
                                 const SizedBox(height: 24),
                                 _buildPersonalDetailsCard(isBangla),
@@ -351,7 +415,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         Text(
           isBangla ? 'আবার স্বাগতম,' : 'Welcome back,',
           style: GoogleFonts.gentiumBookPlus(
-            fontSize: 14,
+            fontSize: 18,
             color: _accent.withValues(alpha: 0.65),
             fontWeight: FontWeight.bold,
           ),
@@ -360,7 +424,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         Text(
           _fullNameController.text.isNotEmpty ? _fullNameController.text : (isBangla ? 'মা' : 'Mother'),
           style: GoogleFonts.gentiumBookPlus(
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
             color: _accent,
           ),
@@ -380,10 +444,10 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   Widget _sectionCard({required String title, required IconData icon, required List<Widget> children}) {
     return Card(
       elevation: 0,
-      color: _primaryWhite52,
+      color: Colors.white.withValues(alpha: 0.6),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: _accent.withValues(alpha: 0.08)),
+        side: BorderSide(color: _accent.withValues(alpha: 0.3)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -396,7 +460,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
               Text(
                 title,
                 style: GoogleFonts.gentiumBookPlus(
-                  fontSize: 17,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: _accent,
                 ),
@@ -435,7 +499,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         hintStyle: GoogleFonts.gentiumBookPlus(color: _accent.withValues(alpha: 0.4)),
         prefixIcon: Icon(icon, color: _accent),
         filled: true,
-        fillColor: _secondaryWhite.withValues(alpha: 0.4),
+        fillColor: _secondaryWhite,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -462,7 +526,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         labelStyle: GoogleFonts.gentiumBookPlus(color: _accent.withValues(alpha: 0.7)),
         prefixIcon: const Icon(Icons.bloodtype_outlined, color: _accent),
         filled: true,
-        fillColor: _secondaryWhite.withValues(alpha: 0.4),
+        fillColor: _secondaryWhite,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -473,7 +537,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           borderSide: const BorderSide(color: _accent, width: 1.5),
         ),
       ),
-      dropdownColor: _bottomGradient,
+      dropdownColor: _secondaryWhite,
       items: _bloodGroups.map((group) => DropdownMenuItem(value: group, child: Text(group))).toList(),
       onChanged: (value) => setState(() => _selectedBloodGroup = value),
       validator: (value) => value == null ? (isBangla ? 'প্রয়োজন' : 'Required') : null,
@@ -540,6 +604,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           onTap: _pickLmpDate,
           child: InputDecorator(
             decoration: InputDecoration(
+              filled: true,
+              fillColor: _secondaryWhite,
               labelText: isBangla ? 'LMP তারিখ' : 'LMP Date',
               labelStyle: GoogleFonts.gentiumBookPlus(color: _accent, fontWeight: FontWeight.bold),
               prefixIcon: const Icon(Icons.calendar_today, color: _accent),
@@ -600,7 +666,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: _accent.withValues(alpha: 0.08),
+        color: _secondaryWhite,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -610,7 +676,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           Text(
             label,
             style: GoogleFonts.gentiumBookPlus(
-              fontSize: 10,
+              fontSize: 16,
               color: _accent.withValues(alpha: 0.65),
               fontWeight: FontWeight.bold,
             ),
@@ -640,7 +706,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18),
               ),
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: const EdgeInsets.symmetric(vertical: 18),
             ),
             child: Text(
               isBangla ? 'বাতিল করুন' : 'Cancel',
@@ -663,7 +729,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18),
               ),
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: const EdgeInsets.symmetric(vertical: 18),
               elevation: 4,
               shadowColor: _accent.withValues(alpha: 0.35),
             ),
