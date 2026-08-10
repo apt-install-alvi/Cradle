@@ -646,7 +646,7 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
                         backgroundColor: const Color(0xFFFDEAF1),
                         foregroundColor: DashboardBottomNav.primaryPink,
                         side: BorderSide.none,
-                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                       child: Text(
@@ -663,7 +663,7 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: DashboardBottomNav.primaryPink,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         elevation: 0,
                       ),
