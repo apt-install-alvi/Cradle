@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/routes/app_routes.dart';
-import '../../core/theme/app_theme.dart';
+import '../../core/widgets/gradient_scaffold.dart';
+import '../../core/widgets/bottom_nav.dart';
+import '../health_monitor/widgets/health_top_bar.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
 import '../../providers/font_size_provider.dart';
@@ -18,11 +20,38 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage>
     with SingleTickerProviderStateMixin {
   // ── Colour constants ──────────────────────────────────────────────
-  static const Color _topGradient = Color(0xFFFFCAE1);
-  static const Color _bottomGradient = Color(0xFFFFE8F2);
-  static const Color _accent = Color(0xFFAB0A65);
-  static const Color _primaryWhite52 = Color(0x85FFFFFF); // #FFF 52 %
-  static const Color _secondaryWhite = Color(0xFFFFFFFF);
+static const Color _accent = Color(0xFFAB0A65);
+static const Color _brandSofter = Color(0xFFFCEEF5);
+static const Color _brandSoft = Color(0xFFF6D9E9);
+static const Color _ink = Color(0xFF3A2C33);
+static const Color _muted = Color(0xFF8A7680);
+static const Color _secondaryWhite = Colors.white;
+
+static const List<BoxShadow> _cardShadow = [
+  BoxShadow(
+    color: Color(0x29C87896),
+    blurRadius: 16,
+    offset: Offset(0, 6),
+  ),
+];
+
+TextStyle _sectionTitle() => GoogleFonts.gentiumBookPlus(
+      fontSize: 20,
+      fontWeight: FontWeight.w700,
+      letterSpacing: 1.1,
+      color: _accent.withValues(alpha: 0.65),
+    );
+
+TextStyle _itemTitle() => const TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.w700,
+      color: _ink,
+    );
+
+TextStyle _itemSubtitle() => const TextStyle(
+      fontSize: 14,
+      color: _muted,
+    );
 
   // ── Toggle states ─────────────────────────────────────────────────
   bool _pushNotifications = true;
@@ -51,328 +80,321 @@ class _SettingsPageState extends State<SettingsPage>
     super.dispose();
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────
-  TextStyle _sectionTitle() => GoogleFonts.gentiumBookPlus(
-        fontSize: 13,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 1.2,
-        color: _accent.withValues(alpha: 0.65),
-      );
-
-  TextStyle _itemTitle() => GoogleFonts.gentiumBookPlus(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: _accent,
-      );
-
-  TextStyle _itemSubtitle() => GoogleFonts.gentiumBookPlus(
-        fontSize: 12.5,
-        color: _accent.withValues(alpha: 0.55),
-      );
-
   // ── Build ─────────────────────────────────────────────────────────
   @override
-  Widget build(BuildContext context) {
-    final languageProvider = context.watch<LanguageProvider>();
-    final authProvider = context.watch<AuthProvider>();
-    final bool isBangla = languageProvider.isBangla;
-    final String userName =
-        authProvider.userName.isEmpty ? 'User' : authProvider.userName;
+Widget build(BuildContext context) {
+  final languageProvider = context.watch<LanguageProvider>();
+  final authProvider = context.watch<AuthProvider>();
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: AppGradients.background,
-        ),
-        child: SafeArea(
-          child: FadeTransition(
-            opacity: _fadeIn,
-            child: Column(
-              children: [
-                // ── App bar ──────────────────────────────────────
-                _buildAppBar(isBangla),
+  final bool isBangla = languageProvider.isBangla;
+  final String userName =
+      authProvider.userName.isEmpty ? 'User' : authProvider.userName;
 
-                // ── Content ──────────────────────────────────────
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(20, 6, 20, 36),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // ── Profile card ─────────────────────────
-                        _buildProfileCard(userName, isBangla),
-                        const SizedBox(height: 26),
+  return GradientScaffold(
+    bottomNavigationBar: const DashboardBottomNav(
+      selectedIndex: -1,
+    ),
+    child: FadeTransition(
+      opacity: _fadeIn,
+      child: ListView(
+        padding: const EdgeInsets.only(bottom: 110),
+        children: [
+          const SizedBox(height: 12),
 
-                        // ── Notifications ────────────────────────
-                        _buildSectionLabel(
-                            isBangla ? 'বিজ্ঞপ্তি' : 'NOTIFICATIONS'),
-                        const SizedBox(height: 10),
-                        _buildSettingsCard([
-                          _toggleTile(
-                            icon: Icons.notifications_active_rounded,
-                            title: isBangla
-                                ? 'পুশ বিজ্ঞপ্তি'
-                                : 'Push Notifications',
-                            subtitle: isBangla
-                                ? 'অ্যাপ বিজ্ঞপ্তি গ্রহণ করুন'
-                                : 'Receive app notifications',
-                            value: _pushNotifications,
-                            onChanged: (v) =>
-                                setState(() => _pushNotifications = v),
-                          ),
-                          _divider(),
-                          _toggleTile(
-                            icon: Icons.calendar_month_rounded,
-                            title: isBangla
-                                ? 'অ্যাপয়েন্টমেন্ট রিমাইন্ডার'
-                                : 'Appointment Reminders',
-                            subtitle: isBangla
-                                ? 'আসন্ন অ্যাপয়েন্টমেন্টের জন্য সতর্কতা'
-                                : 'Alerts for upcoming appointments',
-                            value: _appointmentReminders,
-                            onChanged: (v) =>
-                                setState(() => _appointmentReminders = v),
-                          ),
-                          _divider(),
-                          _toggleTile(
-                            icon: Icons.health_and_safety_rounded,
-                            title:
-                                isBangla ? 'স্বাস্থ্য সতর্কতা' : 'Health Alerts',
-                            subtitle: isBangla
-                                ? 'গুরুত্বপূর্ণ স্বাস্থ্য বিজ্ঞপ্তি'
-                                : 'Important health notifications',
-                            value: _healthAlerts,
-                            onChanged: (v) =>
-                                setState(() => _healthAlerts = v),
-                          ),
-                        ]),
-                        const SizedBox(height: 26),
+          // ── Header ─────────────────────────────────────────────
+          HealthTopBar(
+            title: isBangla ? 'সেটিংস' : 'Settings',
+          ),
 
-                        // ── Language ─────────────────────────────
-                        _buildSectionLabel(isBangla ? 'ভাষা' : 'LANGUAGE'),
-                        const SizedBox(height: 10),
-                        _buildSettingsCard([
-                          _buildLanguageSelector(isBangla, languageProvider),
-                        ]),
-                        const SizedBox(height: 26),
+          const SizedBox(height: 12),
 
-                        // ── Appearance ───────────────────────────
-                        _buildSectionLabel(
-                            isBangla ? 'চেহারা' : 'APPEARANCE'),
-                        const SizedBox(height: 10),
-                        _buildSettingsCard([
-                          _navTile(
-                            icon: Icons.text_fields_rounded,
-                            title:
-                                isBangla ? 'ফন্ট সাইজ' : 'Font Size',
-                            subtitle:
-                                isBangla ? 'টেক্সটের আকার পরিবর্তন করুন' : 'Adjust text size',
-                            onTap: () => _showFontSizeDialog(context, isBangla),
-                          ),
-                        ]),
-                        const SizedBox(height: 26),
+          // ── Profile ────────────────────────────────────────────
+          _buildProfileCard(userName, isBangla),
 
-                        // ── Privacy & Security ───────────────────
-                        _buildSectionLabel(
-                            isBangla ? 'গোপনীয়তা ও নিরাপত্তা' : 'PRIVACY & SECURITY'),
-                        const SizedBox(height: 10),
-                        _buildSettingsCard([
-                          _toggleTile(
-                            icon: Icons.location_on_rounded,
-                            title: isBangla ? 'লোকেশন অ্যাক্সেস' : 'Location Access',
-                            subtitle: isBangla
-                                ? 'অ্যাপকে আপনার অবস্থান ব্যবহার করতে দিন'
-                                : 'Allow app to use your location',
-                            value: _locationAccess,
-                            onChanged: (v) =>
-                                setState(() => _locationAccess = v),
-                          ),
-                        ]),
-                        const SizedBox(height: 26),
+          const SizedBox(height: 26),
 
-                        // ── Data & Storage ───────────────────────
-                        _buildSectionLabel(
-                            isBangla ? 'ডেটা ও স্টোরেজ' : 'DATA & STORAGE'),
-                        const SizedBox(height: 10),
-                        _buildSettingsCard([
-                          _toggleTile(
-                            icon: Icons.analytics_rounded,
-                            title: isBangla ? 'বিশ্লেষণ' : 'Analytics',
-                            subtitle: isBangla
-                                ? 'অ্যাপ উন্নয়নে সাহায্য করুন'
-                                : 'Help improve the app',
-                            value: _analyticsEnabled,
-                            onChanged: (v) =>
-                                setState(() => _analyticsEnabled = v),
-                          ),
-                          _divider(),
-                          _navTile(
-                            icon: Icons.cleaning_services_rounded,
-                            title: isBangla ? 'ক্যাশ পরিষ্কার' : 'Clear Cache',
-                            subtitle: isBangla
-                                ? 'অস্থায়ী ফাইল মুছুন'
-                                : 'Delete temporary files',
-                            onTap: () => _showClearCacheDialog(context, isBangla),
-                          ),
-                          _divider(),
-                          _navTile(
-                            icon: Icons.download_rounded,
-                            title: isBangla ? 'ডেটা এক্সপোর্ট' : 'Export Data',
-                            subtitle: isBangla
-                                ? 'আপনার স্বাস্থ্য ডেটা ডাউনলোড করুন'
-                                : 'Download your health data',
-                            onTap: () => _showComingSoon(context, isBangla),
-                          ),
-                        ]),
-                        const SizedBox(height: 26),
+          // ── Notifications ─────────────────────────────────────
+          _buildSectionLabel(
+            isBangla ? 'বিজ্ঞপ্তি' : 'NOTIFICATIONS',
+          ),
+          const SizedBox(height: 10),
 
-                        // ── Help & Support ───────────────────────
-                        _buildSectionLabel(
-                            isBangla ? 'সাহায্য ও সহায়তা' : 'HELP & SUPPORT'),
-                        const SizedBox(height: 10),
-                        _buildSettingsCard([
-                          _navTile(
-                            icon: Icons.help_outline_rounded,
-                            title: isBangla ? 'সচরাচর জিজ্ঞাসা' : 'FAQ',
-                            subtitle: isBangla
-                                ? 'সাধারণ প্রশ্নের উত্তর'
-                                : 'Answers to common questions',
-                            onTap: () => _showFAQDialog(context, isBangla),
-                          ),
-                          _divider(),
-                          _navTile(
-                            icon: Icons.support_agent_rounded,
-                            title: isBangla ? 'যোগাযোগ করুন' : 'Contact Us',
-                            subtitle: isBangla
-                                ? 'আমাদের সাপোর্ট টিমের সাথে কথা বলুন'
-                                : 'Reach out to our support team',
-                            onTap: () => _showContactUsDialog(context, isBangla),
-                          ),
-                          _divider(),
-                          _navTile(
-                            icon: Icons.bug_report_rounded,
-                            title: isBangla ? 'সমস্যা রিপোর্ট' : 'Report a Problem',
-                            subtitle: isBangla
-                                ? 'বাগ বা সমস্যা জানান'
-                                : 'Let us know about bugs or issues',
-                            onTap: () => _showComingSoon(context, isBangla),
-                          ),
-                        ]),
-                        const SizedBox(height: 26),
+          _buildToggleCard(
+            icon: Icons.notifications_active_rounded,
+            title: isBangla ? 'পুশ বিজ্ঞপ্তি' : 'Push Notifications',
+            subtitle: isBangla
+                ? 'অ্যাপ বিজ্ঞপ্তি গ্রহণ করুন'
+                : 'Receive app notifications',
+            value: _pushNotifications,
+            onChanged: (v) {
+              setState(() => _pushNotifications = v);
+            },
+          ),
 
-                        // ── About ────────────────────────────────
-                        _buildSectionLabel(isBangla ? 'সম্পর্কে' : 'ABOUT'),
-                        const SizedBox(height: 10),
-                        _buildSettingsCard([
-                          _navTile(
-                            icon: Icons.info_outline_rounded,
-                            title: isBangla ? 'অ্যাপ সম্পর্কে' : 'About Cradle',
-                            subtitle: 'v1.0.0',
-                            onTap: () => _showAboutDialog(context, isBangla),
-                          ),
-                          _divider(),
-                          _navTile(
-                            icon: Icons.description_rounded,
-                            title: isBangla
-                                ? 'শর্তাবলী'
-                                : 'Terms & Conditions',
-                            subtitle: isBangla
-                                ? 'ব্যবহারের শর্তাবলী পড়ুন'
-                                : 'Read our terms of use',
-                            onTap: () => _showTermsDialog(context, isBangla),
-                          ),
-                          _divider(),
-                          _navTile(
-                            icon: Icons.privacy_tip_rounded,
-                            title: isBangla
-                                ? 'গোপনীয়তা নীতি'
-                                : 'Privacy Policy',
-                            subtitle: isBangla
-                                ? 'আমরা কীভাবে আপনার ডেটা ব্যবহার করি'
-                                : 'How we use your data',
-                            onTap: () => _showPrivacyPolicyDialog(context, isBangla),
-                          ),
-                          _divider(),
-                          _navTile(
-                            icon: Icons.star_rate_rounded,
-                            title: isBangla ? 'অ্যাপ রেট করুন' : 'Rate the App',
-                            subtitle: isBangla
-                                ? 'স্টোরে আমাদের রিভিউ দিন'
-                                : 'Leave us a review on the store',
-                            onTap: () => _showRatingDialog(context, isBangla),
-                          ),
-                        ]),
-                        const SizedBox(height: 32),
+          const SizedBox(height: 14),
 
-                        // ── Logout button ────────────────────────
-                        _buildLogoutButton(isBangla),
+          _buildToggleCard(
+            icon: Icons.calendar_month_rounded,
+            title: isBangla
+                ? 'অ্যাপয়েন্টমেন্ট রিমাইন্ডার'
+                : 'Appointment Reminders',
+            subtitle: isBangla
+                ? 'আসন্ন অ্যাপয়েন্টমেন্টের জন্য সতর্কতা'
+                : 'Alerts for upcoming appointments',
+            value: _appointmentReminders,
+            onChanged: (v) {
+              setState(() => _appointmentReminders = v);
+            },
+          ),
 
-                        const SizedBox(height: 16),
+          const SizedBox(height: 14),
 
-                        // ── Delete account ───────────────────────
-                        _buildDeleteAccountButton(isBangla),
+          _buildToggleCard(
+            icon: Icons.health_and_safety_rounded,
+            title: isBangla ? 'স্বাস্থ্য সতর্কতা' : 'Health Alerts',
+            subtitle: isBangla
+                ? 'গুরুত্বপূর্ণ স্বাস্থ্য বিজ্ঞপ্তি'
+                : 'Important health notifications',
+            value: _healthAlerts,
+            onChanged: (v) {
+              setState(() => _healthAlerts = v);
+            },
+          ),
 
-                        const SizedBox(height: 24),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+          const SizedBox(height: 26),
+
+          // ── Language ──────────────────────────────────────────
+          _buildSectionLabel(
+            isBangla ? 'ভাষা' : 'LANGUAGE',
+          ),
+          const SizedBox(height: 10),
+
+          _buildLanguageCard(
+            isBangla,
+            languageProvider,
+          ),
+
+          const SizedBox(height: 26),
+
+          // ── Appearance ────────────────────────────────────────
+          _buildSectionLabel(
+            isBangla ? 'চেহারা' : 'APPEARANCE',
+          ),
+          const SizedBox(height: 10),
+
+          _buildNavigationCard(
+            icon: Icons.text_fields_rounded,
+            title: isBangla ? 'ফন্ট সাইজ' : 'Font Size',
+            subtitle: isBangla
+                ? 'টেক্সটের আকার পরিবর্তন করুন'
+                : 'Adjust text size',
+            onTap: () => _showFontSizeDialog(
+              context,
+              isBangla,
             ),
           ),
-        ),
+
+          const SizedBox(height: 26),
+
+          // ── Privacy & Security ────────────────────────────────
+          _buildSectionLabel(
+            isBangla
+                ? 'গোপনীয়তা ও নিরাপত্তা'
+                : 'PRIVACY & SECURITY',
+          ),
+          const SizedBox(height: 10),
+
+          _buildToggleCard(
+            icon: Icons.location_on_rounded,
+            title: isBangla ? 'লোকেশন অ্যাক্সেস' : 'Location Access',
+            subtitle: isBangla
+                ? 'অ্যাপকে আপনার অবস্থান ব্যবহার করতে দিন'
+                : 'Allow app to use your location',
+            value: _locationAccess,
+            onChanged: (v) {
+              setState(() => _locationAccess = v);
+            },
+          ),
+
+          const SizedBox(height: 26),
+
+          // ── Data & Storage ────────────────────────────────────
+          _buildSectionLabel(
+            isBangla ? 'ডেটা ও স্টোরেজ' : 'DATA & STORAGE',
+          ),
+          const SizedBox(height: 10),
+
+          _buildToggleCard(
+            icon: Icons.analytics_rounded,
+            title: isBangla ? 'বিশ্লেষণ' : 'Analytics',
+            subtitle: isBangla
+                ? 'অ্যাপ উন্নয়নে সাহায্য করুন'
+                : 'Help improve the app',
+            value: _analyticsEnabled,
+            onChanged: (v) {
+              setState(() => _analyticsEnabled = v);
+            },
+          ),
+
+          const SizedBox(height: 14),
+
+          _buildNavigationCard(
+            icon: Icons.cleaning_services_rounded,
+            title: isBangla ? 'ক্যাশ পরিষ্কার' : 'Clear Cache',
+            subtitle: isBangla
+                ? 'অস্থায়ী ফাইল মুছুন'
+                : 'Delete temporary files',
+            onTap: () => _showClearCacheDialog(
+              context,
+              isBangla,
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          _buildNavigationCard(
+            icon: Icons.download_rounded,
+            title: isBangla ? 'ডেটা এক্সপোর্ট' : 'Export Data',
+            subtitle: isBangla
+                ? 'আপনার স্বাস্থ্য ডেটা ডাউনলোড করুন'
+                : 'Download your health data',
+            onTap: () => _showComingSoon(
+              context,
+              isBangla,
+            ),
+          ),
+
+          const SizedBox(height: 26),
+
+          // ── Help & Support ────────────────────────────────────
+          _buildSectionLabel(
+            isBangla ? 'সাহায্য ও সহায়তা' : 'HELP & SUPPORT',
+          ),
+          const SizedBox(height: 10),
+
+          _buildNavigationCard(
+            icon: Icons.help_outline_rounded,
+            title: isBangla ? 'সচরাচর জিজ্ঞাসা' : 'FAQ',
+            subtitle: isBangla
+                ? 'সাধারণ প্রশ্নের উত্তর'
+                : 'Answers to common questions',
+            onTap: () => _showFAQDialog(
+              context,
+              isBangla,
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          _buildNavigationCard(
+            icon: Icons.support_agent_rounded,
+            title: isBangla ? 'যোগাযোগ করুন' : 'Contact Us',
+            subtitle: isBangla
+                ? 'আমাদের সাপোর্ট টিমের সাথে কথা বলুন'
+                : 'Reach out to our support team',
+            onTap: () => _showContactUsDialog(
+              context,
+              isBangla,
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          _buildNavigationCard(
+            icon: Icons.bug_report_rounded,
+            title: isBangla ? 'সমস্যা রিপোর্ট' : 'Report a Problem',
+            subtitle: isBangla
+                ? 'বাগ বা সমস্যা জানান'
+                : 'Let us know about bugs or issues',
+            onTap: () => _showComingSoon(
+              context,
+              isBangla,
+            ),
+          ),
+
+          const SizedBox(height: 26),
+
+          // ── About ─────────────────────────────────────────────
+          _buildSectionLabel(
+            isBangla ? 'সম্পর্কে' : 'ABOUT',
+          ),
+          const SizedBox(height: 10),
+
+          _buildNavigationCard(
+            icon: Icons.info_outline_rounded,
+            title: isBangla ? 'অ্যাপ সম্পর্কে' : 'About Cradle',
+            subtitle: 'v1.0.0',
+            onTap: () => _showAboutDialog(
+              context,
+              isBangla,
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          _buildNavigationCard(
+            icon: Icons.description_rounded,
+            title: isBangla
+                ? 'শর্তাবলী'
+                : 'Terms & Conditions',
+            subtitle: isBangla
+                ? 'ব্যবহারের শর্তাবলী পড়ুন'
+                : 'Read our terms of use',
+            onTap: () => _showTermsDialog(
+              context,
+              isBangla,
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          _buildNavigationCard(
+            icon: Icons.privacy_tip_rounded,
+            title: isBangla
+                ? 'গোপনীয়তা নীতি'
+                : 'Privacy Policy',
+            subtitle: isBangla
+                ? 'আমরা কীভাবে আপনার ডেটা ব্যবহার করি'
+                : 'How we use your data',
+            onTap: () => _showPrivacyPolicyDialog(
+              context,
+              isBangla,
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          _buildNavigationCard(
+            icon: Icons.star_rate_rounded,
+            title: isBangla ? 'অ্যাপ রেট করুন' : 'Rate the App',
+            subtitle: isBangla
+                ? 'স্টোরে আমাদের রিভিউ দিন'
+                : 'Leave us a review on the store',
+            onTap: () => _showRatingDialog(
+              context,
+              isBangla,
+            ),
+          ),
+
+          const SizedBox(height: 32),
+
+          // ── Account actions ───────────────────────────────────
+          _buildLogoutButton(isBangla),
+
+          const SizedBox(height: 16),
+
+          _buildDeleteAccountButton(isBangla),
+
+          const SizedBox(height: 24),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   // ════════════════════════════════════════════════════════════════════
   //  W I D G E T   B U I L D E R S
   // ════════════════════════════════════════════════════════════════════
-
-  // ── App bar ─────────────────────────────────────────────────────────
-  Widget _buildAppBar(bool isBangla) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 20, 0),
-      child: Row(
-        children: [
-          // Back button
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: () => Navigator.of(context).pop(),
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: _primaryWhite52,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: _accent,
-                  size: 22,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Text(
-            isBangla ? 'সেটিংস' : 'Settings',
-            style: GoogleFonts.gentiumBookPlus(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: _accent,
-            ),
-          ),
-          const Spacer(),
-        ],
-      ),
-    );
-  }
 
   // ── Profile card ────────────────────────────────────────────────────
   Widget _buildProfileCard(String userName, bool isBangla) {
@@ -389,7 +411,7 @@ class _SettingsPageState extends State<SettingsPage>
             BoxShadow(
               color: _accent.withValues(alpha: 0.3),
               blurRadius: 18,
-              offset: const Offset(0, 8),
+              offset: const Offset(0, 6),
             ),
           ],
         ),
@@ -433,7 +455,7 @@ class _SettingsPageState extends State<SettingsPage>
                         ? 'প্রোফাইল দেখুন ও সম্পাদনা করুন'
                         : 'View & edit profile',
                     style: GoogleFonts.gentiumBookPlus(
-                      fontSize: 13,
+                      fontSize: 15,
                       color: _secondaryWhite.withValues(alpha: 0.75),
                     ),
                   ),
@@ -452,151 +474,145 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   // ── Section label ───────────────────────────────────────────────────
-  Widget _buildSectionLabel(String label) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4),
-      child: Text(label, style: _sectionTitle()),
-    );
-  }
+Widget _buildSectionLabel(String label) {
+  return Padding(
+    padding: const EdgeInsets.only(left: 4),
+    child: Text(
+      label,
+      style: _sectionTitle(),
+    ),
+  );
+}
 
-  // ── Settings card container ─────────────────────────────────────────
-  Widget _buildSettingsCard(List<Widget> children) {
-    return Container(
-      decoration: BoxDecoration(
-        color: _primaryWhite52,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: _accent.withValues(alpha: 0.08),
-        ),
-      ),
-      child: Column(
-        children: children,
-      ),
-    );
-  }
+// ── Shared white card ──────────────────────────────────────────────
+Widget _buildCard({
+  required Widget child,
+}) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: _cardShadow,
+    ),
+    clipBehavior: Clip.antiAlias,
+    child: child,
+  );
+}
 
-  // ── Toggle tile ─────────────────────────────────────────────────────
-  Widget _toggleTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+// ── Toggle card ────────────────────────────────────────────────────
+Widget _buildToggleCard({
+  required IconData icon,
+  required String title,
+  required String subtitle,
+  required bool value,
+  required ValueChanged<bool> onChanged,
+}) {
+  return _buildCard(
+    child: Padding(
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: _accent.withValues(alpha: 0.09),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: _accent, size: 21),
-          ),
-          const SizedBox(width: 14),
+          _SettingIcon(icon: icon),
+
+          const SizedBox(width: 12),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: _itemTitle()),
-                const SizedBox(height: 2),
-                Text(subtitle, style: _itemSubtitle()),
+                Text(
+                  title,
+                  style: _itemTitle(),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  subtitle,
+                  style: _itemSubtitle(),
+                ),
               ],
             ),
           ),
-          Switch.adaptive(
+
+          const SizedBox(width: 8),
+
+          Switch(
             value: value,
+            activeTrackColor: _accent,
+            activeThumbColor: Colors.pink.shade100,
+            inactiveTrackColor: _accent.withValues(alpha: .3),
+            inactiveThumbColor: Colors.white,
             onChanged: onChanged,
-            activeThumbColor: _accent,
-            activeTrackColor: _accent.withValues(alpha: 0.3),
-            inactiveThumbColor: _accent.withValues(alpha: 0.35),
-            inactiveTrackColor: _accent.withValues(alpha: 0.1),
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
-  // ── Navigation tile (arrow >) ───────────────────────────────────────
-  Widget _navTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Material(
+// ── Navigation card ────────────────────────────────────────────────
+Widget _buildNavigationCard({
+  required IconData icon,
+  required String title,
+  required String subtitle,
+  required VoidCallback onTap,
+}) {
+  return _buildCard(
+    child: Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: _accent.withValues(alpha: 0.09),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: _accent, size: 21),
-              ),
-              const SizedBox(width: 14),
+              _SettingIcon(icon: icon),
+
+              const SizedBox(width: 12),
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: _itemTitle()),
-                    const SizedBox(height: 2),
-                    Text(subtitle, style: _itemSubtitle()),
+                    Text(
+                      title,
+                      style: _itemTitle(),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      style: _itemSubtitle(),
+                    ),
                   ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: _accent.withValues(alpha: 0.35),
-                size: 24,
+
+              const Icon(
+                Icons.chevron_right,
+                color: _accent,
               ),
             ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
-  // ── Divider ─────────────────────────────────────────────────────────
-  Widget _divider() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Divider(
-        height: 1,
-        thickness: 0.6,
-        color: _accent.withValues(alpha: 0.08),
-      ),
-    );
-  }
-
-  // ── Language selector ───────────────────────────────────────────────
-  Widget _buildLanguageSelector(
-      bool isBangla, LanguageProvider languageProvider) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+Widget _buildLanguageCard(
+  bool isBangla,
+  LanguageProvider languageProvider,
+) {
+  return _buildCard(
+    child: Padding(
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: _accent.withValues(alpha: 0.09),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.language_rounded, color: _accent, size: 21),
+          const _SettingIcon(
+            icon: Icons.language_rounded,
           ),
-          const SizedBox(width: 14),
+
+          const SizedBox(width: 12),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -605,20 +621,18 @@ class _SettingsPageState extends State<SettingsPage>
                   isBangla ? 'ভাষা নির্বাচন' : 'App Language',
                   style: _itemTitle(),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
-                  isBangla
-                      ? 'বর্তমান: বাংলা'
-                      : 'Current: English',
+                  isBangla ? 'বর্তমান: বাংলা' : 'Current: English',
                   style: _itemSubtitle(),
                 ),
               ],
             ),
           ),
-          // Language toggle
+
           Container(
             decoration: BoxDecoration(
-              color: _accent.withValues(alpha: 0.08),
+              color: _brandSofter,
               borderRadius: BorderRadius.circular(25),
             ),
             child: Row(
@@ -629,39 +643,54 @@ class _SettingsPageState extends State<SettingsPage>
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 250),
                     curve: Curves.easeInOut,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
-                      color: !isBangla ? _accent : Colors.transparent,
+                      color: !isBangla
+                          ? _accent
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(25),
                     ),
                     child: Text(
                       'EN',
                       style: GoogleFonts.gentiumBookPlus(
-                        color: !isBangla ? _secondaryWhite : _accent,
+                        color: !isBangla
+                            ? Colors.white
+                            : _accent,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
                     ),
                   ),
                 ),
+
                 GestureDetector(
                   onTap: () => languageProvider.setLanguage(true),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 250),
                     curve: Curves.easeInOut,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
-                      color: isBangla ? _accent : Colors.transparent,
+                      color: isBangla
+                          ? _accent
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(25),
                     ),
                     child: Text(
                       'বাং',
-                      style: TextStyle(
-                        color: isBangla ? _secondaryWhite : _accent,
+                      style: const TextStyle(
+                        color: _accent,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
+                      ).copyWith(
+                        color: isBangla
+                            ? Colors.white
+                            : _accent,
                       ),
                     ),
                   ),
@@ -671,21 +700,22 @@ class _SettingsPageState extends State<SettingsPage>
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   // ── Logout button ───────────────────────────────────────────────────
   Widget _buildLogoutButton(bool isBangla) {
     return SizedBox(
       width: double.infinity,
-      height: 54,
+      height: 64,
       child: ElevatedButton.icon(
         onPressed: () => _showLogoutDialog(context, isBangla),
-        icon: const Icon(Icons.logout_rounded, size: 20),
+        icon: const Icon(Icons.logout_rounded, size: 30),
         label: Text(
           isBangla ? 'লগ আউট' : 'Log Out',
           style: GoogleFonts.gentiumBookPlus(
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -706,20 +736,21 @@ class _SettingsPageState extends State<SettingsPage>
   Widget _buildDeleteAccountButton(bool isBangla) {
     return SizedBox(
       width: double.infinity,
-      height: 54,
+      height: 64,
       child: OutlinedButton.icon(
         onPressed: () => _showDeleteAccountDialog(context, isBangla),
         icon: Icon(Icons.delete_forever_rounded,
-            size: 20, color: _accent.withValues(alpha: 0.7)),
+            size: 30, color: _accent.withValues(alpha: 0.7)),
         label: Text(
           isBangla ? 'অ্যাকাউন্ট মুছে ফেলুন' : 'Delete Account',
           style: GoogleFonts.gentiumBookPlus(
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: FontWeight.w700,
             color: _accent.withValues(alpha: 0.7),
           ),
         ),
         style: OutlinedButton.styleFrom(
+          backgroundColor: _brandSofter,
           side: BorderSide(color: _accent.withValues(alpha: 0.25), width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
@@ -752,7 +783,7 @@ class _SettingsPageState extends State<SettingsPage>
     showDialog(
       context: ctx,
       builder: (_) => AlertDialog(
-        backgroundColor: _bottomGradient,
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           isBangla ? 'ক্যাশ পরিষ্কার?' : 'Clear Cache?',
@@ -800,7 +831,7 @@ class _SettingsPageState extends State<SettingsPage>
     showDialog(
       context: ctx,
       builder: (_) => AlertDialog(
-        backgroundColor: _bottomGradient,
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           isBangla ? 'লগ আউট?' : 'Log Out?',
@@ -849,7 +880,7 @@ class _SettingsPageState extends State<SettingsPage>
     showDialog(
       context: ctx,
       builder: (_) => AlertDialog(
-        backgroundColor: _bottomGradient,
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
@@ -913,7 +944,7 @@ class _SettingsPageState extends State<SettingsPage>
               gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [_topGradient, _bottomGradient],
+                colors: [_brandSoft, Colors.white],
               ),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
@@ -1009,7 +1040,7 @@ class _SettingsPageState extends State<SettingsPage>
                   gradient: const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [_topGradient, _bottomGradient],
+                    colors: [_brandSoft, Colors.white],
                   ),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
@@ -1154,7 +1185,7 @@ class _SettingsPageState extends State<SettingsPage>
               gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [_topGradient, _bottomGradient],
+                colors: [_brandSoft, Colors.white],
               ),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
@@ -1252,7 +1283,7 @@ class _SettingsPageState extends State<SettingsPage>
               gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [_topGradient, _bottomGradient],
+                colors: [_brandSoft, Colors.white],
               ),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
@@ -1392,7 +1423,7 @@ class _SettingsPageState extends State<SettingsPage>
               gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [_topGradient, _bottomGradient],
+                colors: [_brandSoft, Colors.white],
               ),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
@@ -1477,7 +1508,7 @@ class _SettingsPageState extends State<SettingsPage>
               gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [_topGradient, _bottomGradient],
+                colors: [_brandSoft, Colors.white],
               ),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
@@ -1564,7 +1595,7 @@ class _SettingsPageState extends State<SettingsPage>
                   gradient: const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [_topGradient, _bottomGradient],
+                    colors: [_brandSoft, Colors.white],
                   ),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: _accent.withValues(alpha: 0.15), width: 1.5),
@@ -1683,6 +1714,34 @@ class _SettingsPageState extends State<SettingsPage>
           },
         );
       },
+    );
+  }
+}
+
+// ── Settings icon ──────────────────────────────────────────────────
+class _SettingIcon extends StatelessWidget {
+  const _SettingIcon({
+    required this.icon,
+  });
+  static const Color _accent = Color(0xFFAB0A65);
+  static const Color _brandSofter = Color(0xFFFCEEF5);
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 64,
+      height: 64,
+      decoration: BoxDecoration(
+        color: _brandSofter,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      alignment: Alignment.center,
+      child: Icon(
+        icon,
+        color: _accent,
+        size: 30,
+      ),
     );
   }
 }
