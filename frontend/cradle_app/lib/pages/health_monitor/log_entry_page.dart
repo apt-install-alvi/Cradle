@@ -116,6 +116,7 @@ class _LogEntryPageState extends State<LogEntryPage> {
                     color: _brandSofter,
                     borderRadius: BorderRadius.circular(16),
                   ),
+                  alignment: Alignment.center,
                   child: Image.asset(
                     def.iconAsset,
                     width: 26,
@@ -124,7 +125,6 @@ class _LogEntryPageState extends State<LogEntryPage> {
                     colorBlendMode: BlendMode.srcIn,
                     errorBuilder: (_, __, ___) => const Icon(Icons.favorite, color: _brand),
                   ),
-                  alignment: Alignment.center,
                 ),
                 const SizedBox(height: 16),
                 if (def.type == VitalType.bp) ...[

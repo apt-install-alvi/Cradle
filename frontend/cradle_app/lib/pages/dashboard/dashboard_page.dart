@@ -52,7 +52,7 @@ class DashboardScreen extends StatelessWidget {
                   //--------------------------------------------------
                   // SETTINGS, NOTIFS BUTTON & LANGUAGE SWITCHER
                   //--------------------------------------------------
-
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,

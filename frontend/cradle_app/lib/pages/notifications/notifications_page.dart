@@ -8,7 +8,7 @@ import '../health_monitor/widgets/health_top_bar.dart';
 
 const _brand = DashboardBottomNav.primaryPink;
 const _brandSofter = Color(0xFFFCEEF5);
-const _brandUnread = Color(0xFFFFE4EF);
+const _brandUnread = Color.fromARGB(255, 255, 239, 245);
 const _ink = Color(0xFF3A2C33);
 const _muted = Color(0xFF8A7680);
 
@@ -142,7 +142,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 child: Text(
                   isBangla ? 'সব পড়া হয়েছে' : 'Mark all as read',
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -244,14 +244,14 @@ class _NotificationCard extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               color: notification.unread
-                  ? Colors.white.withValues(alpha: .75)
+                  ? Colors.white
                   : _brandSofter,
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(
               notification.icon,
               color: _brand,
-              size: 23,
+              size: 24,
             ),
           ),
 
@@ -274,7 +274,7 @@ class _NotificationCard extends StatelessWidget {
                             ? notification.titleBn
                             : notification.titleEn,
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: _ink,
                         ),

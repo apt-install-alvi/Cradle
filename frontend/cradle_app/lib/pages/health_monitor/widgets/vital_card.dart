@@ -332,6 +332,7 @@ class _VitalIcon extends StatelessWidget {
         color: _brandSofter,
         borderRadius: BorderRadius.circular(14),
       ),
+      alignment: Alignment.center,
       child: Image.asset(
         iconAsset,
         width: 30,
@@ -340,7 +341,6 @@ class _VitalIcon extends StatelessWidget {
         colorBlendMode: BlendMode.srcIn,
         errorBuilder: (_, __, ___) => const Icon(Icons.favorite, color: _brand, size: 24),
       ),
-      alignment: Alignment.center,
     );
   }
 }
