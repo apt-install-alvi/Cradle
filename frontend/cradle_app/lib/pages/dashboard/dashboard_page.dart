@@ -10,6 +10,8 @@ import '../../providers/language_provider.dart';
 import './widgets/mood_card.dart';
 import './widgets/pregnancy_card.dart';
 import 'package:url_launcher/url_launcher.dart';
+import './widgets/greeting_header.dart';
+import './widgets/quick_status_row.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -130,7 +132,51 @@ class DashboardScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 16),
+                  
+                  //--------------------------------------------------
+                  // Greeting
+                  //--------------------------------------------------
 
+                  // TODO(Nek): wire userName to a profile provider once available
+                  const GreetingHeader(userName: "Nusrat"),
+
+                  const SizedBox(height: 18),
+
+                  //--------------------------------------------------
+                  // Pregnancy Card
+                  //--------------------------------------------------
+
+                  const PregnancyCard(),
+
+                  const SizedBox(height: 20),
+
+                  //--------------------------------------------------
+                  // Quick Status Row
+                  //--------------------------------------------------
+
+                  // TODO(Nek): replace mock values with real data from
+                  // HealthTrackingProvider / medication tracker once wired
+                  QuickStatusRow(
+                    nextDoseName: "Iron",
+                    nextDoseNameBn: "আয়রন",
+                    nextDoseTime: "2:00 PM",
+                    nextDoseEta: "In 2 hours",
+                    nextDoseEtaBn: "২ ঘণ্টার মধ্যে",
+                    lastVitalLabel: "BP 118/76",
+                    lastVitalLabelBn: "BP ১১৮/৭৬",
+                    lastVitalSub: "Logged today",
+                    lastVitalSubBn: "আজ লগ করা হয়েছে",
+                    onMedicineTap: () => Navigator.pushNamed(context, AppRoutes.medicationTracker),
+                    onHealthTap: () => Navigator.pushNamed(context, AppRoutes.healthMonitor),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  //--------------------------------------------------
+                  // Mood Card
+                  //--------------------------------------------------
+
+                  const MoodCard(),
                   //--------------------------------------------------
                   // Pregnancy Card
                   //--------------------------------------------------
