@@ -128,28 +128,39 @@ class _NotificationsPageState extends State<NotificationsPage> {
           // ------------------------------------------------
 
           if (unreadCount > 0)
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: _markAllAsRead,
-                style: TextButton.styleFrom(
-                  foregroundColor: _brand,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
+           Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: _markAllAsRead,
+              style: TextButton.styleFrom(
+                foregroundColor: _brand,
+                backgroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 9,
                 ),
-                child: Text(
-                  isBangla ? 'সব পড়া হয়েছে' : 'Mark all as read',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: _brand.withValues(alpha: 0.20),
                   ),
                 ),
               ),
+              icon: const Icon(
+                Icons.done_all_rounded,
+                size: 18,
+              ),
+              label: Text(
+                isBangla ? 'সব পঠিত হিসেবে চিহ্নিত করুন' : 'Mark all as read',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
+          ),
 
-          const SizedBox(height: 4),
+          const SizedBox(height: 12),
 
           // ------------------------------------------------
           // NOTIFICATIONS
@@ -342,7 +353,7 @@ class _NotificationCard extends StatelessWidget {
                               MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
-                          isBangla ? 'পড়া হয়েছে' : 'Mark as read',
+                          isBangla ? ' পঠিত হিসেবে চিহ্নিত করুন' : 'Mark as read',
                           style: const TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
