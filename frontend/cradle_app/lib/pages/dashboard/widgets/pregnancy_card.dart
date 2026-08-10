@@ -142,7 +142,7 @@ class PregnancyCard extends StatelessWidget {
                       ),
                       padding: const EdgeInsets.all(22),
                       child: Image.asset(
-                        "assets/icons/placeholder.png",
+                        "assets/images/grape.png",
                         fit: BoxFit.contain,
                         errorBuilder: (
                           context,

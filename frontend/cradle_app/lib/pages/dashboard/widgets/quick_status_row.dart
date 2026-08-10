@@ -39,6 +39,7 @@ class QuickStatusRow extends StatelessWidget {
       children: [
         QuickStatusCard(
           label: isBangla ? 'পরবর্তী ডোজ' : 'NEXT DOSE',
+          iconPath: 'assets/icons/pill.svg',
           value: isBangla ? '$nextDoseNameBn · $nextDoseTime' : '$nextDoseName · $nextDoseTime',
           sub: isBangla ? nextDoseEtaBn : nextDoseEta,
           onTap: onMedicineTap,
@@ -46,6 +47,7 @@ class QuickStatusRow extends StatelessWidget {
         const SizedBox(width: 12),
         QuickStatusCard(
           label: isBangla ? 'সর্বশেষ রিডিং' : 'LAST READING',
+          iconPath: 'assets/icons/heartbeat.png',
           value: isBangla ? lastVitalLabelBn : lastVitalLabel,
           sub: isBangla ? lastVitalSubBn : lastVitalSub,
           onTap: onHealthTap,

@@ -141,11 +141,11 @@ class DashboardScreen extends StatelessWidget {
                   const Align(
                     alignment: Alignment.centerLeft,
                     child: GreetingHeader(
-                      userName: "Nusrat",
+                      userName: "Mother",
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
                   //--------------------------------------------------
                   // WEEK CALENDAR
@@ -153,7 +153,7 @@ class DashboardScreen extends StatelessWidget {
 
                   const PregnancyCalendar(),
 
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
 
                   //--------------------------------------------------
                   // PREGNANCY CARD
