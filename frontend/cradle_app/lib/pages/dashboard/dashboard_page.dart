@@ -138,12 +138,25 @@ class DashboardScreen extends StatelessWidget {
                   //--------------------------------------------------
 
                   // TODO: wire userName to a profile provider once available
-                  const GreetingHeader(userName: "Nusrat"),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: GreetingHeader(
+                      userName: "Nusrat",
+                    ),
+                  ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 24),
 
                   //--------------------------------------------------
-                  // Pregnancy Card
+                  // WEEK CALENDAR
+                  //--------------------------------------------------
+
+                  const PregnancyCalendar(),
+
+                  const SizedBox(height: 28),
+
+                  //--------------------------------------------------
+                  // PREGNANCY CARD
                   //--------------------------------------------------
 
                   const PregnancyCard(),

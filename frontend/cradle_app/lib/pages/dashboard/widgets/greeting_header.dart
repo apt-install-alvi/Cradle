@@ -47,7 +47,9 @@ class GreetingHeader extends StatelessWidget {
     final isBangla = context.watch<LanguageProvider>().isBangla;
     final now = DateTime.now();
 
-    return Column(
+  return SizedBox(
+    width: double.infinity,
+    child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -65,6 +67,7 @@ class GreetingHeader extends StatelessWidget {
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color(0xFF8A7680)),
         ),
       ],
-    );
+    )
+  );
   }
 }

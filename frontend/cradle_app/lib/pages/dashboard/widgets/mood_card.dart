@@ -67,7 +67,7 @@ class _MoodCardState extends State<MoodCard>
             width: double.infinity,
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: .50),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
                 color: Colors.pink.withValues(alpha: .4),
