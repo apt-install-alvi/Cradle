@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/widgets/bottom_nav.dart';
 import '../../../providers/language_provider.dart';
-import '../providers/health_tracking_provider.dart';
+import '../../../providers/health_tracking_provider.dart';
 import '../models/vital_definition.dart';
 import '../utils/health_format_utils.dart';
 import 'schedule_editor.dart';
@@ -82,7 +82,7 @@ class _UntrackedBody extends StatelessWidget {
                       Text(
                         def.name(isBangla),
                         style: const TextStyle(
-                          fontSize: 15.5,
+                          fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: _ink,
                         ),
@@ -90,7 +90,7 @@ class _UntrackedBody extends StatelessWidget {
                       const SizedBox(height: 3),
                       Text(
                         isBangla ? 'ট্র্যাক করা হচ্ছে না' : 'Not tracking',
-                        style: const TextStyle(fontSize: 12, color: _muted),
+                        style: const TextStyle(fontSize: 14, color: _muted),
                       ),
                     ],
                   ),
@@ -98,6 +98,9 @@ class _UntrackedBody extends StatelessWidget {
                 Switch(
                   value: expanded,
                   activeTrackColor: _brand,
+                  activeThumbColor: Colors.pink.shade100,
+                  inactiveTrackColor: _brand.withValues(alpha: .3),
+                  inactiveThumbColor: Colors.white,
                   onChanged: (_) => provider.toggleExpand(vitalKey),
                 ),
               ],
@@ -139,7 +142,7 @@ class _UntrackedBody extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _brand,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 13),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -147,7 +150,7 @@ class _UntrackedBody extends StatelessWidget {
                   ),
                   child: Text(
                     isBangla ? 'সময়সূচী সংরক্ষণ করুন' : 'Save schedule',
-                    style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -204,7 +207,7 @@ class _TrackedBody extends StatelessWidget {
                       Text(
                         def.name(isBangla),
                         style: const TextStyle(
-                          fontSize: 15.5,
+                          fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: _ink,
                         ),
@@ -215,7 +218,7 @@ class _TrackedBody extends StatelessWidget {
                             ? 'দৈনিক ${localizedNumber(state.freq, isBangla)}বার ট্র্যাক করা হচ্ছে · সপ্তাহে ${localizedNumber(daysPerWeek, isBangla)} দিন'
                             : 'Tracking ${state.freq}x daily · $daysPerWeek days/wk',
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: _brand,
                         ),
@@ -226,7 +229,7 @@ class _TrackedBody extends StatelessWidget {
                 const Icon(Icons.chevron_right, color: _brand),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
@@ -246,7 +249,7 @@ class _TrackedBody extends StatelessWidget {
                       TextSpan(
                         text: ' ${def.unit}',
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: _muted,
                         ),
@@ -256,15 +259,15 @@ class _TrackedBody extends StatelessWidget {
                 ),
                 Text(
                   fmtDateShort(last.date, isBangla: isBangla),
-                  style: const TextStyle(fontSize: 11.5, color: _muted),
+                  style: const TextStyle(fontSize: 14, color: _muted),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             Text(
               '${def.type == VitalType.bp ? (isBangla ? 'সিস্টোলিক' : 'Systolic') : def.name(isBangla)} · ${isBangla ? '৭ দিনের প্রবণতা' : '7-day trend'} (${def.unit})',
               style: const TextStyle(
-                fontSize: 11.5,
+                fontSize: 14,
                 fontWeight: FontWeight.w800,
                 color: _brand,
               ),
@@ -280,9 +283,9 @@ class _TrackedBody extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(localizedNumber(chartMax, isBangla),
-                          style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: _muted)),
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _muted)),
                       Text(localizedNumber(chartMin, isBangla),
-                          style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: _muted)),
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _muted)),
                     ],
                   ),
                 ),
@@ -299,7 +302,7 @@ class _TrackedBody extends StatelessWidget {
                                   child: Text(
                                     fmtDDMM(l.date, isBangla: isBangla),
                                     textAlign: TextAlign.center,
-                                    style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w600, color: _muted),
+                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _muted),
                                   ),
                                 ))
                             .toList(),
@@ -323,19 +326,19 @@ class _VitalIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 44,
-      height: 44,
+      width: 64,
+      height: 64,
       decoration: BoxDecoration(
         color: _brandSofter,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Image.asset(
         iconAsset,
-        width: 22,
-        height: 22,
+        width: 30,
+        height: 30,
         color: _brand,
         colorBlendMode: BlendMode.srcIn,
-        errorBuilder: (_, __, ___) => const Icon(Icons.favorite, color: _brand, size: 20),
+        errorBuilder: (_, __, ___) => const Icon(Icons.favorite, color: _brand, size: 24),
       ),
       alignment: Alignment.center,
     );
@@ -370,7 +373,7 @@ void _openCardMenu(BuildContext context, String vitalKey, String name, bool isBa
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Text(name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _muted)),
+                child: Text(name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _muted)),
               ),
               const SizedBox(height: 6),
               _sheetOption(
@@ -417,12 +420,12 @@ Widget _sheetOption(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: danger ? const Color(0xFFD64545) : _brand),
+          Icon(icon, size: 30, color: danger ? const Color(0xFFD64545) : _brand),
           const SizedBox(width: 12),
           Text(
             label,
             style: TextStyle(
-              fontSize: 14.5,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
               color: danger ? const Color(0xFFD64545) : _ink,
             ),

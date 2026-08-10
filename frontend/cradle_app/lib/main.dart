@@ -7,7 +7,7 @@ import 'providers/auth_provider.dart';
 import 'providers/language_provider.dart';
 import 'providers/font_size_provider.dart';
 import 'providers/education_provider.dart';
-import './pages/health_monitor/providers/health_tracking_provider.dart';
+import 'providers/health_tracking_provider.dart';
 
 void main() {
   runApp(const CradleApp());

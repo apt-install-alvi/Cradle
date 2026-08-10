@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/widgets/gradient_scaffold.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
-import './providers/health_tracking_provider.dart';
+import '../../providers/health_tracking_provider.dart';
 import './models/vital_definition.dart';
 import './models/vital_log.dart';
 import './utils/health_format_utils.dart';
@@ -34,12 +34,14 @@ class ViewLogsPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const SizedBox(height: 20),
           HealthTopBar(
             title: isBangla ? '${def.nameBn} লগ' : '${def.nameEn} Logs',
             subtitle: isBangla
                 ? '${localizedNumber(sorted.length, isBangla)}টি রিডিং রেকর্ড করা হয়েছে'
                 : '${sorted.length} reading${sorted.length == 1 ? '' : 's'} recorded',
           ),
+          const SizedBox(height: 16),
           Expanded(
             child: sorted.isEmpty
                 ? _EmptyState(isBangla: isBangla)
@@ -131,11 +133,11 @@ class _LogRow extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: valueText,
-                          style: GoogleFonts.gentiumBookPlus(fontSize: 16.5, fontWeight: FontWeight.w700, color: _ink),
+                          style: GoogleFonts.gentiumBookPlus(fontSize: 20, fontWeight: FontWeight.w700, color: _ink),
                         ),
                         TextSpan(
                           text: ' ${def.unit}',
-                          style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: _muted),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _muted),
                         ),
                       ],
                     ),
@@ -143,7 +145,7 @@ class _LogRow extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     fmtDateShort(log.date, isBangla: isBangla),
-                    style: const TextStyle(fontSize: 11.5, color: _muted),
+                    style: const TextStyle(fontSize: 16, color: _muted),
                   ),
                   if (log.context != null) ...[
                     const SizedBox(height: 4),
@@ -155,7 +157,7 @@ class _LogRow extends StatelessWidget {
                       ),
                       child: Text(
                         localizedGlucoseContext(log.context!, isBangla),
-                        style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: _brand),
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _brand),
                       ),
                     ),
                   ],
@@ -206,7 +208,7 @@ void _openLogActionSheet(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Text(
                   isBangla ? 'রিডিং অপশন' : 'Reading options',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _muted),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _muted),
                 ),
               ),
               const SizedBox(height: 6),
@@ -224,11 +226,11 @@ void _openLogActionSheet(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
                   child: Row(
                     children: [
-                      const Icon(Icons.edit_outlined, size: 20, color: _brand),
+                      const Icon(Icons.edit_outlined, size: 30, color: _brand),
                       const SizedBox(width: 12),
                       Text(
                         isBangla ? 'রিডিং সম্পাদনা করুন' : 'Edit reading',
-                        style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600, color: _ink),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: _ink),
                       ),
                     ],
                   ),
@@ -257,11 +259,11 @@ void _openLogActionSheet(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
                   child: Row(
                     children: [
-                      const Icon(Icons.delete_outline, size: 20, color: _danger),
+                      const Icon(Icons.delete_outline, size: 30, color: _danger),
                       const SizedBox(width: 12),
                       Text(
                         isBangla ? 'রিডিং মুছুন' : 'Delete reading',
-                        style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600, color: _danger),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: _danger),
                       ),
                     ],
                   ),

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/widgets/gradient_scaffold.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
-import './providers/health_tracking_provider.dart';
+import '../../providers/health_tracking_provider.dart';
 import './models/vital_definition.dart';
 import './models/vital_log.dart';
 import './utils/health_format_utils.dart';
@@ -200,7 +200,7 @@ class _LogEntryPageState extends State<LogEntryPage> {
                 Text(
                   (isBangla ? 'নোট (ঐচ্ছিক)' : 'Note (optional)').toUpperCase(),
                   style: const TextStyle(
-                    fontSize: 11.5,
+                    fontSize: 14,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.6,
                     color: _brand,
@@ -233,7 +233,7 @@ class _LogEntryPageState extends State<LogEntryPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: _brand,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 elevation: 0,
               ),
@@ -241,7 +241,7 @@ class _LogEntryPageState extends State<LogEntryPage> {
                 widget.mode == LogEntryMode.initial
                     ? (isBangla ? 'রিডিং সংরক্ষণ করুন' : 'Save reading')
                     : (isBangla ? 'রিডিং আপডেট করুন' : 'Update reading'),
-                style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
             ),
           ),
@@ -269,16 +269,16 @@ class _LogEntryPageState extends State<LogEntryPage> {
           widget.vitalKey,
           VitalLog(id: _tempId(), date: DateTime.now(), systolic: sys, diastolic: dia, note: note),
         );
-        Navigator.of(context).pop();
         showHealthToast(context, isBangla ? '${def.nameBn} রিডিং সংরক্ষিত হয়েছে' : '${def.nameEn} reading saved');
+        Navigator.of(context).pop();
       } else {
         provider.updateLog(
           widget.vitalKey,
           widget.logId!,
           _existing!.copyWith(systolic: sys, diastolic: dia, note: note),
         );
-        Navigator.of(context).pop();
         showHealthToast(context, isBangla ? 'রিডিং আপডেট হয়েছে' : 'Reading updated');
+        Navigator.of(context).pop();
       }
     } else {
       final val = double.tryParse(_valueCtrl.text);
@@ -297,16 +297,16 @@ class _LogEntryPageState extends State<LogEntryPage> {
             note: note,
           ),
         );
-        Navigator.of(context).pop();
         showHealthToast(context, isBangla ? '${def.nameBn} রিডিং সংরক্ষিত হয়েছে' : '${def.nameEn} reading saved');
+        Navigator.of(context).pop();
       } else {
         provider.updateLog(
           widget.vitalKey,
           widget.logId!,
           _existing!.copyWith(value: val, context: def.hasContext ? _context : null, note: note),
         );
-        Navigator.of(context).pop();
         showHealthToast(context, isBangla ? 'রিডিং আপডেট হয়েছে' : 'Reading updated');
+        Navigator.of(context).pop();
       }
     }
   }
@@ -337,7 +337,7 @@ class _NumberField extends StatelessWidget {
         Text(
           label.toUpperCase(),
           style: const TextStyle(
-            fontSize: 11.5,
+            fontSize: 14,
             fontWeight: FontWeight.w800,
             letterSpacing: 0.6,
             color: _brand,
@@ -365,7 +365,7 @@ class _NumberField extends StatelessWidget {
             ),
             if (suffix != null) ...[
               const SizedBox(width: 10),
-              Text(suffix!, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _muted)),
+              Text(suffix!, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _muted)),
             ],
           ],
         ),

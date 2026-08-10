@@ -80,7 +80,7 @@ class ScheduleEditor extends StatelessWidget {
                     ? 'প্রতিটি রিডিংয়ের জন্য একটি রিমাইন্ডার যোগ করুন'
                     : 'Add a reminder for each reading',
                 textAlign: TextAlign.right,
-                style: const TextStyle(fontSize: 12, color: _muted),
+                style: const TextStyle(fontSize: 14, color: _muted),
               ),
             ),
           ],
@@ -121,7 +121,7 @@ class ScheduleEditor extends StatelessWidget {
                         child: Text(
                           localizedNumber(i + 1, isBangla),
                           style: const TextStyle(
-                            fontSize: 11,
+                            fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),
@@ -166,7 +166,7 @@ class ScheduleEditor extends StatelessWidget {
                 child: Text(
                   dayLetters[i],
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: selected ? Colors.white : _brand,
                   ),
@@ -194,7 +194,7 @@ class ScheduleEditor extends StatelessWidget {
                         ? 'আপনার নির্বাচিত দিনগুলোতে প্রতিটি রিমাইন্ডার সময়ে আমরা আপনাকে একটি বিজ্ঞপ্তি পাঠাব।'
                         : "We'll send you a notification at each reminder time on the days you've selected.",
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 15,
                       color: Color(0xFF7A0F4F),
                       height: 1.45,
                     ),
@@ -213,8 +213,8 @@ class ScheduleEditor extends StatelessWidget {
         child: Text(
           text.toUpperCase(),
           style: const TextStyle(
-            fontSize: 11.5,
-            fontWeight: FontWeight.w800,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
             letterSpacing: 0.6,
             color: _brand,
           ),
@@ -233,7 +233,7 @@ class ScheduleEditor extends StatelessWidget {
         child: Text(
           label,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 20,
             fontWeight: FontWeight.w700,
             color: Colors.white,
           ),

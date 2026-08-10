@@ -1,16 +1,14 @@
+import 'package:cradle_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/widgets/gradient_scaffold.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
-import './providers/health_tracking_provider.dart';
+import '../../providers/health_tracking_provider.dart';
 import './widgets/vital_card.dart';
 import './widgets/confirm_modal.dart';
 
 const _brand = DashboardBottomNav.primaryPink;
-const _ink = Color(0xFF4A2F3A);
-const _muted = Color(0xFF8A7680);
 
 /// Health Monitor: lets the person turn tracking on/off for each vital
 /// sign and view their trend once tracking begins.
@@ -27,17 +25,14 @@ class HealthLoggingPage extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.only(bottom: 110),
         children: [
+          const SizedBox(height: 20),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Text(
                   isBangla ? 'স্বাস্থ্য মনিটর' : 'Health Monitor',
-                  style: GoogleFonts.gentiumBookPlus(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: _ink,
-                  ),
+                  style: AppText.headerTitle
                 ),
               ),
               _ExportButton(isBangla: isBangla),
@@ -50,7 +45,7 @@ class HealthLoggingPage extends StatelessWidget {
               isBangla
                   ? "আপনি কী পর্যবেক্ষণ করতে চান তা বেছে নিন। আপনি এটি চালু না করা এবং একটি সময়সূচী নির্ধারণ না করা পর্যন্ত কিছুই ট্র্যাক করা হয় না।"
                   : "Choose what you'd like to monitor. Nothing is tracked until you turn it on and set a schedule.",
-              style: const TextStyle(fontSize: 13.5, color: _muted, height: 1.5),
+              style: AppText.subtext.copyWith(fontSize: 16),
             ),
           ),
           for (final key in provider.orderedKeys) VitalCard(vitalKey: key),
@@ -74,10 +69,15 @@ class _ExportButton extends StatelessWidget {
           context,
           isBangla ? 'আপনার পিডিএফ স্বাস্থ্য প্রতিবেদন প্রস্তুত করা হচ্ছে…' : 'Preparing your PDF health report…',
         ),
-        icon: const Text('📄', style: TextStyle(fontSize: 14)),
+        icon: Image.asset(
+          "assets/icons/pdf.png",
+          width: 24,
+          height: 24,
+          fit: BoxFit.contain,
+        ),
         label: Text(
           isBangla ? 'পিডিএফ এক্সপোর্ট করুন' : 'Export PDF',
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,

@@ -35,7 +35,7 @@ Future<void> showHealthConfirmDialog(
               title,
               textAlign: TextAlign.center,
               style: GoogleFonts.gentiumBookPlus(
-                fontSize: 17,
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: _ink,
               ),
@@ -44,7 +44,7 @@ Future<void> showHealthConfirmDialog(
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13, color: _muted, height: 1.5),
+              style: const TextStyle(fontSize: 16, color: _muted, height: 1.5),
             ),
             const SizedBox(height: 18),
             Row(
@@ -106,7 +106,7 @@ class _ModalButton extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 13.5,
+            fontSize: 15,
             fontWeight: FontWeight.w700,
             color: foreground,
           ),
@@ -130,7 +130,7 @@ void showHealthToast(BuildContext context, String message) {
         message,
         textAlign: TextAlign.center,
         style: const TextStyle(
-          fontSize: 12.5,
+          fontSize: 14,
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/widgets/gradient_scaffold.dart';
+import '../../core/widgets/gradient_scaffold.dart';
 import '../../providers/language_provider.dart';
-import './providers/health_tracking_provider.dart';
+import '../../providers/health_tracking_provider.dart';
 import './models/vital_definition.dart';
 import './widgets/health_top_bar.dart';
 import './widgets/schedule_editor.dart';
@@ -58,8 +58,8 @@ class EditPrefsPage extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop();
                 showHealthToast(context, isBangla ? 'সময়সূচী আপডেট হয়েছে' : 'Schedule updated');
+                Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: _brand,
@@ -109,8 +109,8 @@ class EditPrefsPage extends StatelessWidget {
       confirmLabel: isBangla ? 'ট্র্যাকিং বন্ধ করুন' : 'Stop tracking',
       onConfirm: () {
         context.read<HealthTrackingProvider>().stopTracking(vitalKey);
-        Navigator.of(context).pop();
         showHealthToast(context, isBangla ? '${def.nameBn} ট্র্যাকিং বন্ধ করা হয়েছে' : '${def.nameEn} tracking stopped');
+        Navigator.of(context).pop();
       },
     );
   }

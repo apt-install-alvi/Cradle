@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../models/vital_definition.dart';
-import '../models/vital_log.dart';
-import '../models/vital_tracking_state.dart';
+import '../pages/health_monitor/models/vital_definition.dart';
+import '../pages/health_monitor/models/vital_log.dart';
+import '../pages/health_monitor/models/vital_tracking_state.dart';
 
 class HealthTrackingProvider extends ChangeNotifier {
   final Map<String, VitalTrackingState> _states = {
@@ -108,8 +108,8 @@ class HealthTrackingProvider extends ChangeNotifier {
     return logs;
   }
 
-  String _genId(Random rnd) =>
-      'log_${rnd.nextInt(1 << 32).toRadixString(36)}';
+String _genId(Random rnd) =>
+    'log_${DateTime.now().microsecondsSinceEpoch}_${rnd.nextInt(1 << 31).toRadixString(36)}';
 
   /// Saves the very first reading for a vital, turning tracking on and
   /// backfilling mock history (matches saveLogEntry() initial-mode in JS).

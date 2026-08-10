@@ -3,7 +3,6 @@ import '../../core/models/diagnosis_result.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_button.dart';
 import '../../core/widgets/gradient_scaffold.dart';
-import '../../core/widgets/risk_pill.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
 import 'package:provider/provider.dart';

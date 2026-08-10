@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:cradle_app/core/theme/app_theme.dart';
 
-/// Shared sub-screen header: large thick chevron back button (no
-/// background/shadow) + title + optional subtitle, matching the
-/// established app-wide back-arrow style.
 class HealthTopBar extends StatelessWidget {
   const HealthTopBar({
     super.key,
@@ -16,48 +13,48 @@ class HealthTopBar extends StatelessWidget {
   final String? subtitle;
   final VoidCallback? onBack;
 
-  static const Color _ink = Color(0xFF4A2F3A);
   static const Color _muted = Color(0xFF8A7680);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          InkWell(
-            onTap: onBack ?? () => Navigator.of(context).pop(),
-            customBorder: const CircleBorder(),
-            child: const Padding(
-              padding: EdgeInsets.all(4),
-              child: Icon(Icons.chevron_left, size: 30, color: _ink),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.gentiumBookPlus(
-                    fontSize: 19,
-                    fontWeight: FontWeight.w700,
-                    color: _ink,
-                  ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Color(0xFFAB0A65),
+                  size: 28,
                 ),
-                if (subtitle != null && subtitle!.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 1),
-                    child: Text(
-                      subtitle!,
-                      style: const TextStyle(fontSize: 11.5, color: _muted),
-                    ),
-                  ),
-              ],
-            ),
+                onPressed: onBack ?? () => Navigator.of(context).pop(),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppText.headerTitle.copyWith(fontSize: 24),
+                ),
+              ),
+            ],
           ),
+          if (subtitle != null && subtitle!.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(left: 36, top: 2),
+              child: Text(
+                subtitle!,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: _muted,
+                ),
+              ),
+            ),
         ],
       ),
     );
