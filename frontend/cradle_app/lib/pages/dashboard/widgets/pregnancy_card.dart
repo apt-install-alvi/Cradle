@@ -67,7 +67,7 @@ class PregnancyCard extends StatelessWidget {
                 isBangla
                     ? "অভিনন্দন! আপনার গর্ভাবস্থার ${toBanglaDigits(weeksPregnant)} সপ্তাহ চলছে!"
                     : "Congratulations! You are $weeksPregnant weeks pregnant!",
-                style: GoogleFonts.gentiumBookPlus(fontWeight: FontWeight.bold, fontSize: 18, color: primaryPink),
+                style: GoogleFonts.gentiumBookPlus(fontWeight: FontWeight.bold, fontSize: 20, color: primaryPink),
               ),
 
               const SizedBox(height: 20),

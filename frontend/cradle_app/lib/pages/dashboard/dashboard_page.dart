@@ -26,7 +26,7 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
         bottomNavigationBar: const DashboardBottomNav(),
         backgroundColor: Colors.transparent,
-        extendBody: true,
+        // extendBody: true,
 
       body: Stack(
         children: [
@@ -43,7 +43,7 @@ class DashboardScreen extends StatelessWidget {
                 22,
                 10,
                 22,
-                20,
+                130,
               ),
 
               child: Column(
@@ -132,12 +132,12 @@ class DashboardScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 16),
-                  
+
                   //--------------------------------------------------
                   // Greeting
                   //--------------------------------------------------
 
-                  // TODO(Nek): wire userName to a profile provider once available
+                  // TODO: wire userName to a profile provider once available
                   const GreetingHeader(userName: "Nusrat"),
 
                   const SizedBox(height: 18),
@@ -177,19 +177,6 @@ class DashboardScreen extends StatelessWidget {
                   //--------------------------------------------------
 
                   const MoodCard(),
-                  //--------------------------------------------------
-                  // Pregnancy Card
-                  //--------------------------------------------------
-
-                  const PregnancyCard(),
-
-                  const SizedBox(height: 28),
-
-                  //--------------------------------------------------
-                  // Mood Card
-                  //--------------------------------------------------
-
-                  const MoodCard(),
                 ],
               ),
             ),
@@ -197,12 +184,13 @@ class DashboardScreen extends StatelessWidget {
         ),
 
         Positioned(
-          right: 10,
-          bottom: 10, // Sits just above the bottom navigation bar
-          child: SafeArea(
+          right: 4,
+          bottom: 30, // Sits just above the bottom navigation bar
+          // child: SafeArea(
             child: Material(
               elevation: 8,
-              color: Colors.transparent,
+              color: primaryPink,
+              shadowColor: primaryPink.withValues(alpha: .4),
               borderRadius: BorderRadius.circular(50),
               child: InkWell(
                 borderRadius: BorderRadius.circular(50),
@@ -241,8 +229,9 @@ class DashboardScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 10),
 
-                      Flexible(
-                        child: Consumer<LanguageProvider>(
+                      // Flexible(
+                        // child: Consumer<LanguageProvider>(
+                          Consumer<LanguageProvider>(
                           builder: (_, languageProvider, _) {
                             return Text(
                               languageProvider.isBangla
@@ -256,14 +245,14 @@ class DashboardScreen extends StatelessWidget {
                             );
                           },
                         ),
-                      ),
+                      // ),
                     ],
                   ),
                 ),
               ),
             ),
           ),
-        ),
+        // ),
       ], 
     ));
   }

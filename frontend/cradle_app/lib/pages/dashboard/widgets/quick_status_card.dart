@@ -28,6 +28,10 @@ class QuickStatusCard extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: Colors.white,
+            border: Border.all(
+              color: Colors.pink.withAlpha(50),
+              width: 2
+              ),
             borderRadius: BorderRadius.circular(18),
             boxShadow: const [
               BoxShadow(color: Color(0x29C87896), blurRadius: 16, offset: Offset(0, 6)),
@@ -40,16 +44,18 @@ class QuickStatusCard extends StatelessWidget {
               Container(
                 width: 34,
                 height: 34,
-                decoration: BoxDecoration(color: const Color(0xFFFCE3EC), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFCE3EC),
+                  borderRadius: BorderRadius.circular(10)),
                 padding: const EdgeInsets.all(8),
-                child: Image.asset(iconPath, fit: BoxFit.contain, colorFilter: const ColorFilter.mode(_brand, BlendMode.srcIn)),
+                child: Image.asset(iconPath, fit: BoxFit.contain, color: _brand, colorBlendMode: BlendMode.srcIn),
               ),
               const SizedBox(height: 8),
-              Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF8A7680), letterSpacing: .3)),
+              Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF8A7680), letterSpacing: .3)),
               const SizedBox(height: 2),
-              Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF3A2C33))),
+              Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF3A2C33))),
               const SizedBox(height: 2),
-              Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w500, color: Color(0xFF8A7680))),
+              Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF8A7680))),
             ],
           ),
         ),

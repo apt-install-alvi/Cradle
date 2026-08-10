@@ -55,14 +55,14 @@ class GreetingHeader extends StatelessWidget {
           '${_greetingWord(isBangla, now.hour)}, $userName',
           style: GoogleFonts.gentiumBookPlus(
             fontWeight: FontWeight.w700,
-            fontSize: 21,
+            fontSize: 25,
             color: const Color(0xFF4A2F3A),
           ),
         ),
         const SizedBox(height: 2),
         Text(
           _formattedDate(isBangla, now),
-          style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: Color(0xFF8A7680)),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color(0xFF8A7680)),
         ),
       ],
     );
