@@ -50,75 +50,125 @@ class DashboardScreen extends StatelessWidget {
                 children: [
 
                   //--------------------------------------------------
-                  // SETTINGS BUTTON & LANGUAGE SWITCHER
+                  // SETTINGS, NOTIFS BUTTON & LANGUAGE SWITCHER
                   //--------------------------------------------------
 
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        // Language Toggle Switch
-                        Padding(padding: EdgeInsetsGeometry.all(25)),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: .5),
-                            borderRadius: BorderRadius.circular(25),
-                            border: Border.all(color: primaryPink.withValues(alpha: 0.2)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              GestureDetector(
-                                onTap: () => context.read<LanguageProvider>().setLanguage(false),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: !isBangla ? primaryPink : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                  child: Text(
-                                    'English',
-                                    style: GoogleFonts.gentiumBookPlus(
-                                      color: !isBangla ? Colors.white : primaryPink,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () => context.read<LanguageProvider>().setLanguage(true),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: isBangla ? primaryPink : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                  child: Text(
-                                    'বাংলা',
-                                    style: TextStyle(
-                                      color: isBangla ? Colors.white : primaryPink,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // ------------------------------------------------
+                    // LANGUAGE TOGGLE — LEFT
+                    // ------------------------------------------------
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: .5),
+                        borderRadius: BorderRadius.circular(25),
+                        border: Border.all(
+                          color: primaryPink.withValues(alpha: 0.2),
                         ),
-                        const SizedBox(width: 8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          GestureDetector(
+                            onTap: () =>
+                                context.read<LanguageProvider>().setLanguage(false),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: !isBangla
+                                    ? primaryPink
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: Text(
+                                'English',
+                                style: GoogleFonts.gentiumBookPlus(
+                                  color: !isBangla
+                                      ? Colors.white
+                                      : primaryPink,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          GestureDetector(
+                            onTap: () =>
+                                context.read<LanguageProvider>().setLanguage(true),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isBangla
+                                    ? primaryPink
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: Text(
+                                'বাংলা',
+                                style: TextStyle(
+                                  color: isBangla
+                                      ? Colors.white
+                                      : primaryPink,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // ------------------------------------------------
+                    // RIGHT-SIDE BUTTONS
+                    // ------------------------------------------------
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Notifications
                         Material(
                           color: Colors.white.withValues(alpha: .0),
                           borderRadius: BorderRadius.circular(16),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () {
-                              Navigator.of(context).pushNamed(AppRoutes.settings);
+                              Navigator.of(context).pushNamed('/notifications');
                             },
                             child: Padding(
-                              padding: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.all(8),
+                              child: SvgPicture.asset(
+                                "assets/icons/notifications.svg",
+                                width: 24,
+                                height: 24,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 4),
+
+                        // Settings
+                        Material(
+                          color: Colors.white.withValues(alpha: .0),
+                          borderRadius: BorderRadius.circular(16),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(16),
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                AppRoutes.settings,
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
                               child: SvgPicture.asset(
                                 "assets/icons/settings.svg",
                                 width: 24,
@@ -129,7 +179,8 @@ class DashboardScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
+                  ],
+                ),
 
                   const SizedBox(height: 16),
 
