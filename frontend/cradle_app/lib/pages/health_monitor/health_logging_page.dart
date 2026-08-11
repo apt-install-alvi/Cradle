@@ -21,9 +21,9 @@ class HealthLoggingPage extends StatelessWidget {
     final provider = context.watch<HealthTrackingProvider>();
 
     return GradientScaffold(
-      bottomNavigationBar: const DashboardBottomNav(selectedIndex: -1),
+      bottomNavigationBar: const DashboardBottomNav(selectedIndex: 4),
       child: ListView(
-        padding: const EdgeInsets.only(bottom: 110),
+        padding: const EdgeInsets.only(bottom: 180),
         children: [
           const SizedBox(height: 20),
           Row(

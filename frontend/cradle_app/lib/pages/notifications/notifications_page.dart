@@ -168,7 +168,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.only(bottom: 40),
+              padding: const EdgeInsets.only(bottom: 180),
               itemCount: _notifications.length,
               itemBuilder: (context, index) {
                 final notification = _notifications[index];

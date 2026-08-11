@@ -25,7 +25,7 @@ class AiRiskAssessmentPage extends StatelessWidget {
         selectedIndex: 1,
       ),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 24),
+        padding: const EdgeInsets.only(bottom: 180),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

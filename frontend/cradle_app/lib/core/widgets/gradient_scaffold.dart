@@ -21,10 +21,12 @@ class GradientScaffold extends StatelessWidget {
       bottomNavigationBar: bottomNavigationBar,
       body: Container(
         width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: AppGradients.background,
         ),
         child: SafeArea(
+          bottom: false, // Don't let SafeArea pad for the bottom bar if we want to extend body
           child: Padding(
             padding: padding,
             child: child,

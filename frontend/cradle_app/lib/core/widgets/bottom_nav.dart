@@ -29,15 +29,15 @@ class DashboardBottomNav extends StatelessWidget {
 
   // ---- Layout constants -----------------------------------------------
   static const double _barHeight = 78;
-  static const double _barBottomOffset = 18;
-  static const double _barSideMargin = 8;
+  static const double _barBottomOffset = 0;
+  static const double _barSideMargin = 0;
   static const double _stackHeight = _barBottomOffset + _barHeight + 4;
 
   static const double _fabDiameter = 74;
-  static const double _fabBottomOffset = 40;
+  static const double _fabBottomOffset = 22;
   static const double _fabRadius = _fabDiameter / 2;
 
-  static const double _cornerRadius = 28;
+  static const double _cornerRadius = 0;
   // Gap left between the button's edge and the notch's edge, so a sliver of
   // the gradient background peeks through all the way around the circle.
   static const double _notchGap = 8;
@@ -268,9 +268,9 @@ Widget build(BuildContext context) {
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
       decoration: BoxDecoration(
         color: selected
-            ? DashboardBottomNav.primaryPink.withValues(alpha: 0.12)
+            ? const Color(0xFFF7D4E3)
             : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -339,7 +339,7 @@ class _DiagnosisFab extends StatelessWidget {
         ),
         child: Material(
           color: selected
-              ? DashboardBottomNav.primaryPink.withValues(alpha: .2)
+              ? const Color(0xFFF7D4E3)
               : const Color(0xFFFFE8F2),
           shape: const CircleBorder(),
           clipBehavior: Clip.antiAlias,

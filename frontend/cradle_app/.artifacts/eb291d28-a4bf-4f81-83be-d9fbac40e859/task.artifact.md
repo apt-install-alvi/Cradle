@@ -1,0 +1,16 @@
+- [x] Enable edge-to-edge mode in `main.dart`
+- [x] Extend body in `DashboardScreen`
+- [x] Extend body in `PersonalInfoPage`
+- [x] Verify `GradientScaffold` behavior
+- [x] Fix Bottom Nav Bar to be full-width and flush at the bottom
+- [x] Adjust Emergency Ambulance button position (Dashboard)
+- [x] Adjust Add Medication button position (Medication Tracker)
+- [x] Adjust Back to Top button position (Education Guides)
+- [x] Standardize bottom padding across all pages (to 150)
+- [x] Fix button positions in Add Medication bottom sheet
+- [x] Remove transparency from active Bottom Nav items
+- [x] Use `SafeArea` in Add Medication sheet for action buttons
+- [x] Increase bottom padding for Guides and main scroll views
+- [x] Refine Ambulance button position (Dashboard)
+- [x] Restore more prominent pill background for active nav items
+- [x] Manual verification and cleanup

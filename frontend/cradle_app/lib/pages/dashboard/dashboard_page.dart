@@ -26,7 +26,7 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
         bottomNavigationBar: const DashboardBottomNav(),
         backgroundColor: Colors.transparent,
-        // extendBody: true,
+        extendBody: true,
 
       body: Stack(
         children: [
@@ -43,7 +43,7 @@ class DashboardScreen extends StatelessWidget {
                 22,
                 10,
                 22,
-                130,
+                180,
               ),
 
               child: Column(
@@ -249,7 +249,7 @@ class DashboardScreen extends StatelessWidget {
 
         Positioned(
           right: 4,
-          bottom: 30, // Sits just above the bottom navigation bar
+          bottom: 155, // Sits above the bottom navigation bar
           // child: SafeArea(
             child: Material(
               elevation: 8,

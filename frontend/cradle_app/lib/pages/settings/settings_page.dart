@@ -97,7 +97,7 @@ Widget build(BuildContext context) {
     child: FadeTransition(
       opacity: _fadeIn,
       child: ListView(
-        padding: const EdgeInsets.only(bottom: 110),
+        padding: const EdgeInsets.only(bottom: 180),
         children: [
           const SizedBox(height: 12),
 

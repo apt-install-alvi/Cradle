@@ -166,7 +166,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(18, 18, 18, 30),
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 200),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.72),
@@ -292,7 +292,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
           
           // Reading Progress Bar at the top (under AppBar)
           Positioned(
-            top: MediaQuery.of(context).padding.top + kToolbarHeight,
+            top: MediaQuery.of(context).padding.top + kToolbarHeight - 2,
             left: 0,
             right: 0,
             child: LinearProgressIndicator(

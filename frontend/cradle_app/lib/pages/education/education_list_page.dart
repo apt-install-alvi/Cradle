@@ -160,10 +160,7 @@ class _EducationListPageState extends State<EducationListPage> {
               Expanded(
                 child: ListView(
                   controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 200),
                   children: [
                     if (eduProvider.bookmarkedArticles.isNotEmpty &&
                         eduProvider.selectedCategory == 'All') ...[
@@ -308,7 +305,7 @@ class _EducationListPageState extends State<EducationListPage> {
           if (_showBackToTop)
             Positioned(
               right: 16,
-              bottom: 16,
+              bottom: 140,
               child: FloatingActionButton(
                 onPressed: () => _scrollController.animateTo(
                   0,

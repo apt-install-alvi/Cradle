@@ -151,7 +151,7 @@ class _HealthHistoryPageState extends State<HealthHistoryPage> {
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.only(top: 8, bottom: 180),
                     itemCount: _filtered.length,
                     itemBuilder: (context, index) {
                       final entry = _filtered[index];

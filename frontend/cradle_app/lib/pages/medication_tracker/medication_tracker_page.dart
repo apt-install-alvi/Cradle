@@ -214,7 +214,7 @@ Future<void> _deleteMedication(Medication medication) async {
       child: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.only(bottom: 130),
+            padding: const EdgeInsets.only(bottom: 180),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -275,7 +275,7 @@ Future<void> _deleteMedication(Medication medication) async {
           ),
           Positioned(
             right: 4,
-            bottom: 16,
+            bottom: 140,
             child: Material(
               color: DashboardBottomNav.primaryPink,
               shape: const CircleBorder(),

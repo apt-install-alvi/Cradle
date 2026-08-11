@@ -632,48 +632,51 @@ class _AddMedicationSheetState extends State<AddMedicationSheet> {
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 22),
-              decoration: const BoxDecoration(
-                border: Border(top: BorderSide(color: Color(0xFFF7E4EC))),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFDEAF1),
-                        foregroundColor: DashboardBottomNav.primaryPink,
-                        side: BorderSide.none,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      ),
-                      child: Text(
-                        isBangla ? 'বাতিল' : 'Cancel',
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton(
-                      onPressed: _save,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: DashboardBottomNav.primaryPink,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        isBangla ? 'সংরক্ষণ করুন' : 'Save Medication',
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+            SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 30),
+                decoration: const BoxDecoration(
+                  border: Border(top: BorderSide(color: Color(0xFFF7E4EC))),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFDEAF1),
+                          foregroundColor: DashboardBottomNav.primaryPink,
+                          side: BorderSide.none,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        child: Text(
+                          isBangla ? 'বাতিল' : 'Cancel',
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 12),
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton(
+                        onPressed: _save,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: DashboardBottomNav.primaryPink,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          isBangla ? 'সংরক্ষণ করুন' : 'Save Medication',
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

@@ -259,34 +259,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     return Scaffold(
       bottomNavigationBar: const DashboardBottomNav(selectedIndex: -1),
       backgroundColor: Colors.transparent,
-      // appBar: AppBar(
-      //   backgroundColor: Colors.transparent,
-      //   elevation: 0,
-      //   leading: IconButton(
-      //     icon: const Icon(Icons.arrow_back, color: _accent),
-      //     onPressed: () => Navigator.pop(context),
-      //   ),
-      //   title: Text(
-      //     isBangla ? 'ব্যক্তিগত তথ্য' : 'Personal Info',
-      //     style: GoogleFonts.gentiumBookPlus(
-      //       fontWeight: FontWeight.bold,
-      //       color: _accent,
-      //       fontSize: 22,
-      //     ),
-      //   ),
-      //   centerTitle: true,
-      //   // --- ADDED LOGOUT BUTTON HERE ---
-      //   actions: [
-      //     IconButton(
-      //       icon: const Icon(Icons.logout, color: _accent),
-      //       tooltip: isBangla ? 'লগ আউট' : 'Log Out',
-      //       onPressed: () {
-      //         // Clear session and return to login
-      //         Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
-      //       },
-      //     ),
-      //   ],
-      // ),
+      extendBody: true,
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -301,7 +274,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                     final double maxWidth = constraints.maxWidth > 700 ? 650 : constraints.maxWidth;
                     return Center(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                        padding: const EdgeInsets.fromLTRB(16, 20, 16, 180),
                         child: ConstrainedBox(
                           constraints: BoxConstraints(maxWidth: maxWidth),
                           child: Form(
