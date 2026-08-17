@@ -37,8 +37,13 @@ class AuthController {
       const token = generateToken(user._id);
       return ApiResponse.success(res, 'OTP verification successful.', {
         token,
-        isProfileCompleted: user.isProfileCompleted,
-        userId: user._id
+        user: {
+          id: user._id,
+          phone: user.phone,
+          full_name: user.full_name,
+          preferred_language: user.preferred_language,
+          isProfileCompleted: user.isProfileCompleted
+        }
       });
     } catch (error) {
       next(error);

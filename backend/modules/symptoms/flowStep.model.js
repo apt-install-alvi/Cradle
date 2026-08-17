@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const symptomSchema = new mongoose.Schema({
+const symptomFlowStepSchema = new mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -11,18 +11,18 @@ const symptomSchema = new mongoose.Schema({
     ref: 'SymptomSession',
     required: true
   },
-  type: {
-    type: String,
+  step_order: {
+    type: Number,
     required: true
   },
-  value: {
+  selected_option: {
     type: String
   },
-  unit: {
+  user_input: {
     type: String
   }
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
-module.exports = mongoose.model('Symptom', symptomSchema);
+module.exports = mongoose.model('SymptomFlowStep', symptomFlowStepSchema);

@@ -12,6 +12,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  full_name: {
+    type: String,
+    trim: true
+  },
+  preferred_language: {
+    type: String,
+    default: 'en'
+  },
   isProfileCompleted: {
     type: Boolean,
     default: false

@@ -5,25 +5,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5e7f32e2-e561-42ae-bc3d-cefd2a777370" name="Changes" comment="&quot;  bug fix&quot;">
-      <change afterPath="$PROJECT_DIR$/frontend/cradle_app/.artifacts/eb291d28-a4bf-4f81-83be-d9fbac40e859/implementation_plan.artifact.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/cradle_app/.artifacts/eb291d28-a4bf-4f81-83be-d9fbac40e859/task.artifact.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/cradle_app/.artifacts/eb291d28-a4bf-4f81-83be-d9fbac40e859/walkthrough.artifact.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/init-db.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/modules/aiPrediction/riskPrediction.model.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/modules/healthHistory/dailyHealthStatus.model.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/modules/settings/settings.model.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/modules/symptoms/flowStep.model.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/modules/symptoms/session.model.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/core/widgets/bottom_nav.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/core/widgets/bottom_nav.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/core/widgets/gradient_scaffold.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/core/widgets/gradient_scaffold.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/ai_risk_assessment/ai_risk_assessment_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/ai_risk_assessment/ai_risk_assessment_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/dashboard/dashboard_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/dashboard/dashboard_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/education/article_detail_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/education/article_detail_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/education/education_list_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/education/education_list_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/health_history/health_history_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/health_history/health_history_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/health_monitor/health_logging_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/health_monitor/health_logging_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/medication_tracker/medication_tracker_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/medication_tracker/medication_tracker_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/medication_tracker/widgets/add_medication_sheet.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/medication_tracker/widgets/add_medication_sheet.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/notifications/notifications_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/notifications/notifications_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/personal_info/personal_info_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/personal_info/personal_info_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/settings/settings_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/settings/settings_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/symptom_input/symptom_input_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/symptom_input/symptom_input_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/config/db.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/config/db.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/modules/auth/auth.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/auth/auth.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/modules/auth/auth.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/auth/auth.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/modules/auth/user.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/auth/user.model.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/modules/motherProfile/motherProfile.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/motherProfile/motherProfile.model.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/modules/notifications/notification.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/notifications/notification.model.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/modules/symptoms/symptom.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/symptoms/symptom.model.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/.artifacts/eb291d28-a4bf-4f81-83be-d9fbac40e859/implementation_plan.artifact.md" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/.artifacts/eb291d28-a4bf-4f81-83be-d9fbac40e859/implementation_plan.artifact.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/.artifacts/eb291d28-a4bf-4f81-83be-d9fbac40e859/task.artifact.md" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/.artifacts/eb291d28-a4bf-4f81-83be-d9fbac40e859/task.artifact.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/.artifacts/eb291d28-a4bf-4f81-83be-d9fbac40e859/walkthrough.artifact.md" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/.artifacts/eb291d28-a4bf-4f81-83be-d9fbac40e859/walkthrough.artifact.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/core/services/api_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/core/services/api_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/auth/login_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/auth/login_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/otp_verification/otp_verification_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/otp_verification/otp_verification_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/splash/splash_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/splash/splash_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/providers/auth_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/providers/auth_provider.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

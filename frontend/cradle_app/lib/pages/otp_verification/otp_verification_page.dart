@@ -16,7 +16,6 @@ class OtpVerificationPage extends StatefulWidget {
 class _OtpVerificationPageState extends State<OtpVerificationPage> {
   final _formKey = GlobalKey<FormState>();
   final _otpController = TextEditingController();
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -24,35 +23,50 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     super.dispose();
   }
 
-  void _verifyOtp() {
-    setState(() {
-      _errorMessage = null;
-    });
-
+  Future<void> _verifyOtp() async {
     if (_formKey.currentState!.validate()) {
-      final enteredOtp = _otpController.text.trim();
-      // Dummy verification (OTP: 123456)
-      if (enteredOtp == '123456') {
-        // Extract arguments
-        final args = ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
-        final name = args?['name'] ?? 'Mother';
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      try {
+        await authProvider.verifyOtp(_otpController.text.trim());
+        
+        if (mounted) {
+          // Correct OTP - Navigate to Dashboard (clear auth flow from stack)
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.dashboard,
+            (route) => false,
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+          );
+        }
+      }
+    }
+  }
 
-        // Save name to AuthProvider
-        Provider.of<AuthProvider>(context, listen: false).setUserName(name);
-
-        // Correct OTP - Navigate to Dashboard (clear auth flow from stack)
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoutes.dashboard,
-          (route) => false,
+  Future<void> _resendOtp() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
+    try {
+      await authProvider.resendOtp();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isBangla ? 'ওটিপি পুনরায় পাঠানো হয়েছে' : 'OTP has been resent',
+            ),
+            backgroundColor: const Color(0xFFAB0A65),
+          ),
         );
-      } else {
-        final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
-        setState(() {
-          _errorMessage = isBangla
-              ? 'ভুল ওটিপি কোড! অনুগ্রহ করে ১২৩৪৫৬ ব্যবহার করুন।'
-              : 'Invalid OTP code! Please use 123456.';
-        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+        );
       }
     }
   }
@@ -63,9 +77,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     const Color secondaryColor = Color(0xFFAB0A65);
     const Color textColor = Color(0xFF4A3E48);
 
-    // Extract arguments from route settings
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
-    final phoneNumber = args?['phoneNumber'] ?? '';
+    final authProvider = context.watch<AuthProvider>();
+    final phoneNumber = authProvider.phone ?? '';
 
     final languageProvider = context.watch<LanguageProvider>();
     final bool isBangla = languageProvider.isBangla;
@@ -77,13 +90,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         : 'Enter the code sent to your number $phoneNumber';
     final String otpLabel = isBangla ? 'ওটিপি কোড' : 'OTP Code';
     final String otpHint = isBangla ? '১২৩৪৫৬' : '123456';
-    final String otpError = isBangla ? 'দয়া করে ওটিপি কোডটি লিখুন' : 'Please enter the OTP code';
-    final String otpLengthError = isBangla ? 'ওটিপি কোডটি ৬ ডিজিটের হতে হবে' : 'OTP code must be 6 digits';
     final String submitBtn = isBangla ? 'সম্পন্ন করুন' : 'Verify & Proceed';
     final String resendBtn = isBangla ? 'আবার কোড পাঠান' : 'Resend Code';
-    final String resendMessage = isBangla
-        ? 'ওটিপি পুনরায় পাঠানো হয়েছে (১২৩৪৫৬)'
-        : 'OTP has been resent (123456)';
 
     return Scaffold(
       backgroundColor: primaryColor,
@@ -97,310 +105,219 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Language Toggle Switch at top right
+                  // Language Toggle Switch
                   Align(
                     alignment: Alignment.topRight,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(color: secondaryColor.withValues(alpha: 0.2)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          GestureDetector(
-                            onTap: () => context.read<LanguageProvider>().setLanguage(false),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: !isBangla ? secondaryColor : Colors.transparent,
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              child: Text(
-                                'English',
-                                style: GoogleFonts.gentiumBookPlus(
-                                  color: !isBangla ? Colors.white : textColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => context.read<LanguageProvider>().setLanguage(true),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: isBangla ? secondaryColor : Colors.transparent,
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              child: Text(
-                                'বাংলা',
-                                style: TextStyle(
-                                  color: isBangla ? Colors.white : textColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    child: _buildLanguageToggle(secondaryColor, isBangla, textColor),
                   ),
                   const SizedBox(height: 25),
-                  // Logo at the same position
-                  Container(
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      // boxShadow: [
-                      //   BoxShadow(
-                      //     color: secondaryColor.withValues(alpha: 0.2),
-                      //     blurRadius: 20,
-                      //     spreadRadius: 5,
-                      //   ),
-                      // ],
-                    ),
-                    child: ClipRRect(
-                      child: SvgPicture.asset(
-                        'assets/images/Logo.svg',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Cradle',
-                    style: GoogleFonts.geom(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
-                      color: secondaryColor,
-                      letterSpacing: 2.0,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    subtitle,
-                    style: isBangla
-                        ? const TextStyle(
-                            fontSize: 14,
-                            color: textColor,
-                            fontWeight: FontWeight.w500,
-                          )
-                        : GoogleFonts.gentiumBookPlus(
-                            fontSize: 14,
-                            color: textColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                  ),
+                  // Logo
+                  _buildLogo(secondaryColor, subtitle, textColor, isBangla),
                   const SizedBox(height: 50),
                   
-                  // OTP Verification Header (Center Aligned)
-                  Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          otpHeader,
-                          textAlign: TextAlign.center,
-                          style: isBangla
-                              ? const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: textColor,
-                                )
-                              : GoogleFonts.gentiumBookPlus(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: textColor,
-                                ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          otpSub,
-                          textAlign: TextAlign.center,
-                          style: isBangla
-                              ? TextStyle(
-                                  fontSize: 13,
-                                  color: textColor.withValues(alpha: 0.7),
-                                )
-                              : GoogleFonts.gentiumBookPlus(
-                                  fontSize: 13,
-                                  color: textColor.withValues(alpha: 0.7),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Header
+                  _buildHeader(otpHeader, isBangla, textColor, otpSub),
                   const SizedBox(height: 32),
 
                   // OTP Input Field
-                  TextFormField(
-                    controller: _otpController,
-                    keyboardType: TextInputType.number,
-                    maxLength: 6,
-                    style: isBangla
-                        ? const TextStyle(
-                            color: textColor,
-                            fontSize: 22,
-                            letterSpacing: 8.0,
-                            fontWeight: FontWeight.bold,
-                          )
-                        : GoogleFonts.gentiumBookPlus(
-                            color: textColor,
-                            fontSize: 22,
-                            letterSpacing: 8.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      counterText: '',
-                      labelText: otpLabel,
-                      labelStyle: isBangla
-                          ? const TextStyle(
-                              color: secondaryColor,
-                              fontSize: 14,
-                              letterSpacing: 0.0,
-                            )
-                          : GoogleFonts.gentiumBookPlus(
-                              color: secondaryColor,
-                              fontSize: 14,
-                              letterSpacing: 0.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      hintText: otpHint,
-                      hintStyle: isBangla
-                          ? TextStyle(
-                              color: textColor.withValues(alpha: 0.3),
-                              fontSize: 20,
-                              letterSpacing: 8.0,
-                            )
-                          : GoogleFonts.gentiumBookPlus(
-                              color: textColor.withValues(alpha: 0.3),
-                              fontSize: 20,
-                              letterSpacing: 8.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: secondaryColor.withValues(alpha: 0.2), width: 1.5),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: secondaryColor, width: 2.0),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: Colors.redAccent, width: 2.0),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return otpError;
-                      }
-                      if (value.trim().length != 6) {
-                        return otpLengthError;
-                      }
-                      return null;
-                    },
-                  ),
-                  
-                  if (_errorMessage != null) ...[
-                    const SizedBox(height: 16),
-                    Text(
-                      _errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: isBangla
-                          ? const TextStyle(
-                              color: Colors.redAccent,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            )
-                          : GoogleFonts.gentiumBookPlus(
-                              color: Colors.redAccent,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
-                    ),
-                  ],
+                  _buildOtpField(textColor, isBangla, otpLabel, secondaryColor, otpHint),
                   
                   const SizedBox(height: 40),
 
                   // Done Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: _verifyOtp,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: secondaryColor,
-                        foregroundColor: Colors.white,
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: Text(
-                        submitBtn,
-                        style: isBangla
-                            ? const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              )
-                            : GoogleFonts.gentiumBookPlus(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                      ),
-                    ),
-                  ),
+                  _buildSubmitButton(authProvider, _verifyOtp, secondaryColor, isBangla, submitBtn),
                   const SizedBox(height: 24),
                   
                   // Resend Code Button
-                  TextButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            resendMessage,
-                            style: isBangla
-                                ? const TextStyle(fontSize: 14)
-                                : GoogleFonts.gentiumBookPlus(fontSize: 14, fontWeight: FontWeight.bold),
-                          ),
-                          backgroundColor: secondaryColor,
-                        ),
-                      );
-                    },
-                    child: Text(
-                      resendBtn,
-                      style: isBangla
-                          ? const TextStyle(
-                              color: secondaryColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            )
-                          : GoogleFonts.gentiumBookPlus(
-                              color: secondaryColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                    ),
-                  ),
+                  _buildResendButton(authProvider, _resendOtp, secondaryColor, isBangla, resendBtn),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageToggle(Color secondaryColor, bool isBangla, Color textColor) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: secondaryColor.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () => context.read<LanguageProvider>().setLanguage(false),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: !isBangla ? secondaryColor : Colors.transparent,
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: Text(
+                'English',
+                style: GoogleFonts.gentiumBookPlus(
+                  color: !isBangla ? Colors.white : textColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () => context.read<LanguageProvider>().setLanguage(true),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: isBangla ? secondaryColor : Colors.transparent,
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: Text(
+                'বাংলা',
+                style: TextStyle(
+                  color: isBangla ? Colors.white : textColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLogo(Color secondaryColor, String subtitle, Color textColor, bool isBangla) {
+    return Column(
+      children: [
+        Container(
+          width: 110,
+          height: 110,
+          child: SvgPicture.asset(
+            'assets/images/Logo.svg',
+            fit: BoxFit.contain,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'Cradle',
+          style: GoogleFonts.geom(
+            fontSize: 32,
+            fontWeight: FontWeight.w800,
+            color: secondaryColor,
+            letterSpacing: 2.0,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          subtitle,
+          style: isBangla
+              ? TextStyle(fontSize: 14, color: textColor, fontWeight: FontWeight.w500)
+              : GoogleFonts.gentiumBookPlus(fontSize: 14, color: textColor, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(String otpHeader, bool isBangla, Color textColor, String otpSub) {
+    return Center(
+      child: Column(
+        children: [
+          Text(
+            otpHeader,
+            textAlign: TextAlign.center,
+            style: isBangla
+                ? TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor)
+                : GoogleFonts.gentiumBookPlus(fontSize: 24, fontWeight: FontWeight.bold, color: textColor),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            otpSub,
+            textAlign: TextAlign.center,
+            style: isBangla
+                ? TextStyle(fontSize: 13, color: textColor.withValues(alpha: 0.7))
+                : GoogleFonts.gentiumBookPlus(fontSize: 13, color: textColor.withValues(alpha: 0.7), fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOtpField(Color textColor, bool isBangla, String otpLabel, Color secondaryColor, String otpHint) {
+    return TextFormField(
+      controller: _otpController,
+      keyboardType: TextInputType.number,
+      maxLength: 6,
+      style: isBangla
+          ? TextStyle(color: textColor, fontSize: 22, letterSpacing: 8.0, fontWeight: FontWeight.bold)
+          : GoogleFonts.gentiumBookPlus(color: textColor, fontSize: 22, letterSpacing: 8.0, fontWeight: FontWeight.bold),
+      textAlign: TextAlign.center,
+      decoration: InputDecoration(
+        counterText: '',
+        labelText: otpLabel,
+        labelStyle: isBangla
+            ? TextStyle(color: secondaryColor, fontSize: 14, letterSpacing: 0.0)
+            : GoogleFonts.gentiumBookPlus(color: secondaryColor, fontSize: 14, letterSpacing: 0.0, fontWeight: FontWeight.bold),
+        hintText: otpHint,
+        hintStyle: isBangla
+            ? TextStyle(color: textColor.withValues(alpha: 0.3), fontSize: 20, letterSpacing: 8.0)
+            : GoogleFonts.gentiumBookPlus(color: textColor.withValues(alpha: 0.3), fontSize: 20, letterSpacing: 8.0, fontWeight: FontWeight.bold),
+        filled: true,
+        fillColor: Colors.white,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: secondaryColor.withValues(alpha: 0.2), width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: secondaryColor, width: 2.0),
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      ),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) return isBangla ? 'ওটিপি কোড দিন' : 'Enter OTP code';
+        if (value.trim().length != 6) return isBangla ? '৬ ডিজিট হতে হবে' : 'Must be 6 digits';
+        return null;
+      },
+    );
+  }
+
+  Widget _buildSubmitButton(AuthProvider authProvider, Future<void> Function() verifyOtp, Color secondaryColor, bool isBangla, String submitBtn) {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: authProvider.isLoading ? null : verifyOtp,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: secondaryColor,
+          foregroundColor: Colors.white,
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+        child: authProvider.isLoading
+            ? const CircularProgressIndicator(color: Colors.white)
+            : Text(
+                submitBtn,
+                style: isBangla
+                    ? const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)
+                    : GoogleFonts.gentiumBookPlus(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildResendButton(AuthProvider authProvider, Future<void> Function() resendOtp, Color secondaryColor, bool isBangla, String resendBtn) {
+    return TextButton(
+      onPressed: authProvider.isLoading ? null : resendOtp,
+      child: Text(
+        resendBtn,
+        style: isBangla
+            ? TextStyle(color: secondaryColor, fontSize: 14, fontWeight: FontWeight.bold)
+            : GoogleFonts.gentiumBookPlus(color: secondaryColor, fontSize: 14, fontWeight: FontWeight.bold),
       ),
     );
   }

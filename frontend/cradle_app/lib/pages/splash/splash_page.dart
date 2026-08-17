@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../core/routes/app_routes.dart';
+import '../../providers/auth_provider.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -24,7 +26,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 5500),
+      duration: const Duration(milliseconds: 3000),
     );
 
     // Initial scale and fade in for the central splash logo
@@ -42,18 +44,14 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
       ),
     );
 
-// Smooth text animation
+    // Smooth text animation
     _textOpacity = Tween<double>(
       begin: 0,
       end: 1,
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(
-          0.25,
-          0.85,
-          curve: Curves.easeOutCubic,
-        ),
+        curve: const Interval(0.25, 0.85, curve: Curves.easeOutCubic),
       ),
     );
 
@@ -63,11 +61,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(
-          0.25,
-          0.85,
-          curve: Curves.easeOutCubic,
-        ),
+        curve: const Interval(0.25, 0.85, curve: Curves.easeOutCubic),
       ),
     );
 
@@ -77,11 +71,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(
-          0.25,
-          0.85,
-          curve: Curves.easeOutCubic,
-        ),
+        curve: const Interval(0.25, 0.85, curve: Curves.easeOutCubic),
       ),
     );
 
@@ -101,12 +91,8 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     await Future.delayed(const Duration(milliseconds: 800));
     if (!mounted) return;
 
-    // Check login/session state
-    // Replace the boolean value below with actual auth check integration (e.g. FirebaseAuth status or SharedPreferences token check)
-    bool isLoggedIn = false; 
-
-    // ignore: dead_code
-    if (isLoggedIn) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (authProvider.isLoggedIn) {
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     } else {
       Navigator.pushReplacementNamed(context, AppRoutes.login);
@@ -127,76 +113,44 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-// 1. Animated Logo
-FadeTransition(
-  opacity: _imageOpacity,
-  child: ScaleTransition(
-    scale: _imageScale,
-    child: Container(
-      width: 140,
-      height: 140,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: secondaryColor.withValues(alpha: 0.2),
-        //     blurRadius: 30,
-        //     spreadRadius: 8,
-        //   ),
-        // ],
-      ),
-      child: ClipRRect(
-        // borderRadius: BorderRadius.circular(70),
-        child: SvgPicture.asset(
-          'assets/images/Logo.svg',
-          fit: BoxFit.contain,
-          // errorBuilder: (context, error, stackTrace) {
-          //   return Container(
-          //     color: secondaryColor.withValues(alpha: 0.1),
-          //     child: const Icon(
-          //       Icons.child_care,
-          //       size: 70,
-          //       color: secondaryColor,
-          //     ),
-          //   );
-          // },
-        ),
-      ),
-    ),
-  ),
-),
-                    
-const SizedBox(height: 24),
-                  
-// 2. Animated App Name "Cradle"
-FadeTransition(
-  opacity: _textOpacity,
-  child: SlideTransition(
-    position: _textSlide,
-    child: ScaleTransition(
-      scale: _textScale,
-      child: Text(
-        'Cradle',
-        style: GoogleFonts.geom(
-        fontSize: 38,
-        fontWeight: FontWeight.w800,
-        color: secondaryColor,
-        letterSpacing: 3,
-      ),
-        // TextStyle(
-        //   fontSize: 38,
-        //   fontWeight: FontWeight.w800,
-        //   color: secondaryColor,
-        //   letterSpacing: 3,
-        // ),
-      ),
-    ),
-  ),
-),
+                  // 1. Animated Logo
+                  FadeTransition(
+                    opacity: _imageOpacity,
+                    child: ScaleTransition(
+                      scale: _imageScale,
+                      child: Container(
+                        width: 140,
+                        height: 140,
+                        child: SvgPicture.asset(
+                          'assets/images/Logo.svg',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // 2. Animated App Name "Cradle"
+                  FadeTransition(
+                    opacity: _textOpacity,
+                    child: SlideTransition(
+                      position: _textSlide,
+                      child: ScaleTransition(
+                        scale: _textScale,
+                        child: Text(
+                          'Cradle',
+                          style: GoogleFonts.geom(
+                            fontSize: 38,
+                            fontWeight: FontWeight.w800,
+                            color: secondaryColor,
+                            letterSpacing: 3,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-
             // 3. Subtle Animated Progress indicator at the bottom
             Positioned(
               bottom: 100,
@@ -227,4 +181,3 @@ FadeTransition(
     );
   }
 }
-

@@ -1,43 +1,38 @@
-# Implementation Plan - UI Polish and Visibility Fixes
+# Implementation Plan - Direct MongoDB Integration with Fixed OTP
 
-This plan addresses several UI issues where elements are still being obscured by system bars or the navigation bar, and refines the "Diagnosis" button's active state.
+This plan configures the authentication flow to store all user data in MongoDB Atlas, while using a hardcoded OTP (`123456`) for the verification step.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - I will wrap the bottom action bar of the Medication Sheet in a `SafeArea` to ensure it respects the system navigation bar on all devices.
-> - The "Diagnosis" button in the bottom navigation bar will now use a solid light pink color when active, instead of a transparent overlay.
+> - **MongoDB**: All user data will now be stored directly in your MongoDB Atlas cluster. No mock data will be used.
+> - **OTP**: The verification screen will remain, but the backend will accept `123456` as the only valid code for now.
 
 ## Proposed Changes
 
-### Bottom Navigation Bar
+### Backend Refinement
 
-#### [MODIFY] [bottom_nav.dart](file:///D:/code/Cradle/frontend/cradle_app/lib/core/widgets/bottom_nav.dart)
-- Change `_DiagnosisFab` selected color from `primaryPink.withValues(alpha: .2)` to a solid light pink `Color(0xFFFCE0EC)`.
-- Change `_NavItem` selected background from `primaryPink.withValues(alpha: 0.12)` to a solid light pink `Color(0xFFFDEAF1)`.
+#### [MODIFY] [Auth Service](file:///D:/code/Cradle/backend/modules/auth/auth.service.js)
+- Remove all mock database logic (`mockUsers`, connection checks).
+- Hardcode OTP code to `123456` in both `register` and `login` methods.
+- Save user records (including the fixed OTP) directly to MongoDB.
 
-### Screen Adjustments
+#### [MODIFY] [Database Config](file:///D:/code/Cradle/backend/config/db.js)
+- Make the database connection strict (throw error if it fails) to ensure data persistence.
 
-#### [MODIFY] [dashboard_page.dart](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/dashboard/dashboard_page.dart)
-- Increase Emergency Ambulance button `bottom` to `160`.
-- Increase scroll bottom padding to `180`.
+### Frontend (Flutter) Integration
 
-#### [MODIFY] [medication_tracker_page.dart](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/medication_tracker/medication_tracker_page.dart)
-- Increase scroll bottom padding to `180`.
+#### [MODIFY] [Login Page](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/auth/login_page.dart)
+- Ensure the app navigates to the `OtpVerificationPage` upon successful submission.
 
-#### [MODIFY] [education_list_page.dart](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/education/education_list_page.dart)
-- Increase `ListView` bottom padding to `200`.
-
-### Bottom Sheet Adjustments
-
-#### [MODIFY] [add_medication_sheet.dart](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/medication_tracker/widgets/add_medication_sheet.dart)
-- Wrap the bottom action buttons `Container` in a `SafeArea` (specifically for the bottom).
-- Adjust vertical padding in that container for better spacing.
+#### [MODIFY] [OTP Verification Page](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/otp_verification/otp_verification_page.dart)
+- Ensure the page calls `authProvider.verifyOtp` to confirm the code with the backend.
 
 ## Verification Plan
 
 ### Manual Verification
-- Verify the "Diagnosis" button looks correct and has no transparency in its active state.
-- Check the "Add Medication" sheet on a device with a gesture bar (like a modern Android) to ensure "Save/Cancel" buttons are fully visible.
-- Verify that the bottom-most articles in the Guides page are not cut off by the navigation bar.
-- Ensure the ambulance button on the home page is at a comfortable floating height.
+1. Start the backend and verify the MongoDB Atlas connection.
+2. Register a new user in the app.
+3. On the OTP screen, enter `123456`.
+4. Verify that the app navigates to the Dashboard.
+5. Check your MongoDB Atlas Dashboard > Collections to confirm the new user is saved.

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const symptomSchema = new mongoose.Schema({
+const riskPredictionSchema = new mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -11,18 +11,28 @@ const symptomSchema = new mongoose.Schema({
     ref: 'SymptomSession',
     required: true
   },
-  type: {
+  risk_level: {
     type: String,
     required: true
   },
-  value: {
+  confidence_score: {
+    type: Number
+  },
+  recommendation: {
     type: String
   },
-  unit: {
+  risk_factors: {
     type: String
+  },
+  predicted_conditions: {
+    type: String
+  },
+  emergency_contact_notify: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
-module.exports = mongoose.model('Symptom', symptomSchema);
+module.exports = mongoose.model('RiskPrediction', riskPredictionSchema);

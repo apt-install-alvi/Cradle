@@ -1,47 +1,61 @@
-# Cradle
-A mobile app which offers suggested diagnosis of pregnancy-related symptoms to pregnant mothers through Artificial Intelligence and Machine Learning.
+# Cradle - Maternal Health Companion
 
-## System Architecture Layout
-- **[frontend/cradle_app](file:///c:/Users/User/Desktop/Cradle/frontend/cradle_app)**: Mobile Client application (Flutter)
-- **[backend](file:///c:/Users/User/Desktop/Cradle/backend)**: REST API backend gateway (Express.js)
-- **[ml-service](file:///c:/Users/User/Desktop/Cradle/ml-service)**: AI prediction microservice (Python / Flask)
-- **[docs](file:///c:/Users/User/Desktop/Cradle/docs)**: SDP2 System Design project report
+Cradle is an AI-powered mobile application designed to support pregnant mothers by offering suggested diagnoses of pregnancy-related symptoms through Machine Learning and providing comprehensive health tracking.
+
+## 🚀 System Architecture
+- **[frontend/cradle_app](./frontend/cradle_app)**: Mobile Client application built with **Flutter**.
+- **[backend](./backend)**: REST API gateway built with **Node.js & Express**, connected to **MongoDB Atlas**.
+- **[ml-service](./ml-service)**: AI prediction microservice built with **Python & Flask**.
 
 ---
 
-## Getting Started & Execution
+## 🛠️ Getting Started
 
-### 1. Launching the Backend Gateway
-1. Navigate to the `backend/` directory.
-2. Verify dependencies are installed:
+### 1. Backend Gateway (Node.js)
+The backend manages authentication, data persistence, and coordinates with the ML service.
+
+1. Navigate to the `backend/` directory:
+   ```bash
+   cd backend
+   ```
+2. Install dependencies:
    ```bash
    npm install
    ```
-3. Run the development server:
+3. **Configure Environment**: Create a `.env` file in the `backend/` root (refer to `.env.example`):
+   ```env
+   PORT=5000
+   MONGO_URI=your_mongodb_atlas_uri
+   JWT_SECRET=your_jwt_secret
+   ```
+4. **Database Access**: Ensure your Public IP is whitelisted in your **MongoDB Atlas > Network Access** dashboard.
+5. Run the development server:
    ```bash
    npm run dev
    ```
-   *Note: If MongoDB is offline, the backend dynamically initializes fallback mocks for all controllers so you can debug the client without database hassles.*
 
-### 2. Launching the ML Microservice
-1. Navigate to the `ml-service/` directory.
+### 2. ML Microservice (Python)
+The ML service provides risk assessments based on maternal health parameters.
+
+1. Navigate to the `ml-service/` directory:
+   ```bash
+   cd ml-service
+   ```
 2. Install Python packages:
    ```bash
    pip install -r requirements.txt
    ```
-3. Generate the Random Forest classifier pickle model file:
-   ```bash
-   python generate_dummy_model.py
-   ```
-4. Start the Flask service:
+3. Start the Flask service:
    ```bash
    python app.py
    ```
-   *Note: If Flask or the PKL model file is not present, the Node.js backend operates a rule-based heuristics fallback to evaluate logged symptoms.*
 
-### 3. Launching the Mobile Client
-1. Navigate to `frontend/cradle_app/`.
-2. Fetch package dependencies:
+### 3. Mobile Client (Flutter)
+1. Navigate to `frontend/cradle_app/`:
+   ```bash
+   cd frontend/cradle_app
+   ```
+2. Fetch dependencies:
    ```bash
    flutter pub get
    ```
@@ -49,3 +63,21 @@ A mobile app which offers suggested diagnosis of pregnancy-related symptoms to p
    ```bash
    flutter run
    ```
+
+---
+
+## 🔑 Authentication (Dev Mode)
+- **Registration/Login**: Use your phone number and any password.
+- **OTP Verification**: For development, use the hardcoded OTP: **`123456`**.
+- **Persistence**: Sessions are stored locally using `shared_preferences`.
+
+## 📊 Database Schema
+The project uses a structured MongoDB schema based on a comprehensive ER diagram covering:
+- User Profiles & Settings
+- Mother Health Records
+- Symptom Logging Sessions
+- AI Risk Predictions
+- System Notifications
+
+---
+© 2026 Cradle Team
