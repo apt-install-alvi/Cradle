@@ -1,50 +1,52 @@
 const User = require('./user.model');
+const SmsService = require('../../common/utils/smsService');
 const dateHelpers = require('../../common/utils/dateHelpers');
 const otpConfig = require('../../config/otpConfig');
 
+function generateOtpCode() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 class AuthService {
-  static async register(phone, full_name) {
-    const existingUser = await User.findOne({ phone });
-    if (existingUser) {
-      // If user exists, we treat it as a login attempt
-      return this.login(phone);
-    }
+  /**
+   * Request OTP for Phone Authentication
+   * Check user status based on whether profile setup has been completed (isProfileCompleted).
+   */
+  static async requestOtp(phone) {
+    let user = await User.findOne({ phone });
 
-    const otpCode = '123456'; // Fixed for development
-    const otpExpires = dateHelpers.addMinutes(new Date(), otpConfig.expiresInMinutes);
+    // If user doesn't exist or profile is not completed yet, treat as new user flow
+    const isNewUser = !user || !user.isProfileCompleted;
 
-    const user = new User({
-      phone,
-      full_name,
-      otp: { code: otpCode, expiresAt: otpExpires }
-    });
-
-    await user.save();
-    console.log(`[AUTH] User registered: ${phone}. OTP: ${otpCode}`);
-    return user;
-  }
-
-  static async login(phone) {
-    const user = await User.findOne({ phone });
     if (!user) {
-        throw new Error('User not found. Please register first.');
+      user = new User({
+        phone,
+        isProfileCompleted: false
+      });
     }
 
-    const otpCode = '123456'; // Fixed for development
-    user.otp = {
-      code: otpCode,
-      expiresAt: dateHelpers.addMinutes(new Date(), otpConfig.expiresInMinutes)
-    };
+    const otpCode = generateOtpCode();
+    const expiresAt = dateHelpers.addMinutes(new Date(), otpConfig.expiresInMinutes || 5);
+
+    user.otp = { code: otpCode, expiresAt };
     await user.save();
 
-    console.log(`[AUTH] OTP sent to ${phone}: ${otpCode}`);
-    return user;
+    // Trigger Voice Call OTP
+    await SmsService.sendVoiceOtp(phone, otpCode);
+
+    console.log(`[AUTH] Voice OTP requested for ${phone}. OTP: ${otpCode}. Is new user (needs profile setup): ${isNewUser}`);
+    return { user, isNewUser };
   }
 
   static async verifyOtp(phone, code) {
     const user = await User.findOne({ phone });
     if (!user) throw new Error('User not found');
 
+    if (!user.otp || !user.otp.code) {
+      throw new Error('No OTP requested for this user');
+    }
+
+    // Allow dev bypass code '123456' or compare with stored OTP
     if (user.otp.code !== code && code !== '123456') {
       throw new Error('Invalid OTP code');
     }
@@ -53,25 +55,29 @@ class AuthService {
       throw new Error('OTP code expired');
     }
 
+    // Clear OTP after successful verification
     user.otp = undefined;
-    // We don't automatically set isProfileCompleted here because the mother profile
-    // needs to be filled in later in the PersonalInfoPage.
     await user.save();
 
     return user;
   }
 
   static async resendOtp(phone) {
-    const otpCode = '123456'; // Fixed for development
-    const expiresAt = dateHelpers.addMinutes(new Date(), otpConfig.expiresInMinutes);
+    let user = await User.findOne({ phone });
+    if (!user) {
+      user = new User({ phone, isProfileCompleted: false });
+    }
 
-    const user = await User.findOne({ phone });
-    if (!user) throw new Error('User not found');
+    const otpCode = generateOtpCode();
+    const expiresAt = dateHelpers.addMinutes(new Date(), otpConfig.expiresInMinutes || 5);
 
     user.otp = { code: otpCode, expiresAt };
     await user.save();
 
-    console.log(`[AUTH] OTP resent to ${phone}: ${otpCode}`);
+    // Resend Voice Call OTP
+    await SmsService.sendVoiceOtp(phone, otpCode);
+
+    console.log(`[AUTH] Voice OTP resent to ${phone}. OTP: ${otpCode}`);
     return true;
   }
 }

@@ -4,32 +4,27 @@ const ApiResponse = require('../../common/utils/apiResponse');
 const httpStatusCodes = require('../../common/constants/httpStatusCodes');
 
 class AuthController {
-  static async register(req, res, next) {
+  static async requestOtp(req, res, next) {
     try {
-      const { phone, full_name } = req.body;
-      const user = await AuthService.register(phone, full_name);
-      return ApiResponse.success(res, 'Verification OTP code sent.', {
+      const { phone } = req.body;
+      const { user, isNewUser } = await AuthService.requestOtp(phone);
+      return ApiResponse.success(res, 'Verification OTP sent.', {
         userId: user._id,
         phone: user.phone,
-        full_name: user.full_name
-      }, httpStatusCodes.CREATED);
+        isNewUser,
+        isProfileCompleted: user.isProfileCompleted
+      });
     } catch (error) {
       next(error);
     }
   }
 
+  static async register(req, res, next) {
+    return AuthController.requestOtp(req, res, next);
+  }
+
   static async login(req, res, next) {
-    try {
-      const { phone } = req.body;
-      const user = await AuthService.login(phone);
-      return ApiResponse.success(res, 'Verification OTP code sent.', {
-        userId: user._id,
-        phone: user.phone,
-        full_name: user.full_name
-      });
-    } catch (error) {
-      next(error);
-    }
+    return AuthController.requestOtp(req, res, next);
   }
 
   static async verifyOtp(req, res, next) {
