@@ -26,7 +26,7 @@ class AuthProvider extends ChangeNotifier {
     _userName = prefs.getString('user_name') ?? '';
     _phone = prefs.getString('user_phone');
     if (_token != null) {
-      notifyListeners();
+      await fetchProfile();
     }
   }
 
@@ -85,7 +85,43 @@ class AuthProvider extends ChangeNotifier {
       final user = data['user'];
       
       await _saveAuthData(token, user['phone'], user['full_name'] ?? '');
-      _userProfile = user;
+      await fetchProfile(); // Get full details
+      _setLoading(false);
+    } catch (e) {
+      _setLoading(false);
+      rethrow;
+    }
+  }
+
+  Future<void> fetchProfile() async {
+    if (_token == null) return;
+    try {
+      final response = await ApiService.get('/profile', token: _token);
+      _userProfile = response['data'];
+      if (_userProfile?['full_name'] != null) {
+        _userName = _userProfile!['full_name'];
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_name', _userName);
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching profile: $e');
+    }
+  }
+
+  Future<void> updateProfile(Map<String, dynamic> data) async {
+    if (_token == null) return;
+    _setLoading(true);
+    try {
+      final response = await ApiService.post('/profile', data, token: _token);
+      _userProfile = response['data'];
+      // Update local name if changed
+      if (data.containsKey('full_name')) {
+        _userName = data['full_name'];
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_name', _userName);
+      }
+      notifyListeners();
       _setLoading(false);
     } catch (e) {
       _setLoading(false);

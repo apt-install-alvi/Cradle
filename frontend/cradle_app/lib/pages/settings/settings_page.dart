@@ -855,10 +855,15 @@ Widget _buildLanguageCard(
             ),
           ),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+            onPressed: () async {
+              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+              await authProvider.logout();
+              if (mounted) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  AppRoutes.login,
+                  (route) => false,
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: _accent,

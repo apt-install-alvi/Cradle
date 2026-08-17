@@ -1,25 +1,37 @@
-# Walkthrough - Direct MongoDB Integration with Fixed OTP
+# Walkthrough - Mother Profile Persistence & Sync
 
-I have implemented the direct integration with your MongoDB Atlas cluster while maintaining the OTP verification step using a fixed code (`123456`).
+I have implemented the complete data flow for the mother's profile, ensuring that health details and images are stored in MongoDB and synchronized with the user account.
 
 ## Changes Made
 
-### 1. Backend Persistence
-- **Auth Service**: Completely removed all mock/in-memory user storage. The [AuthService](file:///D:/code/Cradle/backend/modules/auth/auth.service.js) now interacts directly with the `User` model for all operations (register, login, verify, resend).
-- **Hardcoded OTP**: Registration and login now save `123456` as the valid OTP in the user's MongoDB document.
-- **Strict Database Connection**: Updated [db.js](file:///D:/code/Cradle/backend/config/db.js) to throw an error if the connection to MongoDB Atlas fails. This ensures no data is ever lost to "mock mode".
+### 1. Backend Data Persistence
+- **Model Update**: Added `profile_image` to the [MotherProfile](file:///D:/code/Cradle/backend/modules/motherProfile/motherProfile.model.js) model to store images as Base64 strings.
+- **Service Refactor**: The [MotherProfileService](file:///D:/code/Cradle/backend/modules/motherProfile/motherProfile.service.js) now:
+    - Removes all mock/dummy logic.
+    - Synchronizes the `full_name` between the profile and the main `User` account.
+    - Automatically handles "new" vs "existing" profiles during retrieval.
+- **Auth Middleware**: Removed mock bypass from [authMiddleware.js](file:///D:/code/Cradle/backend/common/middlewares/authMiddleware.js) to ensure real database users are always used.
 
-### 2. Frontend Flow
-- **Login/Register**: The [LoginPage](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/auth/login_page.dart) now attempts to register or login via the backend and then navigates to the OTP verification screen.
-- **OTP Verification**: The [OtpVerificationPage](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/otp_verification/otp_verification_page.dart) calls the backend to verify the code. It no longer relies on local dummy checks.
+### 2. Frontend Connectivity
+- **Auth Provider**: Updated [auth_provider.dart](file:///D:/code/Cradle/frontend/cradle_app/lib/providers/auth_provider.dart) with `fetchProfile` and `updateProfile` methods to communicate with the `/api/profile` endpoints.
+- **Dynamic Loading**: The profile is now fetched automatically after a successful login or OTP verification.
+
+### 3. Personal Info Page Enhancements
+- **Auto-Fill**: The [PersonalInfoPage](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/personal_info/personal_info_page.dart) now fetches existing data from MongoDB as soon as it opens.
+- **Image Handling**: Implemented image selection with automatic conversion to Base64 and basic compression (512x512) for efficient database storage.
+- **Real Saving**: The "Save" button now persists all data (Age, Weight, Height, LMP, Allergies, Diseases, Emergency Contact, and Image) to the backend.
 
 ## Verification Instructions
 
-1.  **Start Backend**: Navigate to `backend/` and run `npm run dev`.
-2.  **Monitor Console**: You will see logs like `[AUTH] User registered: ... OTP: 123456` when someone signs up.
-3.  **App Interaction**:
-    - Open the app.
-    - Register with a phone number and password.
-    - Enter `123456` on the OTP screen.
-    - Upon success, you will be taken to the Dashboard.
-4.  **Database Check**: Open your [MongoDB Atlas Dashboard](https://cloud.mongodb.com/) and browse your collections. You should see a new document in the `users` collection.
+1. **Start Backend**: Ensure your backend server is running (`npm run dev`).
+2. **Onboarding**:
+    - Register a new user with a specific name (e.g., "Sarah").
+    - Complete the OTP verification.
+3. **Profile Sync**:
+    - Go to **Personal Info**.
+    - Verify that the name "Sarah" is already filled in.
+    - Add a photo, update the name to "Sarah Johnson", and fill in health details.
+    - Click **Save**.
+4. **Persistence Test**:
+    - Restart the app and go back to the Personal Info page.
+    - Verify that all your data and the photo are still there, fetched correctly from MongoDB Atlas.

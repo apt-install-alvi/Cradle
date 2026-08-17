@@ -1,5 +1,13 @@
-- [x] Make MongoDB connection strict in `db.js`
-- [x] Remove mock logic and hardcode OTP (123456) in `auth.service.js`
-- [x] Verify `LoginPage.dart` navigates to OTP page
-- [x] Verify `OtpVerificationPage.dart` calls backend verification
-- [x] Test the full flow from Flutter to MongoDB
+- [x] Update Backend `MotherProfile` Model & Service
+    - [x] Add `profile_image` to `motherProfile.model.js`
+    - [x] Refactor `motherProfile.service.js` (remove mock, add sync logic)
+    - [x] Update `motherProfile.validation.js`
+    - [x] Clean up `authMiddleware.js`
+- [x] Update Frontend `AuthProvider`
+    - [x] Implement `fetchProfile` and `updateProfile` methods
+    - [x] Add loading and error states for profile fetching
+- [x] Update Frontend `PersonalInfoPage`
+    - [x] Fetch profile on `initState`
+    - [x] Implement Image to Base64 conversion
+    - [x] Connect form submission to `AuthProvider.updateProfile`
+- [ ] Verify full synchronization (Login -> Profile Update -> Persistence)
