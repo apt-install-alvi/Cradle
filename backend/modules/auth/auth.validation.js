@@ -1,12 +1,11 @@
 const validateRegisterLogin = (body) => {
-  const { phone, password } = body;
+  const { phone, full_name } = body;
   if (!phone || typeof phone !== 'string' || phone.trim().length < 8) {
     return { error: new Error('Valid phone number is required (at least 8 characters)') };
   }
-  if (!password || typeof password !== 'string' || password.length < 6) {
-    return { error: new Error('Password must be at least 6 characters long') };
-  }
-  return { value: { phone: phone.trim(), password } };
+  // full_name is optional for login but required for first-time registration
+  // For simplicity, we just pass what we have.
+  return { value: { phone: phone.trim(), full_name: full_name?.trim() } };
 };
 
 const validateVerifyOtp = (body) => {

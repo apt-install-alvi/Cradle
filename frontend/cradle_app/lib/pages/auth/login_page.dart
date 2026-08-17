@@ -15,14 +15,13 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _isObscured = true;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _phoneController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
@@ -30,10 +29,9 @@ class _LoginPageState extends State<LoginPage> {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       try {
-        // We use register for now, if user exists backend will throw error which we can catch to try login
         await authProvider.register(
           _phoneController.text.trim(),
-          _passwordController.text.trim(),
+          _nameController.text.trim(),
         );
         
         if (mounted) {
@@ -46,31 +44,8 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
       } catch (e) {
-        // If already exists, try logging in
-        if (e.toString().contains('User already exists')) {
-          try {
-            await authProvider.login(
-              _phoneController.text.trim(),
-              _passwordController.text.trim(),
-            );
-            if (mounted) {
-              Navigator.pushNamed(
-                context,
-                AppRoutes.otp,
-                arguments: {
-                  'phoneNumber': _phoneController.text.trim(),
-                },
-              );
-            }
-          } catch (loginErr) {
-            if (mounted) {
-              _showError(loginErr.toString());
-            }
-          }
-        } else {
-          if (mounted) {
-            _showError(e.toString());
-          }
+        if (mounted) {
+          _showError(e.toString());
         }
       }
     }
@@ -95,9 +70,10 @@ class _LoginPageState extends State<LoginPage> {
     final String subtitle = isBangla ? 'একজন মায়ের সুরক্ষিত যত্ন' : "A Mother's Secure Care";
     final String authHeader = isBangla ? 'প্রবেশ করুন / নিবন্ধন করুন' : 'Login / Register';
     final String authSub = isBangla ? 'এগিয়ে যেতে আপনার তথ্য প্রদান করুন' : 'Provide your details to proceed';
+    final String nameLabel = isBangla ? 'নাম' : 'Name';
+    final String nameHint = isBangla ? 'আপনার সম্পূর্ণ নাম লিখুন' : 'Enter your full name';
     final String phoneLabel = isBangla ? 'মোবাইল নম্বর' : 'Mobile Number';
     final String phoneHint = isBangla ? '১১ ডিজিটের মোবাইল নম্বর' : '11-digit mobile number';
-    final String passwordLabel = isBangla ? 'পাসওয়ার্ড' : 'Password';
     final String submitBtn = isBangla ? 'এগিয়ে যান' : 'Proceed';
 
     return Scaffold(
@@ -126,12 +102,12 @@ class _LoginPageState extends State<LoginPage> {
                   _buildHeader(authHeader, isBangla, textColor, authSub),
                   const SizedBox(height: 32),
 
-                  // Phone Field
-                  _buildPhoneField(textColor, isBangla, phoneLabel, secondaryColor, phoneHint),
+                  // Name Field
+                  _buildNameField(textColor, isBangla, nameLabel, secondaryColor, nameHint),
                   const SizedBox(height: 20),
 
-                  // Password Field
-                  _buildPasswordField(textColor, isBangla, passwordLabel, secondaryColor),
+                  // Phone Field
+                  _buildPhoneField(textColor, isBangla, phoneLabel, secondaryColor, phoneHint),
                   const SizedBox(height: 40),
 
                   // Submit Button
@@ -255,6 +231,43 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Widget _buildNameField(Color textColor, bool isBangla, String nameLabel, Color secondaryColor, String nameHint) {
+    return TextFormField(
+      controller: _nameController,
+      keyboardType: TextInputType.name,
+      style: isBangla
+          ? TextStyle(color: textColor, fontSize: 16)
+          : GoogleFonts.gentiumBookPlus(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
+      decoration: InputDecoration(
+        labelText: nameLabel,
+        labelStyle: isBangla
+            ? TextStyle(color: secondaryColor, fontSize: 14)
+            : GoogleFonts.gentiumBookPlus(color: secondaryColor, fontSize: 14, fontWeight: FontWeight.bold),
+        hintText: nameHint,
+        hintStyle: isBangla
+            ? TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 14)
+            : GoogleFonts.gentiumBookPlus(color: textColor.withValues(alpha: 0.4), fontSize: 14, fontWeight: FontWeight.bold),
+        prefixIcon: Icon(Icons.person_outline, color: secondaryColor),
+        filled: true,
+        fillColor: Colors.white,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: secondaryColor.withValues(alpha: 0.2), width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: secondaryColor, width: 2.0),
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      ),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) return isBangla ? 'আপনার নাম লিখুন' : 'Please enter your name';
+        return null;
+      },
+    );
+  }
+
   Widget _buildPhoneField(Color textColor, bool isBangla, String phoneLabel, Color secondaryColor, String phoneHint) {
     return TextFormField(
       controller: _phoneController,
@@ -289,44 +302,6 @@ class _LoginPageState extends State<LoginPage> {
         if (value == null || value.trim().isEmpty) return isBangla ? 'মোবাইল নম্বর লিখুন' : 'Please enter phone number';
         final phoneRegExp = RegExp(r'^(?:\+88|88)?(01[3-9]\d{8})$');
         if (!phoneRegExp.hasMatch(value.trim())) return isBangla ? 'সঠিক নম্বর দিন' : 'Enter valid phone number';
-        return null;
-      },
-    );
-  }
-
-  Widget _buildPasswordField(Color textColor, bool isBangla, String passwordLabel, Color secondaryColor) {
-    return TextFormField(
-      controller: _passwordController,
-      obscureText: _isObscured,
-      style: isBangla
-          ? TextStyle(color: textColor, fontSize: 16)
-          : GoogleFonts.gentiumBookPlus(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
-      decoration: InputDecoration(
-        labelText: passwordLabel,
-        labelStyle: isBangla
-            ? TextStyle(color: secondaryColor, fontSize: 14)
-            : GoogleFonts.gentiumBookPlus(color: secondaryColor, fontSize: 14, fontWeight: FontWeight.bold),
-        prefixIcon: Icon(Icons.lock_outline, color: secondaryColor),
-        suffixIcon: IconButton(
-          icon: Icon(_isObscured ? Icons.visibility_off : Icons.visibility, color: secondaryColor),
-          onPressed: () => setState(() => _isObscured = !_isObscured),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: secondaryColor.withValues(alpha: 0.2), width: 1.5),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: secondaryColor, width: 2.0),
-        ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-      ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) return isBangla ? 'পাসওয়ার্ড লিখুন' : 'Please enter password';
-        if (value.length < 6) return isBangla ? 'কমপক্ষে ৬ অক্ষরের হতে হবে' : 'Min 6 characters';
         return null;
       },
     );

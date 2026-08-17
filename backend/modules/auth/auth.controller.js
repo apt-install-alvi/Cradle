@@ -6,11 +6,12 @@ const httpStatusCodes = require('../../common/constants/httpStatusCodes');
 class AuthController {
   static async register(req, res, next) {
     try {
-      const { phone, password } = req.body;
-      const user = await AuthService.register(phone, password);
-      return ApiResponse.success(res, 'Registration successful, verification OTP code sent.', {
+      const { phone, full_name } = req.body;
+      const user = await AuthService.register(phone, full_name);
+      return ApiResponse.success(res, 'Verification OTP code sent.', {
         userId: user._id,
-        phone: user.phone
+        phone: user.phone,
+        full_name: user.full_name
       }, httpStatusCodes.CREATED);
     } catch (error) {
       next(error);
@@ -19,11 +20,12 @@ class AuthController {
 
   static async login(req, res, next) {
     try {
-      const { phone, password } = req.body;
-      const user = await AuthService.login(phone, password);
+      const { phone } = req.body;
+      const user = await AuthService.login(phone);
       return ApiResponse.success(res, 'Verification OTP code sent.', {
         userId: user._id,
-        phone: user.phone
+        phone: user.phone,
+        full_name: user.full_name
       });
     } catch (error) {
       next(error);

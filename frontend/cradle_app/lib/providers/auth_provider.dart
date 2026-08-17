@@ -26,7 +26,6 @@ class AuthProvider extends ChangeNotifier {
     _userName = prefs.getString('user_name') ?? '';
     _phone = prefs.getString('user_phone');
     if (_token != null) {
-      // Optionally fetch profile from backend to verify token and get latest data
       notifyListeners();
     }
   }
@@ -42,16 +41,13 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> login(String phone, String password) async {
+  Future<void> login(String phone) async {
     _setLoading(true);
     try {
-      final response = await ApiService.post('/auth/login', {
+      await ApiService.post('/auth/login', {
         'phone': phone,
-        'password': password,
       });
       _phone = phone;
-      // Depending on backend, login might send OTP or return token
-      // Our backend currently sends OTP on login
       _setLoading(false);
     } catch (e) {
       _setLoading(false);
@@ -59,14 +55,15 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> register(String phone, String password) async {
+  Future<void> register(String phone, String name) async {
     _setLoading(true);
     try {
       await ApiService.post('/auth/register', {
         'phone': phone,
-        'password': password,
+        'full_name': name,
       });
       _phone = phone;
+      _userName = name;
       _setLoading(false);
     } catch (e) {
       _setLoading(false);

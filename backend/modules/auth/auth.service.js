@@ -3,10 +3,11 @@ const dateHelpers = require('../../common/utils/dateHelpers');
 const otpConfig = require('../../config/otpConfig');
 
 class AuthService {
-  static async register(phone, password) {
+  static async register(phone, full_name) {
     const existingUser = await User.findOne({ phone });
     if (existingUser) {
-      throw new Error('User already exists');
+      // If user exists, we treat it as a login attempt
+      return this.login(phone);
     }
 
     const otpCode = '123456'; // Fixed for development
@@ -14,7 +15,7 @@ class AuthService {
 
     const user = new User({
       phone,
-      password,
+      full_name,
       otp: { code: otpCode, expiresAt: otpExpires }
     });
 
@@ -23,12 +24,11 @@ class AuthService {
     return user;
   }
 
-  static async login(phone, password) {
+  static async login(phone) {
     const user = await User.findOne({ phone });
-    if (!user) throw new Error('Invalid credentials');
-
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) throw new Error('Invalid credentials');
+    if (!user) {
+        throw new Error('User not found. Please register first.');
+    }
 
     const otpCode = '123456'; // Fixed for development
     user.otp = {
@@ -54,7 +54,8 @@ class AuthService {
     }
 
     user.otp = undefined;
-    user.isProfileCompleted = true; // Assuming verification completes basic auth profile
+    // We don't automatically set isProfileCompleted here because the mother profile
+    // needs to be filled in later in the PersonalInfoPage.
     await user.save();
 
     return user;
