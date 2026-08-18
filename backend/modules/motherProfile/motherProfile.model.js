@@ -37,6 +37,9 @@ const motherProfileSchema = new mongoose.Schema({
   },
   emergency_contact: {
     type: String
+  },
+  profile_image: {
+    type: String // Base64 encoded image
   }
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

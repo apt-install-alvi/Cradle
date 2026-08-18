@@ -17,5 +17,8 @@ module.exports = {
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   OTP_EXPIRES_IN_MINUTES: parseInt(process.env.OTP_EXPIRES_IN_MINUTES || '5', 10),
   ML_SERVICE_URL: process.env.ML_SERVICE_URL || 'http://localhost:5001',
-  NODE_ENV: process.env.NODE_ENV || 'development'
+  NODE_ENV: process.env.NODE_ENV || 'development',
+  // Infobip configuration
+  INFOBIP_API_KEY: process.env.INFOBIP_API_KEY,
+  INFOBIP_BASE_URL: process.env.INFOBIP_BASE_URL
 };
