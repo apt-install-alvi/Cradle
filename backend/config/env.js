@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const requiredEnv = ['JWT_SECRET'];
+const requiredEnv = ['SUPABASE_URL', 'SUPABASE_ANON_KEY', 'JWT_SECRET'];
 
 for (const env of requiredEnv) {
   if (!process.env[env]) {
@@ -12,7 +12,8 @@ for (const env of requiredEnv) {
 
 module.exports = {
   PORT: process.env.PORT || 5000,
-  MONGO_URI: process.env.MONGO_URI || 'mongodb://localhost:27017/cradle',
+  SUPABASE_URL: process.env.SUPABASE_URL,
+  SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   OTP_EXPIRES_IN_MINUTES: parseInt(process.env.OTP_EXPIRES_IN_MINUTES || '5', 10),

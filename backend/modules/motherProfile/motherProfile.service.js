@@ -1,5 +1,4 @@
-const MotherProfile = require('./motherProfile.model');
-const User = require('../auth/user.model');
+const supabase = require('../../config/supabase');
 
 class MotherProfileService {
   /**
@@ -7,11 +6,19 @@ class MotherProfileService {
    * containing the name from the main User document.
    */
   static async getProfileByUserId(userId) {
-    let profile = await MotherProfile.findOne({ user_id: userId });
+    const { data: profile, error } = await supabase
+      .from('mother_profiles')
+      .select('*, users(full_name, phone)')
+      .eq('user_id', userId)
+      .maybeSingle();
 
-    // If no profile exists yet, fetch the name from the User account to pre-fill
     if (!profile) {
-      const user = await User.findById(userId);
+      const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('full_name, phone')
+        .eq('id', userId)
+        .single();
+
       return {
         user_id: userId,
         full_name: user?.full_name || '',
@@ -20,11 +27,13 @@ class MotherProfileService {
       };
     }
 
-    // Merge in the latest name from the User document
-    const user = await User.findById(userId);
-    const result = profile.toObject();
-    result.full_name = user?.full_name || '';
-    result.phone = user?.phone || '';
+    // Flatten the result to match expected format
+    const result = {
+      ...profile,
+      full_name: profile.users?.full_name || '',
+      phone: profile.users?.phone || ''
+    };
+    delete result.users;
 
     return result;
   }
@@ -37,18 +46,23 @@ class MotherProfileService {
 
     // 1. Sync name with User document if provided
     if (full_name !== undefined) {
-      await User.findByIdAndUpdate(userId, {
-        full_name: full_name,
-        isProfileCompleted: true
-      });
+      await supabase
+        .from('users')
+        .update({
+          full_name: full_name,
+          is_profile_completed: true
+        })
+        .eq('id', userId);
     }
 
-    // 2. Update or Create the MotherProfile document
-    let profile = await MotherProfile.findOneAndUpdate(
-      { user_id: userId },
-      { $set: otherData },
-      { new: true, upsert: true }
-    );
+    // 2. Update or Create the MotherProfile document (Upsert)
+    const { data: profile, error: upsertError } = await supabase
+      .from('mother_profiles')
+      .upsert({ user_id: userId, ...otherData }, { onConflict: 'user_id' })
+      .select()
+      .single();
+
+    if (upsertError) throw upsertError;
 
     return profile;
   }

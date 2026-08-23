@@ -1,45 +1,47 @@
-const EmergencyAlert = require('./emergencyAlert.model');
+const supabase = require('../../config/supabase');
 const MotherProfileService = require('../motherProfile/motherProfile.service');
-const mongoose = require('mongoose');
-
-// In-memory fallback
-const mockAlerts = [];
 
 class EmergencyService {
   static async triggerSOS(userId, location) {
     let contacts = [];
     try {
       const profile = await MotherProfileService.getProfileByUserId(userId);
-      contacts = profile.emergencyContacts || [];
+      // In Supabase, it might be emergency_contact (singular string based on my schema)
+      contacts = profile.emergency_contact ? [profile.emergency_contact] : [];
     } catch (e) {
       console.warn('Could not retrieve mother profile for SOS emergency contacts.');
     }
 
-    // Simulate SMS dispatch to emergency contacts
     console.log(`[SMS Gateway Alert] SOS Triggered for User ${userId}. Dispatched alerts to:`, contacts);
 
-    if (mongoose.connection.readyState !== 1) {
-      const alert = {
-        _id: 'mock-sos-' + Math.random().toString(36).substring(2, 11),
-        userId: userId.toString(),
-        location: location || {},
-        triggeredAt: new Date(),
-        status: 'TRIGGERED',
-        createdAt: new Date()
-      };
-      mockAlerts.push(alert);
-      return { alert, contactsSent: contacts };
-    }
+    const { data: alert, error } = await supabase
+      .from('emergency_alerts')
+      .insert([
+        {
+          user_id: userId,
+          alert_type: 'SOS',
+          location_lat: location?.lat,
+          location_lng: location?.lng,
+          status: 'TRIGGERED'
+        }
+      ])
+      .select()
+      .single();
 
-    const alert = await EmergencyAlert.create({ userId, location });
+    if (error) throw error;
+
     return { alert, contactsSent: contacts };
   }
 
   static async getAlerts(userId) {
-    if (mongoose.connection.readyState !== 1) {
-      return mockAlerts.filter(a => a.userId === userId.toString());
-    }
-    return await EmergencyAlert.find({ userId }).sort({ triggeredAt: -1 });
+    const { data, error } = await supabase
+      .from('emergency_alerts')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data;
   }
 }
 

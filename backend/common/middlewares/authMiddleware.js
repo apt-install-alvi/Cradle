@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 const env = require('../../config/env');
+const supabase = require('../../config/supabase');
 const ApiResponse = require('../utils/apiResponse');
 const httpStatusCodes = require('../constants/httpStatusCodes');
-const User = require('../../modules/auth/user.model');
 
 const protect = async (req, res, next) => {
   let token;
@@ -10,17 +10,25 @@ const protect = async (req, res, next) => {
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
+
+      // Verify our custom JWT
       const decoded = jwt.verify(token, env.JWT_SECRET);
 
-      const user = await User.findById(decoded.id).select('-otp');
-      if (!user) {
-        return ApiResponse.error(res, 'User not found', httpStatusCodes.UNAUTHORIZED);
+      // Fetch the user from public.users
+      const { data: user, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', decoded.id)
+        .single();
+
+      if (error || !user) {
+        return ApiResponse.error(res, 'User not found or token invalid', httpStatusCodes.UNAUTHORIZED);
       }
       
       req.user = user;
       next();
     } catch (error) {
-      console.error('[Auth Middleware] Error:', error.message);
+      console.error('[Auth Middleware] JWT Error:', error.message);
       return ApiResponse.error(res, 'Not authorized, token validation failed', httpStatusCodes.UNAUTHORIZED);
     }
   }

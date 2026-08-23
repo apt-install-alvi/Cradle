@@ -1,17 +1,15 @@
 const AuthService = require('./auth.service');
-const generateToken = require('../../common/utils/generateToken');
 const ApiResponse = require('../../common/utils/apiResponse');
 const httpStatusCodes = require('../../common/constants/httpStatusCodes');
+const generateToken = require('../../common/utils/generateToken');
 
 class AuthController {
   static async register(req, res, next) {
     try {
       const { phone, full_name } = req.body;
-      const user = await AuthService.register(phone, full_name);
-      return ApiResponse.success(res, 'Verification OTP code sent.', {
-        userId: user._id,
-        phone: user.phone,
-        full_name: user.full_name
+      await AuthService.register(phone, full_name);
+      return ApiResponse.success(res, 'Verification OTP code sent via SMS8.', {
+        phone
       }, httpStatusCodes.CREATED);
     } catch (error) {
       next(error);
@@ -21,11 +19,9 @@ class AuthController {
   static async login(req, res, next) {
     try {
       const { phone } = req.body;
-      const user = await AuthService.login(phone);
-      return ApiResponse.success(res, 'Verification OTP code sent.', {
-        userId: user._id,
-        phone: user.phone,
-        full_name: user.full_name
+      await AuthService.login(phone);
+      return ApiResponse.success(res, 'Verification OTP code sent via SMS8.', {
+        phone
       });
     } catch (error) {
       next(error);
@@ -36,15 +32,17 @@ class AuthController {
     try {
       const { phone, code } = req.body;
       const user = await AuthService.verifyOtp(phone, code);
-      const token = generateToken(user._id);
+
+      // Generate our custom JWT token
+      const token = generateToken(user.id);
+
       return ApiResponse.success(res, 'OTP verification successful.', {
         token,
         user: {
-          id: user._id,
+          id: user.id,
           phone: user.phone,
           full_name: user.full_name,
-          preferred_language: user.preferred_language,
-          isProfileCompleted: user.isProfileCompleted
+          isProfileCompleted: user.is_profile_completed
         }
       });
     } catch (error) {
