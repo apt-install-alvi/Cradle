@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
 import '../../core/routes/app_routes.dart';
+import '../../core/widgets/language_toggle.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   const OtpVerificationPage({super.key});
@@ -23,26 +24,45 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     super.dispose();
   }
 
+  bool _isVerifying = false;
+
   Future<void> _verifyOtp() async {
+    if (_isVerifying) return;
+
     if (_formKey.currentState!.validate()) {
+      setState(() => _isVerifying = true);
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       try {
-        await authProvider.verifyOtp(_otpController.text.trim());
+        final code = _otpController.text.trim();
+        debugPrint('[OTP] Attempting verification for code: $code');
+
+        await authProvider.verifyOtp(code);
         
         if (mounted) {
-          // Correct OTP - Navigate to Dashboard (clear auth flow from stack)
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            AppRoutes.dashboard,
-            (route) => false,
-          );
+          debugPrint('[OTP] Verification successful. Profile completed: ${authProvider.isProfileCompleted}');
+          if (authProvider.isProfileCompleted) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRoutes.dashboard,
+              (route) => false,
+            );
+          } else {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRoutes.personalInfo,
+              (route) => false,
+            );
+          }
         }
       } catch (e) {
         if (mounted) {
+          debugPrint('[OTP] Verification failed: $e');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
           );
         }
+      } finally {
+        if (mounted) setState(() => _isVerifying = false);
       }
     }
   }
@@ -89,7 +109,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         ? 'আপনার $phoneNumber নম্বরে পাঠানো কোডটি লিখুন'
         : 'Enter the code sent to your number $phoneNumber';
     final String otpLabel = isBangla ? 'ওটিপি কোড' : 'OTP Code';
-    final String otpHint = isBangla ? '১২৩৪৫৬' : '123456';
+    final String otpHint = isBangla ? '০০০০০০' : '000000';
     final String submitBtn = isBangla ? 'সম্পন্ন করুন' : 'Verify & Proceed';
     final String resendBtn = isBangla ? 'আবার কোড পাঠান' : 'Resend Code';
 
@@ -140,53 +160,9 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   }
 
   Widget _buildLanguageToggle(Color secondaryColor, bool isBangla, Color textColor) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: secondaryColor.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          GestureDetector(
-            onTap: () => context.read<LanguageProvider>().setLanguage(false),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: !isBangla ? secondaryColor : Colors.transparent,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Text(
-                'English',
-                style: GoogleFonts.gentiumBookPlus(
-                  color: !isBangla ? Colors.white : textColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () => context.read<LanguageProvider>().setLanguage(true),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isBangla ? secondaryColor : Colors.transparent,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Text(
-                'বাংলা',
-                style: TextStyle(
-                  color: isBangla ? Colors.white : textColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return LanguageToggle(
+      activeColor: secondaryColor,
+      textColor: textColor,
     );
   }
 
@@ -282,6 +258,11 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         if (value == null || value.trim().isEmpty) return isBangla ? 'ওটিপি কোড দিন' : 'Enter OTP code';
         if (value.trim().length != 6) return isBangla ? '৬ ডিজিট হতে হবে' : 'Must be 6 digits';
         return null;
+      },
+      onChanged: (value) {
+        if (value.trim().length == 6 && !_isVerifying) {
+          _verifyOtp();
+        }
       },
     );
   }

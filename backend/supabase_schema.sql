@@ -151,6 +151,26 @@ CREATE TABLE IF NOT EXISTS medication_logs (
   UNIQUE(reminder_id, scheduled_time, log_date)
 );
 
+-- 13. User Settings Table
+CREATE TABLE IF NOT EXISTS user_settings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  push_notifications_enabled BOOLEAN DEFAULT true,
+  appointment_reminders_enabled BOOLEAN DEFAULT true,
+  health_alerts_enabled BOOLEAN DEFAULT true,
+  language TEXT DEFAULT 'en',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 14. Water Logs Table
+CREATE TABLE IF NOT EXISTS water_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  amount_ml INTEGER DEFAULT 250, -- Standard glass size
+  logged_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Disable RLS (Row Level Security) for all tables
 -- This allows the backend to perform operations without specific policies
 
@@ -174,3 +194,33 @@ CREATE TRIGGER update_appointments_modtime BEFORE UPDATE ON appointments FOR EAC
 CREATE TRIGGER update_medication_reminders_modtime BEFORE UPDATE ON medication_reminders FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 CREATE TRIGGER update_emergency_alerts_modtime BEFORE UPDATE ON emergency_alerts FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 CREATE TRIGGER update_daily_health_status_modtime BEFORE UPDATE ON daily_health_status FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+-- 15. Vitals Table
+CREATE TABLE IF NOT EXISTS vitals (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  type TEXT NOT NULL, -- e.g., 'bp', 'temp', 'glucose', 'spo2', 'hr'
+  value DOUBLE PRECISION,
+  systolic INTEGER,
+  diastolic INTEGER,
+  context TEXT,
+  note TEXT,
+  logged_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 16. Vital Settings Table
+CREATE TABLE IF NOT EXISTS vital_settings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  vital_key TEXT NOT NULL, -- 'bp', 'temp', 'glucose', 'spo2', 'hr'
+  frequency INTEGER DEFAULT 1,
+  times TEXT[], -- Array of strings e.g. ['08:00', '13:00']
+  days BOOLEAN[] DEFAULT '{true, true, true, true, true, true, true}', -- Mon-Sun
+  is_tracking BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, vital_key)
+);
+
+CREATE TRIGGER update_vital_settings_modtime BEFORE UPDATE ON vital_settings FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+

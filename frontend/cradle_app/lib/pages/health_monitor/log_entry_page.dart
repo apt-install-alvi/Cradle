@@ -250,7 +250,7 @@ class _LogEntryPageState extends State<LogEntryPage> {
     );
   }
 
-  void _save(BuildContext context, VitalDefinition def, bool isBangla) {
+  Future<void> _save(BuildContext context, VitalDefinition def, bool isBangla) async {
     final provider = context.read<HealthTrackingProvider>();
     final note = _noteCtrl.text;
 
@@ -265,20 +265,24 @@ class _LogEntryPageState extends State<LogEntryPage> {
         return;
       }
       if (widget.mode == LogEntryMode.initial) {
-        provider.addInitialLog(
+        await provider.addInitialLog(
           widget.vitalKey,
           VitalLog(id: _tempId(), date: DateTime.now(), systolic: sys, diastolic: dia, note: note),
         );
-        showHealthToast(context, isBangla ? '${def.nameBn} রিডিং সংরক্ষিত হয়েছে' : '${def.nameEn} reading saved');
-        Navigator.of(context).pop();
+        if (context.mounted) {
+          showHealthToast(context, isBangla ? '${def.nameBn} রিডিং সংরক্ষিত হয়েছে' : '${def.nameEn} reading saved');
+          Navigator.of(context).pop();
+        }
       } else {
-        provider.updateLog(
+        await provider.updateLog(
           widget.vitalKey,
           widget.logId!,
           _existing!.copyWith(systolic: sys, diastolic: dia, note: note),
         );
-        showHealthToast(context, isBangla ? 'রিডিং আপডেট হয়েছে' : 'Reading updated');
-        Navigator.of(context).pop();
+        if (context.mounted) {
+          showHealthToast(context, isBangla ? 'রিডিং আপডেট হয়েছে' : 'Reading updated');
+          Navigator.of(context).pop();
+        }
       }
     } else {
       final val = double.tryParse(_valueCtrl.text);
@@ -287,7 +291,7 @@ class _LogEntryPageState extends State<LogEntryPage> {
         return;
       }
       if (widget.mode == LogEntryMode.initial) {
-        provider.addInitialLog(
+        await provider.addInitialLog(
           widget.vitalKey,
           VitalLog(
             id: _tempId(),
@@ -297,16 +301,20 @@ class _LogEntryPageState extends State<LogEntryPage> {
             note: note,
           ),
         );
-        showHealthToast(context, isBangla ? '${def.nameBn} রিডিং সংরক্ষিত হয়েছে' : '${def.nameEn} reading saved');
-        Navigator.of(context).pop();
+        if (context.mounted) {
+          showHealthToast(context, isBangla ? '${def.nameBn} রিডিং সংরক্ষিত হয়েছে' : '${def.nameEn} reading saved');
+          Navigator.of(context).pop();
+        }
       } else {
-        provider.updateLog(
+        await provider.updateLog(
           widget.vitalKey,
           widget.logId!,
           _existing!.copyWith(value: val, context: def.hasContext ? _context : null, note: note),
         );
-        showHealthToast(context, isBangla ? 'রিডিং আপডেট হয়েছে' : 'Reading updated');
-        Navigator.of(context).pop();
+        if (context.mounted) {
+          showHealthToast(context, isBangla ? 'রিডিং আপডেট হয়েছে' : 'Reading updated');
+          Navigator.of(context).pop();
+        }
       }
     }
   }

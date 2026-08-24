@@ -1,10 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../core/services/api_service.dart';
 import '../pages/health_monitor/models/vital_definition.dart';
 import '../pages/health_monitor/models/vital_log.dart';
 import '../pages/health_monitor/models/vital_tracking_state.dart';
 
 class HealthTrackingProvider extends ChangeNotifier {
+  final String? token;
+
   final Map<String, VitalTrackingState> _states = {
     'bp': VitalTrackingState(freq: 1, times: ['08:00']),
     'temp': VitalTrackingState(freq: 1, times: ['09:00']),
@@ -12,6 +15,114 @@ class HealthTrackingProvider extends ChangeNotifier {
     'spo2': VitalTrackingState(freq: 1, times: ['08:00']),
     'hr': VitalTrackingState(freq: 1, times: ['08:00']),
   };
+
+  VitalLog? get latestAnyVitalLog {
+    VitalLog? latest;
+    for (var s in _states.values) {
+      if (s.logs.isNotEmpty) {
+        final last = s.logs.last;
+        if (latest == null || last.date.isAfter(latest.date)) {
+          latest = last;
+        }
+      }
+    }
+    return latest;
+  }
+
+  String? getLatestVitalKey(VitalLog log) {
+    for (var entry in _states.entries) {
+      if (entry.value.logs.contains(log)) return entry.key;
+    }
+    return null;
+  }
+
+  HealthTrackingProvider(this.token) {
+    if (token != null) {
+      _fetchAllVitals();
+      _fetchSettings();
+    }
+  }
+
+  Future<void> _fetchSettings() async {
+    try {
+      final response = await ApiService.get('/vitals/settings', token: token);
+      final List data = response['data'] ?? [];
+      for (var item in data) {
+        final key = item['vital_key'];
+        if (_states.containsKey(key)) {
+          final s = _states[key]!;
+          s.freq = item['frequency'] ?? 1;
+          s.times = List<String>.from(item['times'] ?? []);
+          s.days = List<bool>.from(item['days'] ?? [true, true, true, true, true, true, true]);
+          s.tracking = item['is_tracking'] ?? false;
+        }
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching vital settings: $e');
+    }
+  }
+
+  Future<void> _saveSettings(String key) async {
+    if (token == null) {
+      debugPrint('[HealthTrackingProvider] Cannot save settings for $key: token is null');
+      return;
+    }
+    try {
+      final s = _states[key]!;
+      debugPrint('[HealthTrackingProvider] Saving settings for $key: freq=${s.freq}, tracking=${s.tracking}');
+
+      final response = await ApiService.post('/vitals/settings', {
+        'vitalKey': key,
+        'settings': {
+          'frequency': s.freq,
+          'times': s.times,
+          'days': s.days,
+          'isTracking': s.tracking,
+        }
+      }, token: token);
+
+      debugPrint('[HealthTrackingProvider] Settings saved successfully for $key: ${response['message']}');
+    } catch (e) {
+      debugPrint('[HealthTrackingProvider] Error saving vital settings for $key: $e');
+    }
+  }
+
+  Future<void> _fetchAllVitals() async {
+    for (var key in _states.keys) {
+      await fetchVitals(key);
+    }
+  }
+
+  Future<void> fetchVitals(String key) async {
+    if (token == null) return;
+    try {
+      final response = await ApiService.get('/vitals?type=$key', token: token);
+      final List data = response['data'] ?? [];
+      final logs = data.map((json) => VitalLog(
+        id: json['id'].toString(),
+        date: DateTime.parse(json['logged_at']),
+        value: json['value']?.toDouble(),
+        systolic: json['systolic'],
+        diastolic: json['diastolic'],
+        context: json['context'],
+        note: json['note'] ?? '',
+      )).toList();
+
+      final s = _states[key]!;
+      s.logs = logs;
+
+      // If we have logs but it's not tracking, we sync it
+      if (logs.isNotEmpty && !s.tracking) {
+        s.tracking = true;
+        _saveSettings(key);
+      }
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching vitals for $key: $e');
+    }
+  }
 
   static const List<String> _defaultTimeSlots = [
     '08:00',
@@ -44,6 +155,7 @@ class HealthTrackingProvider extends ChangeNotifier {
     final s = state(key);
     s.freq = max(1, min(6, s.freq + delta));
     _reconcileTimes(s);
+    _saveSettings(key);
     notifyListeners();
   }
 
@@ -61,12 +173,14 @@ class HealthTrackingProvider extends ChangeNotifier {
 
   void updateTime(String key, int index, String hhmm) {
     state(key).times[index] = hhmm;
+    _saveSettings(key);
     notifyListeners();
   }
 
   void toggleDay(String key, int index) {
     final s = state(key);
     s.days[index] = !s.days[index];
+    _saveSettings(key);
     notifyListeners();
   }
 
@@ -111,31 +225,81 @@ class HealthTrackingProvider extends ChangeNotifier {
 String _genId(Random rnd) =>
     'log_${DateTime.now().microsecondsSinceEpoch}_${rnd.nextInt(1 << 31).toRadixString(36)}';
 
-  /// Saves the very first reading for a vital, turning tracking on and
-  /// backfilling mock history (matches saveLogEntry() initial-mode in JS).
-  void addInitialLog(String key, VitalLog log) {
+  /// Saves the very first reading for a vital, turning tracking on.
+  Future<void> addInitialLog(String key, VitalLog log) async {
     final s = state(key);
-    s.logs = [..._generateMockHistory(key), log];
-    s.tracking = true;
-    expandedKey = null;
-    notifyListeners();
+    try {
+      final response = await ApiService.post('/vitals', {
+        'type': key,
+        'value': log.value,
+        'systolic': log.systolic,
+        'diastolic': log.diastolic,
+        'context': log.context,
+        'loggedAt': log.date.toIso8601String(),
+      }, token: token);
+
+      final newLog = VitalLog(
+        id: response['data']['id'].toString(),
+        date: DateTime.parse(response['data']['logged_at']),
+        value: response['data']['value']?.toDouble(),
+        systolic: response['data']['systolic'],
+        diastolic: response['data']['diastolic'],
+        context: response['data']['context'],
+      );
+
+      s.logs = [newLog]; // We don't backfill mock history in real app
+      s.tracking = true;
+      _saveSettings(key);
+      expandedKey = null;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error adding vital: $e');
+    }
   }
 
-  void updateLog(String key, String logId, VitalLog updated) {
-    final s = state(key);
-    final idx = s.logs.indexWhere((l) => l.id == logId);
-    if (idx != -1) s.logs[idx] = updated;
-    notifyListeners();
+  Future<void> updateLog(String key, String logId, VitalLog updated) async {
+    try {
+      await ApiService.patch('/vitals/$logId', {
+        'value': updated.value,
+        'systolic': updated.systolic,
+        'diastolic': updated.diastolic,
+        'context': updated.context,
+        'loggedAt': updated.date.toIso8601String(),
+        'note': updated.note,
+      }, token: token);
+
+      final s = state(key);
+      final idx = s.logs.indexWhere((l) => l.id == logId);
+      if (idx != -1) {
+        s.logs[idx] = updated;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error updating vital: $e');
+    }
   }
 
-  void deleteLog(String key, String logId) {
-    final s = state(key);
-    s.logs.removeWhere((l) => l.id == logId);
-    notifyListeners();
+  Future<void> deleteLog(String key, String logId) async {
+    try {
+      await ApiService.delete('/vitals/$logId', token: token);
+      final s = state(key);
+      s.logs.removeWhere((l) => l.id == logId);
+
+      // If last log is deleted, stop tracking in settings too
+      if (s.logs.isEmpty && s.tracking) {
+        s.tracking = false;
+        await _saveSettings(key);
+      }
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error deleting vital: $e');
+    }
   }
 
   void stopTracking(String key) {
     state(key).tracking = false;
+    _saveSettings(key);
     notifyListeners();
   }
 }

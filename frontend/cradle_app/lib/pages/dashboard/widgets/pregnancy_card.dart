@@ -1,44 +1,48 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:cradle_app/core/utils/bangla_numerals.dart';
+import 'package:cradle_app/core/utils/pregnancy_utils.dart';
+import 'package:cradle_app/providers/auth_provider.dart';
 import '../../../providers/language_provider.dart';
 import 'growth_ring_painter.dart';
 
 class PregnancyCard extends StatelessWidget {
   const PregnancyCard({super.key});
 
-  final int weeksPregnant = 7;
   final int totalWeeks = 40;
-
-  final String childSizeBn = "আঙুর";
-  final String childSizeEn = "grape";
 
   static const Color primaryPink = Color(0xFFAB0A65);
   static const Color ringTrack = Color(0xFFFCE3EC);
 
-  int get _trimester {
-    if (weeksPregnant <= 13) return 1;
-    if (weeksPregnant <= 27) return 2;
+  int getTrimester(int weeks) {
+    if (weeks <= 13) return 1;
+    if (weeks <= 27) return 2;
     return 3;
   }
 
-  double _trimesterFraction() {
-    switch (_trimester) {
+  double getTrimesterFraction(int weeks, int trimester) {
+    switch (trimester) {
       case 1:
-        return weeksPregnant / 13;
+        return weeks / 13;
       case 2:
-        return (weeksPregnant - 13) / 14;
+        return (weeks - 13) / 14;
       default:
-        return (weeksPregnant - 27) / 13;
+        return (weeks - 27) / 13;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final isBangla = context.watch<LanguageProvider>().isBangla;
+    final authProvider = context.watch<AuthProvider>();
+
+    final weeksPregnant = authProvider.profile['pregnancy_week'] ?? 0;
+    final childSize = getChildSizeForWeek(weeksPregnant);
+
+    final trimester = getTrimester(weeksPregnant);
+    final trimesterFraction = getTrimesterFraction(weeksPregnant, trimester);
 
     final progress = (weeksPregnant / totalWeeks).clamp(0.0, 1.0);
 
@@ -142,7 +146,7 @@ class PregnancyCard extends StatelessWidget {
                       ),
                       padding: const EdgeInsets.all(22),
                       child: Image.asset(
-                        "assets/images/grape.png",
+                        "images/${childSize.icon}.png",
                         fit: BoxFit.contain,
                         errorBuilder: (
                           context,
@@ -181,7 +185,7 @@ class PregnancyCard extends StatelessWidget {
                         text: "আপনার শিশুর আকার এখন প্রায় একটি\n",
                       ),
                       TextSpan(
-                        text: childSizeBn,
+                        text: childSize.nameBn,
                         style: const TextStyle(
                           color: primaryPink,
                           fontWeight: FontWeight.bold,
@@ -207,7 +211,7 @@ class PregnancyCard extends StatelessWidget {
                         text: "Your baby is now the size of a\n",
                       ),
                       TextSpan(
-                        text: childSizeEn,
+                        text: childSize.nameEn,
                         style: const TextStyle(
                           color: primaryPink,
                           fontWeight: FontWeight.bold,
@@ -230,13 +234,13 @@ class PregnancyCard extends StatelessWidget {
                     final segmentNumber = index + 1;
 
                     final bool filled =
-                        segmentNumber < _trimester;
+                        segmentNumber < trimester;
 
                     final bool partial =
-                        segmentNumber == _trimester;
+                        segmentNumber == trimester;
 
                     final double fillFraction = partial
-                        ? _trimesterFraction().clamp(0.0, 1.0)
+                        ? trimesterFraction.clamp(0.0, 1.0)
                         : (filled ? 1.0 : 0.0);
 
                     return Expanded(

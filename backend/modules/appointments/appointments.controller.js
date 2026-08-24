@@ -32,9 +32,28 @@ class AppointmentsController {
 
   static async getReminders(req, res, next) {
     try {
+      const { localDate } = req.query;
       const reminders = await AppointmentsService.getMedicationReminders(req.user.id || req.user._id);
-      const logs = await AppointmentsService.getTodayLogs(req.user.id || req.user._id);
+      const logs = await AppointmentsService.getTodayLogs(req.user.id || req.user._id, localDate);
       return ApiResponse.success(res, 'Medication reminders retrieved successfully.', { reminders, logs });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async updateReminder(req, res, next) {
+    try {
+      const reminder = await AppointmentsService.updateMedicationReminder(req.user.id || req.user._id, req.params.id, req.body);
+      return ApiResponse.success(res, 'Medication reminder updated successfully.', reminder);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async deleteReminder(req, res, next) {
+    try {
+      await AppointmentsService.deleteMedicationReminder(req.user.id || req.user._id, req.params.id);
+      return ApiResponse.success(res, 'Medication reminder deleted successfully.');
     } catch (error) {
       next(error);
     }
@@ -42,8 +61,8 @@ class AppointmentsController {
 
   static async logDose(req, res, next) {
     try {
-      const { reminderId, scheduledTime } = req.body;
-      const log = await AppointmentsService.logMedicationDose(req.user.id || req.user._id, reminderId, scheduledTime);
+      const { reminderId, scheduledTime, localDate } = req.body;
+      const log = await AppointmentsService.logMedicationDose(req.user.id || req.user._id, reminderId, scheduledTime, localDate);
       return ApiResponse.success(res, 'Medication dose logged successfully.', log, httpStatusCodes.CREATED);
     } catch (error) {
       next(error);
@@ -52,8 +71,8 @@ class AppointmentsController {
 
   static async unlogDose(req, res, next) {
     try {
-      const { reminderId, scheduledTime } = req.body;
-      await AppointmentsService.unlogMedicationDose(req.user.id || req.user._id, reminderId, scheduledTime);
+      const { reminderId, scheduledTime, localDate } = req.body;
+      await AppointmentsService.unlogMedicationDose(req.user.id || req.user._id, reminderId, scheduledTime, localDate);
       return ApiResponse.success(res, 'Medication dose unlogged successfully.');
     } catch (error) {
       next(error);
@@ -62,7 +81,8 @@ class AppointmentsController {
 
   static async getAdherence(req, res, next) {
     try {
-      const data = await AppointmentsService.getAdherence(req.user.id || req.user._id);
+      const { localDate } = req.query;
+      const data = await AppointmentsService.getAdherence(req.user.id || req.user._id, localDate);
       return ApiResponse.success(res, 'Medication adherence retrieved successfully.', data);
     } catch (error) {
       next(error);

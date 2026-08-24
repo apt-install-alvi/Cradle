@@ -6,9 +6,9 @@ const generateToken = require('../../common/utils/generateToken');
 class AuthController {
   static async register(req, res, next) {
     try {
-      const { phone, full_name } = req.body;
-      await AuthService.register(phone, full_name);
-      return ApiResponse.success(res, 'Verification OTP code sent via SMS8.', {
+      const { phone, full_name, age } = req.body;
+      await AuthService.register(phone, full_name, age);
+      return ApiResponse.success(res, 'Verification OTP code sent.', {
         phone
       }, httpStatusCodes.CREATED);
     } catch (error) {
@@ -20,7 +20,7 @@ class AuthController {
     try {
       const { phone } = req.body;
       await AuthService.login(phone);
-      return ApiResponse.success(res, 'Verification OTP code sent via SMS8.', {
+      return ApiResponse.success(res, 'Verification OTP code sent.', {
         phone
       });
     } catch (error) {

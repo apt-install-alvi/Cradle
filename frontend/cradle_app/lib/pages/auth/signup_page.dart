@@ -7,20 +7,24 @@ import '../../core/widgets/language_toggle.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _ageController = TextEditingController();
 
   @override
   void dispose() {
+    _nameController.dispose();
     _phoneController.dispose();
+    _ageController.dispose();
     super.dispose();
   }
 
@@ -28,8 +32,12 @@ class _LoginPageState extends State<LoginPage> {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       try {
-        await authProvider.login(_phoneController.text.trim());
-        
+        await authProvider.register(
+          _phoneController.text.trim(),
+          _nameController.text.trim(),
+          int.parse(_ageController.text.trim()),
+        );
+
         if (mounted) {
           // Navigate to OTP page
           Navigator.pushNamed(context, AppRoutes.otp);
@@ -59,11 +67,15 @@ class _LoginPageState extends State<LoginPage> {
     final bool isBangla = languageProvider.isBangla;
 
     final String subtitle = isBangla ? 'একজন মায়ের সুরক্ষিত যত্ন' : "A Mother's Secure Care";
-    final String loginHeader = isBangla ? 'প্রবেশ করুন' : 'Login';
-    final String loginSub = isBangla ? 'এগিয়ে যেতে আপনার মোবাইল নম্বর দিন' : 'Enter your phone to proceed';
+    final String registerHeader = isBangla ? 'নিবন্ধন করুন' : 'Sign Up';
+    final String registerSub = isBangla ? 'নিবন্ধন করতে আপনার তথ্য প্রদান করুন' : 'Provide your details to register';
+    final String nameLabel = isBangla ? 'নাম' : 'Name';
+    final String nameHint = isBangla ? 'আপনার সম্পূর্ণ নাম লিখুন' : 'Enter your full name';
+    final String ageLabel = isBangla ? 'বয়স' : 'Age';
+    final String ageHint = isBangla ? 'আপনার বয়স লিখুন' : 'Enter your age';
     final String phoneLabel = isBangla ? 'মোবাইল নম্বর' : 'Mobile Number';
     final String phoneHint = isBangla ? '১১ ডিজিটের মোবাইল নম্বর' : '11-digit mobile number';
-    final String submitBtn = isBangla ? 'লগইন করুন' : 'Login';
+    final String submitBtn = isBangla ? 'নিবন্ধন করুন' : 'Sign Up';
 
     return Scaffold(
       backgroundColor: primaryColor,
@@ -89,13 +101,59 @@ class _LoginPageState extends State<LoginPage> {
                   // Logo
                   _buildLogo(secondaryColor, subtitle, textColor),
                   const SizedBox(height: 50),
-                  
+
                   // Header
-                  _buildHeader(loginHeader, isBangla, textColor, loginSub),
+                  _buildHeader(registerHeader, isBangla, textColor, registerSub),
                   const SizedBox(height: 32),
 
+                  // Name Field
+                  _buildTextField(
+                    controller: _nameController,
+                    label: nameLabel,
+                    hint: nameHint,
+                    icon: Icons.person_outline,
+                    secondaryColor: secondaryColor,
+                    textColor: textColor,
+                    isBangla: isBangla,
+                    validator: (value) => (value == null || value.trim().isEmpty) ? (isBangla ? 'আপনার নাম লিখুন' : 'Please enter your name') : null,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Age Field
+                  _buildTextField(
+                    controller: _ageController,
+                    label: ageLabel,
+                    hint: ageHint,
+                    icon: Icons.cake_outlined,
+                    secondaryColor: secondaryColor,
+                    textColor: textColor,
+                    isBangla: isBangla,
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) return isBangla ? 'আপনার বয়স লিখুন' : 'Please enter your age';
+                      if (int.tryParse(value.trim()) == null) return isBangla ? 'সঠিক সংখ্যা দিন' : 'Enter a valid number';
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
                   // Phone Field
-                  _buildPhoneField(textColor, isBangla, phoneLabel, secondaryColor, phoneHint),
+                  _buildTextField(
+                    controller: _phoneController,
+                    label: phoneLabel,
+                    hint: phoneHint,
+                    icon: Icons.phone_outlined,
+                    secondaryColor: secondaryColor,
+                    textColor: textColor,
+                    isBangla: isBangla,
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) return isBangla ? 'মোবাইল নম্বর লিখুন' : 'Please enter phone number';
+                      final phoneRegExp = RegExp(r'^(?:\+88|88)?(01[3-9]\d{8})$');
+                      if (!phoneRegExp.hasMatch(value.trim())) return isBangla ? 'সঠিক নম্বর দিন' : 'Enter valid phone number';
+                      return null;
+                    },
+                  ),
                   const SizedBox(height: 40),
 
                   // Submit Button
@@ -172,10 +230,20 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildPhoneField(Color textColor, bool isBangla, String label, Color secondaryColor, String hint) {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    required Color secondaryColor,
+    required Color textColor,
+    required bool isBangla,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
     return TextFormField(
-      controller: _phoneController,
-      keyboardType: TextInputType.phone,
+      controller: controller,
+      keyboardType: keyboardType,
       style: isBangla
           ? TextStyle(color: textColor, fontSize: 16)
           : GoogleFonts.gentiumBookPlus(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
@@ -188,7 +256,7 @@ class _LoginPageState extends State<LoginPage> {
         hintStyle: isBangla
             ? TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 14)
             : GoogleFonts.gentiumBookPlus(color: textColor.withValues(alpha: 0.4), fontSize: 14, fontWeight: FontWeight.bold),
-        prefixIcon: Icon(Icons.phone_outlined, color: secondaryColor),
+        prefixIcon: Icon(icon, color: secondaryColor),
         filled: true,
         fillColor: Colors.white,
         enabledBorder: OutlineInputBorder(
@@ -202,12 +270,7 @@ class _LoginPageState extends State<LoginPage> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) return isBangla ? 'মোবাইল নম্বর লিখুন' : 'Please enter phone number';
-        final phoneRegExp = RegExp(r'^(?:\+88|88)?(01[3-9]\d{8})$');
-        if (!phoneRegExp.hasMatch(value.trim())) return isBangla ? 'সঠিক নম্বর দিন' : 'Enter valid phone number';
-        return null;
-      },
+      validator: validator,
     );
   }
 
@@ -240,13 +303,13 @@ class _LoginPageState extends State<LoginPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          isBangla ? 'আপনার কি অ্যাকাউন্ট নেই? ' : "If you don't have an account, ",
+          isBangla ? 'আগের অ্যাকাউন্ট? ' : "Already have an account? ",
           style: GoogleFonts.gentiumBookPlus(color: const Color(0xFF4A3E48)),
         ),
         GestureDetector(
-          onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.signup),
+          onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.login),
           child: Text(
-            isBangla ? 'নিবন্ধন করুন' : 'register',
+            isBangla ? 'লগইন করুন' : 'Login here',
             style: GoogleFonts.gentiumBookPlus(
               color: secondaryColor,
               fontWeight: FontWeight.bold,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/widgets/bottom_nav.dart';
+import '../../core/widgets/language_toggle.dart';
 import '../../providers/language_provider.dart';
 import '../../providers/education_provider.dart';
 import 'widgets/article_card.dart';
@@ -69,11 +70,13 @@ class _EducationListPageState extends State<EducationListPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       isBangla ? "শিক্ষামূলক গাইড" : "Education Guides",
                       style: AppText.headerTitle.copyWith(fontSize: 24)
                     ),
+                    const LanguageToggle(),
                   ],
                 ),
               ),

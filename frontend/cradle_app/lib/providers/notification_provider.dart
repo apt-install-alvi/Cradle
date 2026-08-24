@@ -48,7 +48,14 @@ class NotificationProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await ApiService.get('/notifications', token: token);
+      final now = DateTime.now();
+      final localDate = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+      final localTime = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+
+      final response = await ApiService.get(
+        '/notifications?localDate=$localDate&localTime=$localTime',
+        token: token
+      );
       final List data = response['data'] ?? [];
       _notifications = data.map((n) => NotificationModel.fromJson(n)).toList();
     } catch (e) {
@@ -65,7 +72,8 @@ class NotificationProvider extends ChangeNotifier {
       if (index != -1) {
         _notifications[index].isRead = true;
         notifyListeners();
-        await ApiService.post('/notifications/mark-read', {'notificationId': id}, token: token);
+        // Backend expects PATCH /notifications/:id/read
+        await ApiService.patch('/notifications/$id/read', {}, token: token);
       }
     } catch (e) {
       debugPrint('Error marking notification as read: $e');
@@ -73,9 +81,14 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   Future<void> markAllAsRead() async {
-    // Simplified for now: just update local state
-    for (var n in _notifications) {
-      if (!n.isRead) markAsRead(n.id);
+    try {
+      for (var n in _notifications) {
+        n.isRead = true;
+      }
+      notifyListeners();
+      await ApiService.patch('/notifications/read-all', {}, token: token);
+    } catch (e) {
+      debugPrint('Error marking all notifications as read: $e');
     }
   }
 }

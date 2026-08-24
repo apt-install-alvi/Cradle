@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../pages/medication_tracker/medication_tracker_page.dart';
 import '../../pages/splash/splash_page.dart';
 import '../../pages/auth/login_page.dart';
+import '../../pages/auth/signup_page.dart';
 import '../../pages/otp_verification/otp_verification_page.dart';
 import '../../pages/personal_info/personal_info_page.dart';
 import '../../pages/dashboard/dashboard_page.dart';
@@ -38,6 +39,8 @@ switch (routeName) {
         return MaterialPageRoute(builder: (_) => const SplashPage());
       case AppRoutes.login:
         return MaterialPageRoute(builder: (_) => const LoginPage());
+      case AppRoutes.signup:
+        return MaterialPageRoute(builder: (_) => const SignupPage());
       case AppRoutes.otp:
         return MaterialPageRoute(builder: (_) => const OtpVerificationPage());
       case AppRoutes.personalInfo:

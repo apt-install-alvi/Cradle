@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/gradient_scaffold.dart';
 import '../../core/widgets/bottom_nav.dart';
+import '../../core/widgets/language_toggle.dart';
 import './models/medication.dart';
 import './models/scheduled_dose.dart';
 import '../../providers/language_provider.dart';
@@ -31,7 +32,11 @@ class _MedicationTrackerPageState extends State<MedicationTrackerPage> {
 
     if (mounted) {
       final provider = context.read<MedicationProvider>();
-      await provider.addMedication(result);
+      if (existing != null) {
+        await provider.updateMedication(result);
+      } else {
+        await provider.addMedication(result);
+      }
     }
   }
 
@@ -88,10 +93,16 @@ class _MedicationTrackerPageState extends State<MedicationTrackerPage> {
 
     if (shouldDelete != true) return;
 
-    // TODO: Implement delete in provider and backend
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Delete not yet implemented in backend')),
-    );
+    if (mounted) {
+      final provider = context.read<MedicationProvider>();
+      await provider.deleteMedication(medication.id);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isBangla ? 'ওষুধ মুছে ফেলা হয়েছে' : 'Medication deleted'),
+        ),
+      );
+    }
   }
 
   @override
@@ -134,9 +145,15 @@ class _MedicationTrackerPageState extends State<MedicationTrackerPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
-                  Text(
-                    isBangla ? 'ওষুধ ট্র্যাকার' : 'Medication Tracker',
-                    style: AppText.headerTitle,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        isBangla ? 'ওষুধ ট্র্যাকার' : 'Medication Tracker',
+                        style: AppText.headerTitle,
+                      ),
+                      const LanguageToggle(),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   Text(

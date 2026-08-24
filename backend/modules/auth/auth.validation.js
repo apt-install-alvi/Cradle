@@ -1,11 +1,23 @@
-const validateRegisterLogin = (body) => {
-  const { phone, full_name } = body;
+const validateRegister = (body) => {
+  const { phone, full_name, age } = body;
   if (!phone || typeof phone !== 'string' || phone.trim().length < 8) {
-    return { error: new Error('Valid phone number is required (at least 8 characters)') };
+    return { error: new Error('Valid phone number is required') };
   }
-  // full_name is optional for login but required for first-time registration
-  // For simplicity, we just pass what we have.
-  return { value: { phone: phone.trim(), full_name: full_name?.trim() } };
+  if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2) {
+    return { error: new Error('Full name is required') };
+  }
+  if (!age) {
+    return { error: new Error('Age is required') };
+  }
+  return { value: { phone: phone.trim(), full_name: full_name.trim(), age } };
+};
+
+const validateLogin = (body) => {
+  const { phone } = body;
+  if (!phone || typeof phone !== 'string' || phone.trim().length < 8) {
+    return { error: new Error('Valid phone number is required') };
+  }
+  return { value: { phone: phone.trim() } };
 };
 
 const validateVerifyOtp = (body) => {
@@ -28,7 +40,8 @@ const validateResendOtp = (body) => {
 };
 
 module.exports = {
-  validateRegisterLogin,
+  validateRegister,
+  validateLogin,
   validateVerifyOtp,
   validateResendOtp
 };

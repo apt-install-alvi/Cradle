@@ -17,6 +17,9 @@ const healthHistoryRoutes = require('./modules/healthHistory/healthHistory.route
 const emergencyRoutes = require('./modules/emergency/emergency.routes');
 const educationRoutes = require('./modules/education/education.routes');
 const notificationsRoutes = require('./modules/notifications/notifications.routes');
+const settingsRoutes = require('./modules/settings/settings.routes');
+const waterRoutes = require('./modules/water/water.routes');
+const vitalsRoutes = require('./modules/vitals/vitals.routes');
 
 const app = express();
 
@@ -45,6 +48,9 @@ app.use('/api/history', healthHistoryRoutes);
 app.use('/api/emergency', emergencyRoutes);
 app.use('/api/education', educationRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/water', waterRoutes);
+app.use('/api/vitals', vitalsRoutes);
 
 // Catch 404
 app.use((req, res, next) => {

@@ -180,7 +180,15 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       };
 
       await authProvider.updateProfile(profileData);
-      _showSnackBar(isBangla ? 'প্রোফাইল সফলভাবে সংরক্ষিত!' : 'Profile saved successfully!');
+      if (mounted) {
+        _showSnackBar(isBangla ? 'প্রোফাইল সফলভাবে সংরক্ষিত!' : 'Profile saved successfully!');
+        // Navigate to dashboard after saving
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.dashboard,
+          (route) => false,
+        );
+      }
     } catch (e) {
       _showSnackBar(isBangla ? 'ব্যর্থ হয়েছে: $e' : 'Failed to save: $e', isError: true);
     } finally {

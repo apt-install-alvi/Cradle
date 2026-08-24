@@ -5,10 +5,12 @@ import 'package:provider/provider.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/widgets/gradient_scaffold.dart';
 import '../../core/widgets/bottom_nav.dart';
+import '../../core/widgets/language_toggle.dart';
 import '../health_monitor/widgets/health_top_bar.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
 import '../../providers/font_size_provider.dart';
+import '../../providers/settings_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -54,9 +56,6 @@ TextStyle _itemSubtitle() => const TextStyle(
     );
 
   // ── Toggle states ─────────────────────────────────────────────────
-  bool _pushNotifications = true;
-  bool _appointmentReminders = true;
-  bool _healthAlerts = true;
   bool _locationAccess = true;
   bool _analyticsEnabled = true;
 
@@ -85,10 +84,15 @@ TextStyle _itemSubtitle() => const TextStyle(
 Widget build(BuildContext context) {
   final languageProvider = context.watch<LanguageProvider>();
   final authProvider = context.watch<AuthProvider>();
+  final settingsProvider = context.watch<SettingsProvider?>();
 
   final bool isBangla = languageProvider.isBangla;
   final String userName =
       authProvider.userName.isEmpty ? 'User' : authProvider.userName;
+
+  if (settingsProvider == null) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+  }
 
   return GradientScaffold(
     bottomNavigationBar: const DashboardBottomNav(
@@ -125,9 +129,9 @@ Widget build(BuildContext context) {
             subtitle: isBangla
                 ? 'অ্যাপ বিজ্ঞপ্তি গ্রহণ করুন'
                 : 'Receive app notifications',
-            value: _pushNotifications,
+            value: settingsProvider.pushNotificationsEnabled,
             onChanged: (v) {
-              setState(() => _pushNotifications = v);
+              settingsProvider.updatePushNotifications(v);
             },
           ),
 
@@ -141,9 +145,9 @@ Widget build(BuildContext context) {
             subtitle: isBangla
                 ? 'আসন্ন অ্যাপয়েন্টমেন্টের জন্য সতর্কতা'
                 : 'Alerts for upcoming appointments',
-            value: _appointmentReminders,
+            value: settingsProvider.appointmentRemindersEnabled,
             onChanged: (v) {
-              setState(() => _appointmentReminders = v);
+              settingsProvider.updateAppointmentReminders(v);
             },
           ),
 
@@ -155,9 +159,9 @@ Widget build(BuildContext context) {
             subtitle: isBangla
                 ? 'গুরুত্বপূর্ণ স্বাস্থ্য বিজ্ঞপ্তি'
                 : 'Important health notifications',
-            value: _healthAlerts,
+            value: settingsProvider.healthAlertsEnabled,
             onChanged: (v) {
-              setState(() => _healthAlerts = v);
+              settingsProvider.updateHealthAlerts(v);
             },
           ),
 
@@ -630,73 +634,8 @@ Widget _buildLanguageCard(
             ),
           ),
 
-          Container(
-            decoration: BoxDecoration(
-              color: _brandSofter,
-              borderRadius: BorderRadius.circular(25),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                  onTap: () => languageProvider.setLanguage(false),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeInOut,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: !isBangla
-                          ? _accent
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Text(
-                      'EN',
-                      style: GoogleFonts.gentiumBookPlus(
-                        color: !isBangla
-                            ? Colors.white
-                            : _accent,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ),
-
-                GestureDetector(
-                  onTap: () => languageProvider.setLanguage(true),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeInOut,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isBangla
-                          ? _accent
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Text(
-                      'বাং',
-                      style: const TextStyle(
-                        color: _accent,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ).copyWith(
-                        color: isBangla
-                            ? Colors.white
-                            : _accent,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          const LanguageToggle(
+            inactiveColor: Color(0xFFFCEEF5), // _brandSofter
           ),
         ],
       ),

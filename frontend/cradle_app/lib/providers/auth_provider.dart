@@ -11,7 +11,7 @@ class AuthProvider extends ChangeNotifier {
 
   bool get isLoggedIn => _token != null;
   String? get token => _token;
-  bool get isProfileCompleted => _userProfile?['isProfileCompleted'] ?? false;
+  bool get isProfileCompleted => _userProfile?['is_profile_completed'] ?? _userProfile?['isProfileCompleted'] ?? false;
   Map<String, dynamic> get profile => _userProfile ?? {};
   String get userName => _userName;
   String? get phone => _phone;
@@ -56,12 +56,13 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> register(String phone, String name) async {
+  Future<void> register(String phone, String name, int age) async {
     _setLoading(true);
     try {
       await ApiService.post('/auth/register', {
         'phone': phone,
         'full_name': name,
+        'age': age,
       });
       _phone = phone;
       _userName = name;

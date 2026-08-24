@@ -10,6 +10,8 @@ import 'providers/font_size_provider.dart';
 import 'providers/education_provider.dart';
 import 'providers/health_tracking_provider.dart';
 import 'providers/medication_provider.dart';
+import 'providers/notification_provider.dart';
+import 'providers/settings_provider.dart';
 import 'repositories/medication_repository.dart';
 
 void main() {
@@ -35,10 +37,32 @@ class CradleApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ChangeNotifierProvider(create: (_) => FontSizeProvider()),
         ChangeNotifierProvider(create: (_) => EducationProvider()),
-        ChangeNotifierProvider(create: (_) => HealthTrackingProvider()),
+        ChangeNotifierProxyProvider<AuthProvider, HealthTrackingProvider>(
+          create: (context) => HealthTrackingProvider(null),
+          update: (context, auth, previous) {
+            if (previous != null && previous.token == auth.token) return previous;
+            return HealthTrackingProvider(auth.token);
+          },
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, SettingsProvider?>(
+          create: (context) => null,
+          update: (context, auth, previous) {
+            if (!auth.isLoggedIn) return null;
+            if (previous != null) return previous;
+            return SettingsProvider(auth.token);
+          },
+        ),
+        ChangeNotifierProxyProvider<SettingsProvider?, LanguageProvider>(
+          create: (_) => LanguageProvider(),
+          update: (_, settings, language) {
+            if (settings != null && settings.language != language!.localeCode) {
+              Future.microtask(() => language.setLocaleCode(settings.language));
+            }
+            return language!;
+          },
+        ),
         ChangeNotifierProxyProvider<AuthProvider, MedicationProvider?>(
           create: (context) => null,
           update: (context, auth, previous) {

@@ -58,8 +58,34 @@ class MedicationProvider extends ChangeNotifier {
     try {
       final newMed = await _repository.addMedication(medication);
       _medications.add(newMed);
-      _buildTodayDoses([]); // Rebuild with current state, though logs might need refresh
+      await fetchMedications(); // Refresh to get correct doses
+    } catch (e) {
+      _error = e.toString();
       notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<void> updateMedication(Medication medication) async {
+    try {
+      final updatedMed = await _repository.updateMedication(medication);
+      final index = _medications.indexWhere((m) => m.id == updatedMed.id);
+      if (index != -1) {
+        _medications[index] = updatedMed;
+      }
+      await fetchMedications(); // Refresh to get correct doses
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<void> deleteMedication(String id) async {
+    try {
+      await _repository.deleteMedication(id);
+      _medications.removeWhere((m) => m.id == id);
+      await fetchMedications(); // Refresh to get correct doses
     } catch (e) {
       _error = e.toString();
       notifyListeners();

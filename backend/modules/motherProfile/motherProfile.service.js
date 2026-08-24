@@ -8,14 +8,14 @@ class MotherProfileService {
   static async getProfileByUserId(userId) {
     const { data: profile, error } = await supabase
       .from('mother_profiles')
-      .select('*, users(full_name, phone)')
+      .select('*, users(full_name, phone, is_profile_completed)')
       .eq('user_id', userId)
       .maybeSingle();
 
     if (!profile) {
       const { data: user, error: userError } = await supabase
         .from('users')
-        .select('full_name, phone')
+        .select('full_name, phone, is_profile_completed')
         .eq('id', userId)
         .single();
 
@@ -23,6 +23,7 @@ class MotherProfileService {
         user_id: userId,
         full_name: user?.full_name || '',
         phone: user?.phone || '',
+        is_profile_completed: user?.is_profile_completed || false,
         isNew: true
       };
     }
@@ -31,7 +32,8 @@ class MotherProfileService {
     const result = {
       ...profile,
       full_name: profile.users?.full_name || '',
-      phone: profile.users?.phone || ''
+      phone: profile.users?.phone || '',
+      is_profile_completed: profile.users?.is_profile_completed || false
     };
     delete result.users;
 

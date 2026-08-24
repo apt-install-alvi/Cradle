@@ -1,4 +1,5 @@
 const supabase = require('../../config/supabase');
+const { getLocalDateString } = require('../../common/utils/dateHelpers');
 
 class AppointmentsService {
   static async createAppointment(userId, data) {
@@ -63,7 +64,37 @@ class AppointmentsService {
     return data;
   }
 
-  static async logMedicationDose(userId, reminderId, scheduledTime) {
+  static async updateMedicationReminder(userId, reminderId, data) {
+    const { data: reminder, error } = await supabase
+      .from('medication_reminders')
+      .update({
+        medication_name: data.medicationName,
+        dosage: data.dosage,
+        time_of_day: data.timeOfDay,
+        is_active: data.isActive !== undefined ? data.isActive : true
+      })
+      .eq('id', reminderId)
+      .eq('user_id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return reminder;
+  }
+
+  static async deleteMedicationReminder(userId, reminderId) {
+    const { error } = await supabase
+      .from('medication_reminders')
+      .delete()
+      .eq('id', reminderId)
+      .eq('user_id', userId);
+
+    if (error) throw error;
+    return true;
+  }
+
+  static async logMedicationDose(userId, reminderId, scheduledTime, localDate) {
+    const date = localDate || getLocalDateString();
     const { data, error } = await supabase
       .from('medication_logs')
       .upsert([
@@ -71,7 +102,7 @@ class AppointmentsService {
           user_id: userId,
           reminder_id: reminderId,
           scheduled_time: scheduledTime,
-          log_date: new Date().toISOString().split('T')[0],
+          log_date: date,
           taken_at: new Date().toISOString(),
           status: 'TAKEN'
         }
@@ -83,8 +114,8 @@ class AppointmentsService {
     return data;
   }
 
-  static async unlogMedicationDose(userId, reminderId, scheduledTime) {
-    const today = new Date().toISOString().split('T')[0];
+  static async unlogMedicationDose(userId, reminderId, scheduledTime, localDate) {
+    const date = localDate || getLocalDateString();
     const { error } = await supabase
       .from('medication_logs')
       .delete()
@@ -92,14 +123,14 @@ class AppointmentsService {
         user_id: userId,
         reminder_id: reminderId,
         scheduled_time: scheduledTime,
-        log_date: today
+        log_date: date
       });
 
     if (error) throw error;
     return true;
   }
 
-  static async getAdherence(userId) {
+  static async getAdherence(userId, localDate) {
     // Get all reminders to know the denominator
     const { data: reminders } = await supabase
       .from('medication_reminders')
@@ -108,14 +139,15 @@ class AppointmentsService {
       .eq('is_active', true);
 
     // Get logs for the last 30 days
-    const thirtyDaysAgo = new Date();
+    const endDate = localDate ? new Date(localDate) : new Date();
+    const thirtyDaysAgo = new Date(endDate);
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const { data: logs, error } = await supabase
       .from('medication_logs')
       .select('log_date, reminder_id')
       .eq('user_id', userId)
-      .gte('log_date', thirtyDaysAgo.toISOString().split('T')[0]);
+      .gte('log_date', getLocalDateString(thirtyDaysAgo));
 
     if (error) throw error;
 
@@ -138,13 +170,13 @@ class AppointmentsService {
     return adherence;
   }
 
-  static async getTodayLogs(userId) {
-    const today = new Date().toISOString().split('T')[0];
+  static async getTodayLogs(userId, localDate) {
+    const date = localDate || getLocalDateString();
     const { data, error } = await supabase
       .from('medication_logs')
       .select('reminder_id, scheduled_time')
       .eq('user_id', userId)
-      .eq('log_date', today);
+      .eq('log_date', date);
 
     if (error) throw error;
     return data;

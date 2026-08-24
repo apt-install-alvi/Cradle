@@ -1,4 +1,7 @@
 import 'package:cradle_app/core/routes/app_routes.dart';
+import 'package:cradle_app/core/utils/bangla_numerals.dart';
+import 'package:cradle_app/pages/health_monitor/models/vital_definition.dart';
+import 'package:cradle_app/providers/health_tracking_provider.dart';
 import 'package:cradle_app/providers/medication_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/widgets/bottom_nav.dart';
+import '../../core/widgets/language_toggle.dart';
 import '../../core/theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
@@ -27,6 +31,7 @@ class DashboardScreen extends StatelessWidget {
     final bool isBangla = languageProvider.isBangla;
     final authProvider = context.watch<AuthProvider>();
     final medicationProvider = context.watch<MedicationProvider?>();
+    final healthProvider = context.watch<HealthTrackingProvider>();
 
     // Calculate next dose for QuickStatusRow
     ScheduledDose? nextDose;
@@ -39,8 +44,40 @@ class DashboardScreen extends StatelessWidget {
           (d) => !d.taken && (d.time.hour * 60 + d.time.minute) > nowMinutes
         );
       } catch (_) {
-        // If all doses taken or none after current time, maybe show first untaken or nothing
-        nextDose = medicationProvider.todayDoses.firstWhere((d) => !d.taken, orElse: () => medicationProvider.todayDoses.first);
+        // If all doses taken or none after current time, show first untaken or first
+        try {
+          nextDose = medicationProvider.todayDoses.firstWhere((d) => !d.taken);
+        } catch (_) {
+          nextDose = medicationProvider.todayDoses.first;
+        }
+      }
+    }
+
+    // Health monitor latest reading
+    final latestLog = healthProvider.latestAnyVitalLog;
+    String lastVitalLabel = "None";
+    String lastVitalLabelBn = "কোনোটি নেই";
+    String lastVitalSub = "--";
+    String lastVitalSubBn = "--";
+
+    if (latestLog != null) {
+      final key = healthProvider.getLatestVitalKey(latestLog);
+      final def = key != null ? kVitalDefinitions[key] : null;
+      if (def != null) {
+        lastVitalLabel = def.type == VitalType.bp
+          ? "BP ${latestLog.systolic}/${latestLog.diastolic}"
+          : "${def.nameEn} ${latestLog.value}";
+
+        lastVitalLabelBn = def.type == VitalType.bp
+          ? "BP ${toBanglaDigits(latestLog.systolic!)}/${toBanglaDigits(latestLog.diastolic!)}"
+          : "${def.nameBn} ${toBanglaDigits(latestLog.value!)}";
+
+        final bool isToday = latestLog.date.day == DateTime.now().day &&
+            latestLog.date.month == DateTime.now().month &&
+            latestLog.date.year == DateTime.now().year;
+
+        lastVitalSub = isToday ? "Logged today" : "Last: ${latestLog.date.day}/${latestLog.date.month}";
+        lastVitalSubBn = isToday ? "আজ লগ করা হয়েছে" : "সর্বশেষ: ${toBanglaDigits(latestLog.date.day)}/${toBanglaDigits(latestLog.date.month)}";
       }
     }
 
@@ -81,73 +118,7 @@ class DashboardScreen extends StatelessWidget {
                     // ------------------------------------------------
                     // LANGUAGE TOGGLE — LEFT
                     // ------------------------------------------------
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: .5),
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(
-                          color: primaryPink.withValues(alpha: 0.2),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          GestureDetector(
-                            onTap: () =>
-                                context.read<LanguageProvider>().setLanguage(false),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: !isBangla
-                                    ? primaryPink
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              child: Text(
-                                'English',
-                                style: GoogleFonts.gentiumBookPlus(
-                                  color: !isBangla
-                                      ? Colors.white
-                                      : primaryPink,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          GestureDetector(
-                            onTap: () =>
-                                context.read<LanguageProvider>().setLanguage(true),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isBangla
-                                    ? primaryPink
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              child: Text(
-                                'বাংলা',
-                                style: TextStyle(
-                                  color: isBangla
-                                      ? Colors.white
-                                      : primaryPink,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    const LanguageToggle(),
 
                     // ------------------------------------------------
                     // RIGHT-SIDE BUTTONS
@@ -244,10 +215,10 @@ class DashboardScreen extends StatelessWidget {
                     nextDoseTime: nextDose?.time.format(context) ?? "--:--",
                     nextDoseEta: nextDose != null ? (isBangla ? "পরবর্তী ডোজ" : "Next dose") : (isBangla ? "সব শেষ" : "All set"),
                     nextDoseEtaBn: nextDose != null ? "পরবর্তী ডোজ" : "সব শেষ",
-                    lastVitalLabel: "BP 118/76", // TODO: Wire health monitor
-                    lastVitalLabelBn: "BP ১১৮/৭৬",
-                    lastVitalSub: "Logged today",
-                    lastVitalSubBn: "আজ লগ করা হয়েছে",
+                    lastVitalLabel: lastVitalLabel,
+                    lastVitalLabelBn: lastVitalLabelBn,
+                    lastVitalSub: lastVitalSub,
+                    lastVitalSubBn: lastVitalSubBn,
                     onMedicineTap: () => Navigator.pushNamed(context, AppRoutes.medicationTracker),
                     onHealthTap: () => Navigator.pushNamed(context, AppRoutes.healthMonitor),
                   ),
