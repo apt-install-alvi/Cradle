@@ -5,34 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5e7f32e2-e561-42ae-bc3d-cefd2a777370" name="Changes" comment=" &quot;backend fix for  login and that save to database&quot;">
-      <change afterPath="$PROJECT_DIR$/backend/common/utils/smsService.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/config/supabase.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/supabase_schema.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/providers/medication_provider.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/repositories/medication_repository.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/planningMode.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/planningMode.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/common/middlewares/authMiddleware.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/common/middlewares/authMiddleware.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/config/env.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/config/env.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/aiPrediction/aiPrediction.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/aiPrediction/aiPrediction.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/modules/appointments/appointments.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/appointments/appointments.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/modules/appointments/appointments.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/appointments/appointments.routes.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/modules/appointments/appointments.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/appointments/appointments.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/auth/auth.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/auth/auth.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/auth/auth.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/auth/auth.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/education/education.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/education/education.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/emergency/emergency.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/emergency/emergency.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/motherProfile/motherProfile.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/motherProfile/motherProfile.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/notifications/notifications.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/notifications/notifications.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/symptoms/symptoms.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/symptoms/symptoms.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugin_registrant.h" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugin_registrant.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/linux/flutter/generated_plugins.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugin_registrant.h" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugin_registrant.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/windows/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/supabase_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/supabase_schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/auth/login_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/auth/login_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/dashboard/dashboard_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/dashboard/dashboard_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/medication_tracker/medication_tracker_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/medication_tracker/medication_tracker_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/medication_tracker/models/medication.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/pages/medication_tracker/models/medication.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cradle_app/lib/providers/auth_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/cradle_app/lib/providers/auth_provider.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,28 +101,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Flutter.main.dart.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "Database__Supabase",
-    "implementationPlan.dismissed.99fd5401-09dc-4903-bf0b-81bbae7fdcff": "true",
-    "io.flutter.reload.alreadyRun": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/HP/Cradle",
-    "settings.editor.selected.configurable": "templates.modelproviders.configurable",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Flutter.main.dart.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Database__Supabase&quot;,
+    &quot;implementationPlan.dismissed.99fd5401-09dc-4903-bf0b-81bbae7fdcff&quot;: &quot;true&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/HP/Cradle&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;templates.modelproviders.configurable&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\code\Cradle\frontend\cradle_app\lib\pages\" />

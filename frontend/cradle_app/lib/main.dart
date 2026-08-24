@@ -9,6 +9,8 @@ import 'providers/language_provider.dart';
 import 'providers/font_size_provider.dart';
 import 'providers/education_provider.dart';
 import 'providers/health_tracking_provider.dart';
+import 'providers/medication_provider.dart';
+import 'repositories/medication_repository.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +38,24 @@ class CradleApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ChangeNotifierProvider(create: (_) => FontSizeProvider()),
         ChangeNotifierProvider(create: (_) => EducationProvider()),
-        ChangeNotifierProvider(create: (_) => HealthTrackingProvider())
+        ChangeNotifierProvider(create: (_) => HealthTrackingProvider()),
+        ChangeNotifierProxyProvider<AuthProvider, MedicationProvider?>(
+          create: (context) => null,
+          update: (context, auth, previous) {
+            if (!auth.isLoggedIn) return null;
+            if (previous != null) return previous;
+            final repo = MedicationRepository(auth.token ?? '');
+            return MedicationProvider(repo);
+          },
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, NotificationProvider?>(
+          create: (context) => null,
+          update: (context, auth, previous) {
+            if (!auth.isLoggedIn) return null;
+            if (previous != null) return previous;
+            return NotificationProvider(auth.token);
+          },
+        ),
       ],
       child: Consumer<FontSizeProvider>(
         builder: (context, fontSizeProvider, child) {
@@ -61,4 +80,3 @@ class CradleApp extends StatelessWidget {
     );
   }
 }
-

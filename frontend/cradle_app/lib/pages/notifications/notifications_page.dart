@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 import '../../core/widgets/gradient_scaffold.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
+import '../../providers/notification_provider.dart';
 import '../health_monitor/widgets/health_top_bar.dart';
 
 const _brand = DashboardBottomNav.primaryPink;
@@ -20,84 +22,20 @@ class NotificationsPage extends StatefulWidget {
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
-  final List<_NotificationItem> _notifications = [
-    _NotificationItem(
-      id: 1,
-      icon: Icons.medication_outlined,
-      titleEn: 'Medicine reminder',
-      titleBn: 'ওষুধের রিমাইন্ডার',
-      messageEn: 'It is time to take your Iron supplement.',
-      messageBn: 'আপনার আয়রন সাপ্লিমেন্ট নেওয়ার সময় হয়েছে।',
-      timeEn: '10 minutes ago',
-      timeBn: '১০ মিনিট আগে',
-      unread: true,
-    ),
-    _NotificationItem(
-      id: 2,
-      icon: Icons.favorite_outline,
-      titleEn: 'Health reminder',
-      titleBn: 'স্বাস্থ্য রিমাইন্ডার',
-      messageEn: 'Remember to log your blood pressure today.',
-      messageBn: 'আজ আপনার রক্তচাপ লগ করতে ভুলবেন না।',
-      timeEn: '1 hour ago',
-      timeBn: '১ ঘণ্টা আগে',
-      unread: true,
-    ),
-    _NotificationItem(
-      id: 3,
-      icon: Icons.child_care_outlined,
-      titleEn: 'Pregnancy update',
-      titleBn: 'গর্ভাবস্থার আপডেট',
-      messageEn: 'Your baby is now about the size of a grape.',
-      messageBn: 'আপনার শিশুর আকার এখন প্রায় একটি আঙুরের সমান।',
-      timeEn: '3 hours ago',
-      timeBn: '৩ ঘণ্টা আগে',
-      unread: false,
-    ),
-    _NotificationItem(
-      id: 4,
-      icon: Icons.calendar_month_outlined,
-      titleEn: 'Weekly check-in',
-      titleBn: 'সাপ্তাহিক চেক-ইন',
-      messageEn: 'Take a moment to update your health information.',
-      messageBn: 'আপনার স্বাস্থ্য সংক্রান্ত তথ্য আপডেট করতে কিছু সময় নিন।',
-      timeEn: 'Yesterday',
-      timeBn: 'গতকাল',
-      unread: false,
-    ),
-    _NotificationItem(
-      id: 5,
-      icon: Icons.water_drop_outlined,
-      titleEn: 'Hydration reminder',
-      titleBn: 'পানি পান করার রিমাইন্ডার',
-      messageEn: 'Remember to stay hydrated throughout the day.',
-      messageBn: 'সারাদিন পর্যাপ্ত পানি পান করতে মনে রাখুন।',
-      timeEn: 'Yesterday',
-      timeBn: 'গতকাল',
-      unread: true,
-    ),
-  ];
-
-  void _markAsRead(int index) {
-    setState(() {
-      _notifications[index].unread = false;
-    });
-  }
-
-  void _markAllAsRead() {
-    setState(() {
-      for (final notification in _notifications) {
-        notification.unread = false;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final isBangla = context.watch<LanguageProvider>().isBangla;
+    final provider = context.watch<NotificationProvider?>();
 
-    final unreadCount =
-        _notifications.where((notification) => notification.unread).length;
+    if (provider == null) {
+      return const GradientScaffold(
+        bottomNavigationBar: DashboardBottomNav(),
+        child: Center(child: Text("Please log in to see notifications")),
+      );
+    }
+
+    final notifications = provider.notifications;
+    final unreadCount = provider.unreadCount;
 
     return GradientScaffold(
       bottomNavigationBar: const DashboardBottomNav(),
@@ -106,79 +44,65 @@ class _NotificationsPageState extends State<NotificationsPage> {
         children: [
           const SizedBox(height: 20),
 
-          // ------------------------------------------------
-          // HEADER
-          // ------------------------------------------------
-
           HealthTopBar(
             title: isBangla ? 'নোটিফিকেশন' : 'Notifications',
-            subtitle: unreadCount == 0
-                ? (isBangla
-                    ? 'সব নোটিফিকেশন পড়া হয়েছে'
-                    : 'All notifications are read')
-                : (isBangla
-                    ? '${_toBanglaNumber(unreadCount)}টি অপঠিত নোটিফিকেশন'
-                    : '$unreadCount unread notification${unreadCount == 1 ? '' : 's'}'),
+            subtitle: provider.isLoading
+                ? (isBangla ? 'লোড হচ্ছে...' : 'Loading...')
+                : unreadCount == 0
+                    ? (isBangla ? 'সব নোটিফিকেশন পড়া হয়েছে' : 'All notifications are read')
+                    : (isBangla
+                        ? '${_toBanglaNumber(unreadCount)}টি অপঠিত নোটিফিকেশন'
+                        : '$unreadCount unread notification${unreadCount == 1 ? '' : 's'}'),
           ),
 
           const SizedBox(height: 14),
-
-          // ------------------------------------------------
-          // MARK ALL AS READ
-          // ------------------------------------------------
 
           if (unreadCount > 0)
            Align(
             alignment: Alignment.centerRight,
             child: TextButton.icon(
-              onPressed: _markAllAsRead,
+              onPressed: provider.markAllAsRead,
               style: TextButton.styleFrom(
                 foregroundColor: _brand,
                 backgroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 9,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(
-                    color: _brand.withValues(alpha: 0.20),
-                  ),
+                  side: BorderSide(color: _brand.withValues(alpha: 0.20)),
                 ),
               ),
-              icon: const Icon(
-                Icons.done_all_rounded,
-                size: 18,
-              ),
+              icon: const Icon(Icons.done_all_rounded, size: 18),
               label: Text(
                 isBangla ? 'সব পঠিত হিসেবে চিহ্নিত করুন' : 'Mark all as read',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
               ),
             ),
           ),
 
           const SizedBox(height: 12),
 
-          // ------------------------------------------------
-          // NOTIFICATIONS
-          // ------------------------------------------------
-
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.only(bottom: 180),
-              itemCount: _notifications.length,
-              itemBuilder: (context, index) {
-                final notification = _notifications[index];
-
-                return _NotificationCard(
-                  notification: notification,
-                  isBangla: isBangla,
-                  onMarkRead: () => _markAsRead(index),
-                );
-              },
+            child: RefreshIndicator(
+              onRefresh: provider.fetchNotifications,
+              child: notifications.isEmpty && !provider.isLoading
+                ? Center(
+                    child: Text(
+                      isBangla ? "কোনো নোটিফিকেশন নেই" : "No notifications yet",
+                      style: const TextStyle(color: _muted),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 180),
+                    itemCount: notifications.length,
+                    itemBuilder: (context, index) {
+                      final notification = notifications[index];
+                      return _NotificationCard(
+                        notification: notification,
+                        isBangla: isBangla,
+                        onMarkRead: () => provider.markAsRead(notification.id),
+                      );
+                    },
+                  ),
             ),
           ),
         ],
@@ -189,22 +113,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
   String _toBanglaNumber(int number) {
     const english = '0123456789';
     const bangla = '০১২৩৪৫৬৭৮৯';
-
-    return number
-        .toString()
-        .split('')
-        .map((char) {
-          final index = english.indexOf(char);
-          return index == -1 ? char : bangla[index];
-        })
-        .join();
+    return number.toString().split('').map((char) {
+      final index = english.indexOf(char);
+      return index == -1 ? char : bangla[index];
+    }).join();
   }
 }
-
-
-// ============================================================
-// NOTIFICATION CARD
-// ============================================================
 
 class _NotificationCard extends StatelessWidget {
   const _NotificationCard({
@@ -213,9 +127,19 @@ class _NotificationCard extends StatelessWidget {
     required this.onMarkRead,
   });
 
-  final _NotificationItem notification;
+  final NotificationModel notification;
   final bool isBangla;
   final VoidCallback onMarkRead;
+
+  IconData _getIcon() {
+    switch (notification.type) {
+      case 'WATER_REMINDER': return Icons.water_drop_outlined;
+      case 'OUTBREAK_WARNING': return Icons.warning_amber_rounded;
+      case 'MEDICATION': return Icons.medication_outlined;
+      case 'APPOINTMENT': return Icons.calendar_month_outlined;
+      default: return Icons.notifications_none_rounded;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -225,53 +149,28 @@ class _NotificationCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: notification.unread
-            ? _brandUnread
-            : Colors.white,
+        color: !notification.isRead ? _brandUnread : Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: notification.unread
-              ? _brand.withValues(alpha: .18)
-              : Colors.white,
+          color: !notification.isRead ? _brand.withValues(alpha: .18) : Colors.white,
         ),
         boxShadow: const [
-          BoxShadow(
-            color: Color(0x29C87896),
-            blurRadius: 16,
-            offset: Offset(0, 6),
-          ),
+          BoxShadow(color: Color(0x29C87896), blurRadius: 16, offset: Offset(0, 6)),
         ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ------------------------------------------------
-          // ICON
-          // ------------------------------------------------
-
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 350),
+          Container(
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: notification.unread
-                  ? Colors.white
-                  : _brandSofter,
+              color: !notification.isRead ? Colors.white : _brandSofter,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(
-              notification.icon,
-              color: _brand,
-              size: 24,
-            ),
+            child: Icon(_getIcon(), color: _brand, size: 24),
           ),
-
           const SizedBox(width: 12),
-
-          // ------------------------------------------------
-          // CONTENT
-          // ------------------------------------------------
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,83 +180,43 @@ class _NotificationCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        isBangla
-                            ? notification.titleBn
-                            : notification.titleEn,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: _ink,
-                        ),
+                        notification.title,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: _ink),
                       ),
                     ),
-
-                    // Unread indicator
-                    if (notification.unread)
+                    if (!notification.isRead)
                       Container(
-                        width: 8,
-                        height: 8,
-                        margin: const EdgeInsets.only(
-                          left: 8,
-                          top: 5,
-                        ),
-                        decoration: const BoxDecoration(
-                          color: _brand,
-                          shape: BoxShape.circle,
-                        ),
+                        width: 8, height: 8,
+                        margin: const EdgeInsets.only(left: 8, top: 5),
+                        decoration: const BoxDecoration(color: _brand, shape: BoxShape.circle),
                       ),
                   ],
                 ),
-
                 const SizedBox(height: 4),
-
                 Text(
-                  isBangla
-                      ? notification.messageBn
-                      : notification.messageEn,
-                  style: const TextStyle(
-                    fontSize: 13.5,
-                    height: 1.4,
-                    color: _muted,
-                  ),
+                  notification.message,
+                  style: const TextStyle(fontSize: 13.5, height: 1.4, color: _muted),
                 ),
-
                 const SizedBox(height: 8),
-
                 Row(
                   children: [
                     Text(
-                      isBangla
-                          ? notification.timeBn
-                          : notification.timeEn,
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w600,
-                        color: _muted,
-                      ),
+                      timeago.format(notification.createdAt),
+                      style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: _muted),
                     ),
-
                     const Spacer(),
-
-                    if (notification.unread)
+                    if (!notification.isRead)
                       TextButton(
                         onPressed: onMarkRead,
                         style: TextButton.styleFrom(
                           foregroundColor: _brand,
                           minimumSize: Size.zero,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          tapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
-                          isBangla ? ' পঠিত হিসেবে চিহ্নিত করুন' : 'Mark as read',
-                          style: const TextStyle(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          isBangla ? 'পঠিত হিসেবে চিহ্নিত করুন' : 'Mark as read',
+                          style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
                         ),
                       ),
                   ],
@@ -369,37 +228,4 @@ class _NotificationCard extends StatelessWidget {
       ),
     );
   }
-}
-
-
-// ============================================================
-// NOTIFICATION MODEL
-// ============================================================
-
-class _NotificationItem {
-  _NotificationItem({
-    required this.id,
-    required this.icon,
-    required this.titleEn,
-    required this.titleBn,
-    required this.messageEn,
-    required this.messageBn,
-    required this.timeEn,
-    required this.timeBn,
-    required this.unread,
-  });
-
-  final int id;
-  final IconData icon;
-
-  final String titleEn;
-  final String titleBn;
-
-  final String messageEn;
-  final String messageBn;
-
-  final String timeEn;
-  final String timeBn;
-
-  bool unread;
 }

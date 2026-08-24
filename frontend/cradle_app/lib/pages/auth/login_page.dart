@@ -34,13 +34,14 @@ class _LoginPageState extends State<LoginPage> {
           _nameController.text.trim(),
         );
         
+        // Auto-verify with dev code to skip OTP page
+        await authProvider.verifyOtp('123456');
+
         if (mounted) {
-          Navigator.pushNamed(
+          Navigator.pushNamedAndRemoveUntil(
             context,
-            AppRoutes.otp,
-            arguments: {
-              'phoneNumber': _phoneController.text.trim(),
-            },
+            AppRoutes.dashboard,
+            (route) => false,
           );
         }
       } catch (e) {

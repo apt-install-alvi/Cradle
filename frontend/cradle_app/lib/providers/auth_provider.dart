@@ -10,6 +10,7 @@ class AuthProvider extends ChangeNotifier {
   Map<String, dynamic>? _userProfile;
 
   bool get isLoggedIn => _token != null;
+  String? get token => _token;
   bool get isProfileCompleted => _userProfile?['isProfileCompleted'] ?? false;
   Map<String, dynamic> get profile => _userProfile ?? {};
   String get userName => _userName;

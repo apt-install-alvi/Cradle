@@ -138,6 +138,19 @@ CREATE TABLE IF NOT EXISTS ai_predictions (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 12. Medication Logs Table
+CREATE TABLE IF NOT EXISTS medication_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  reminder_id UUID NOT NULL REFERENCES medication_reminders(id) ON DELETE CASCADE,
+  scheduled_time TEXT, -- e.g., "08:00"
+  log_date DATE DEFAULT CURRENT_DATE,
+  taken_at TIMESTAMPTZ DEFAULT NOW(),
+  status TEXT DEFAULT 'TAKEN',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(reminder_id, scheduled_time, log_date)
+);
+
 -- Disable RLS (Row Level Security) for all tables
 -- This allows the backend to perform operations without specific policies
 

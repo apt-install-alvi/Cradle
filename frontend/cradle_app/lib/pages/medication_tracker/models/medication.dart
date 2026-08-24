@@ -71,4 +71,41 @@ class Medication {
       customDays: customDays ?? this.customDays,
     );
   }
+
+  factory Medication.fromJson(Map<String, dynamic> json) {
+    final List<String> timeStrings = List<String>.from(json['time_of_day'] ?? []);
+    final times = timeStrings.map((t) {
+      final parts = t.split(':');
+      return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+    }).toList();
+
+    // Map frequency based on number of times if not provided
+    MedicationFrequency freq = MedicationFrequency.custom;
+    if (times.length == 1) freq = MedicationFrequency.once;
+    if (times.length == 2) freq = MedicationFrequency.twice;
+    if (times.length == 3) freq = MedicationFrequency.thrice;
+
+    // Parse dosage "500 mg"
+    final dosageStr = json['dosage'] ?? '0';
+    final dosageParts = dosageStr.split(' ');
+    final amount = double.tryParse(dosageParts[0]) ?? 0.0;
+    final unit = dosageParts.length > 1 ? dosageParts[1] : '';
+
+    return Medication(
+      id: json['id'] ?? '',
+      name: json['medication_name'] ?? '',
+      doseAmount: amount,
+      doseUnit: unit,
+      frequency: freq,
+      times: times,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'medicationName': name,
+      'dosage': '$formattedAmount $doseUnit',
+      'timeOfDay': times.map((t) => '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}').toList(),
+    };
+  }
 }

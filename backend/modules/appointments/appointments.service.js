@@ -62,6 +62,93 @@ class AppointmentsService {
     if (error) throw error;
     return data;
   }
+
+  static async logMedicationDose(userId, reminderId, scheduledTime) {
+    const { data, error } = await supabase
+      .from('medication_logs')
+      .upsert([
+        {
+          user_id: userId,
+          reminder_id: reminderId,
+          scheduled_time: scheduledTime,
+          log_date: new Date().toISOString().split('T')[0],
+          taken_at: new Date().toISOString(),
+          status: 'TAKEN'
+        }
+      ], { onConflict: 'reminder_id,scheduled_time,log_date' })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  static async unlogMedicationDose(userId, reminderId, scheduledTime) {
+    const today = new Date().toISOString().split('T')[0];
+    const { error } = await supabase
+      .from('medication_logs')
+      .delete()
+      .match({
+        user_id: userId,
+        reminder_id: reminderId,
+        scheduled_time: scheduledTime,
+        log_date: today
+      });
+
+    if (error) throw error;
+    return true;
+  }
+
+  static async getAdherence(userId) {
+    // Get all reminders to know the denominator
+    const { data: reminders } = await supabase
+      .from('medication_reminders')
+      .select('id, time_of_day')
+      .eq('user_id', userId)
+      .eq('is_active', true);
+
+    // Get logs for the last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const { data: logs, error } = await supabase
+      .from('medication_logs')
+      .select('log_date, reminder_id')
+      .eq('user_id', userId)
+      .gte('log_date', thirtyDaysAgo.toISOString().split('T')[0]);
+
+    if (error) throw error;
+
+    // Calculate adherence percentage per day
+    // This is a simplified calculation
+    const logsPerDay = {};
+    logs.forEach(log => {
+      logsPerDay[log.log_date] = (logsPerDay[log.log_date] || 0) + 1;
+    });
+
+    const totalDosesPerDay = reminders.reduce((acc, r) => acc + (r.time_of_day?.length || 0), 0);
+
+    const adherence = {};
+    Object.keys(logsPerDay).forEach(date => {
+      adherence[date] = totalDosesPerDay > 0
+        ? Math.round((logsPerDay[date] / totalDosesPerDay) * 100)
+        : 0;
+    });
+
+    return adherence;
+  }
+
+  static async getTodayLogs(userId) {
+    const today = new Date().toISOString().split('T')[0];
+    const { data, error } = await supabase
+      .from('medication_logs')
+      .select('reminder_id, scheduled_time')
+      .eq('user_id', userId)
+      .eq('log_date', today);
+
+    if (error) throw error;
+    return data;
+  }
 }
 
 module.exports = AppointmentsService;

@@ -1,4 +1,5 @@
 import 'package:cradle_app/core/routes/app_routes.dart';
+import 'package:cradle_app/providers/medication_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +7,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/widgets/bottom_nav.dart';
 import '../../core/theme/app_theme.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
+import '../medication_tracker/models/scheduled_dose.dart';
 import './widgets/mood_card.dart';
 import './widgets/pregnancy_card.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -22,6 +25,24 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final languageProvider = context.watch<LanguageProvider>();
     final bool isBangla = languageProvider.isBangla;
+    final authProvider = context.watch<AuthProvider>();
+    final medicationProvider = context.watch<MedicationProvider?>();
+
+    // Calculate next dose for QuickStatusRow
+    ScheduledDose? nextDose;
+    if (medicationProvider != null && medicationProvider.todayDoses.isNotEmpty) {
+      final now = TimeOfDay.now();
+      final nowMinutes = now.hour * 60 + now.minute;
+
+      try {
+        nextDose = medicationProvider.todayDoses.firstWhere(
+          (d) => !d.taken && (d.time.hour * 60 + d.time.minute) > nowMinutes
+        );
+      } catch (_) {
+        // If all doses taken or none after current time, maybe show first untaken or nothing
+        nextDose = medicationProvider.todayDoses.firstWhere((d) => !d.taken, orElse: () => medicationProvider.todayDoses.first);
+      }
+    }
 
     return Scaffold(
         bottomNavigationBar: const DashboardBottomNav(),
@@ -141,7 +162,7 @@ class DashboardScreen extends StatelessWidget {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () {
-                              Navigator.of(context).pushNamed('/notifications');
+                              Navigator.of(context).pushNamed(AppRoutes.notifications);
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(8),
@@ -188,11 +209,10 @@ class DashboardScreen extends StatelessWidget {
                   // Greeting
                   //--------------------------------------------------
 
-                  // TODO: wire userName to a profile provider once available
-                  const Align(
+                  Align(
                     alignment: Alignment.centerLeft,
                     child: GreetingHeader(
-                      userName: "Mother",
+                      userName: authProvider.userName.isNotEmpty ? authProvider.userName : (isBangla ? "মা" : "Mother"),
                     ),
                   ),
 
@@ -218,15 +238,13 @@ class DashboardScreen extends StatelessWidget {
                   // Quick Status Row
                   //--------------------------------------------------
 
-                  // TODO(Nek): replace mock values with real data from
-                  // HealthTrackingProvider / medication tracker once wired
                   QuickStatusRow(
-                    nextDoseName: "Iron",
-                    nextDoseNameBn: "আয়রন",
-                    nextDoseTime: "2:00 PM",
-                    nextDoseEta: "In 2 hours",
-                    nextDoseEtaBn: "২ ঘণ্টার মধ্যে",
-                    lastVitalLabel: "BP 118/76",
+                    nextDoseName: nextDose?.medication.name ?? (isBangla ? "কোনোটি নেই" : "None"),
+                    nextDoseNameBn: nextDose?.medication.name ?? "কোনোটি নেই",
+                    nextDoseTime: nextDose?.time.format(context) ?? "--:--",
+                    nextDoseEta: nextDose != null ? (isBangla ? "পরবর্তী ডোজ" : "Next dose") : (isBangla ? "সব শেষ" : "All set"),
+                    nextDoseEtaBn: nextDose != null ? "পরবর্তী ডোজ" : "সব শেষ",
+                    lastVitalLabel: "BP 118/76", // TODO: Wire health monitor
                     lastVitalLabelBn: "BP ১১৮/৭৬",
                     lastVitalSub: "Logged today",
                     lastVitalSubBn: "আজ লগ করা হয়েছে",
