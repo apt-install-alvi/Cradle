@@ -1,51 +1,28 @@
-# Cradle
-A mobile app which offers suggested diagnosis of pregnancy-related symptoms to pregnant mothers through Artificial Intelligence and Machine Learning.
+This project is currently in development. 
+All changes will be pushed to `main` once complete.
 
-## System Architecture Layout
-- **[frontend/cradle_app](file:///c:/Users/User/Desktop/Cradle/frontend/cradle_app)**: Mobile Client application (Flutter)
-- **[backend](file:///c:/Users/User/Desktop/Cradle/backend)**: REST API backend gateway (Express.js)
-- **[ml-service](file:///c:/Users/User/Desktop/Cradle/ml-service)**: AI prediction microservice (Python / Flask)
-- **[docs](file:///c:/Users/User/Desktop/Cradle/docs)**: SDP2 System Design project report
+# About
+Cradle is a maternal healthcare app targeted towards pregnant mothers of Bangladesh in both rural and urban environments to know when to seek out professional help based on their symptoms.
 
----
-
-## Getting Started & Execution
-
-### 1. Launching the Backend Gateway
-1. Navigate to the `backend/` directory.
-2. Verify dependencies are installed:
-   ```bash
-   npm install
-   ```
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
-   *Note: If MongoDB is offline, the backend dynamically initializes fallback mocks for all controllers so you can debug the client without database hassles.*
-
-### 2. Launching the ML Microservice
-1. Navigate to the `ml-service/` directory.
-2. Install Python packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Generate the Random Forest classifier pickle model file:
-   ```bash
-   python generate_dummy_model.py
-   ```
-4. Start the Flask service:
-   ```bash
-   python app.py
-   ```
-   *Note: If Flask or the PKL model file is not present, the Node.js backend operates a rule-based heuristics fallback to evaluate logged symptoms.*
-
-### 3. Launching the Mobile Client
-1. Navigate to `frontend/cradle_app/`.
-2. Fetch package dependencies:
-   ```bash
-   flutter pub get
-   ```
-3. Run the app:
-   ```bash
-   flutter run
-   ```
+# Features
+### Authentication:
+Easy to use registration process via Phone number and secure OTP
+### Intuitive Dashboard: 
+Displays gestational age calculated from LMP (Last Menstrual Period) date provided by the user, a cute graphic of the approximate size of the fetus compared to real life fruits/vegetables, latest health logging information, upcoming medicine, a mood tracker with inspirational advice and the ability to directly contact Emergency Ambulance Services.
+### Educational Guides: 
+Offline articles on various health and nutrition related information relevant during pregnancy.
+### Diagnosis:
+The core part of the app. Logs symptoms the user is currently feeling (along with necessary measurements for measurable symptoms such as fever, blood pressure etc) and finally predicts risk in 3 categories (Low, Medium, High Risk) based on the user submitted symptoms through a Machine Learning algorithm. Based on risk severity, the user will be suggested to seek professional help.
+_**In no way does our model claim to be an alternative to proper medical advice. Always verify with a doctor if problems persist.**_
+### Medicine Tracker:
+A full-fledged medicine tracker complete with the ability to set dose, custom frequency (once, twice, thrice or specific days of the week) and times for each with visual indicators of the exact type of medicine. A monthly calendar helps users to view their medicine adherence (how dutifully they've been taking their medicine) throughout the month at-a-glance. It also features the ability to set doctor appointments.
+### Health Logger:
+Tracks important health information like temperature, blood pressure, heart rate, blood glucose etc as per the required frequency set by the user along with a 7 day graph that visually shows the trend of change across the week.
+### User Profile:
+A comprehensive user profile retaining all necessary information about the user along with their emergency contacts (who can be contacted in case of a High Risk emergency)
+### Notification System:
+Reminders for medicine, health logging, appointments, hydration reminders as well as updates on gestational age and baby size.
+### Language Toggle:
+Supports both Bangla and English, with Bangla as the default language.
+### Settings:
+Customisable settings as per the user's needs.
