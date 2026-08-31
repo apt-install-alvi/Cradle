@@ -438,13 +438,13 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
       ),
       'hba1c': _FieldMeta(
         label: isBangla ? 'এইচবিএ১সি (HbA1c)' : 'Blood Glucose (HbA1c)',
-        hint: 'e.g. 5.7',
+        hint: 'e.g. 40',
         unit: '%',
         icon: Icons.water_drop_outlined,
       ),
       'fasting_glucose': _FieldMeta(
         label: isBangla ? 'খালি পেটে সুগার' : 'Fasting Glucose',
-        hint: 'e.g. 90',
+        hint: 'e.g. 5.8',
         unit: 'mg/dL',
         icon: Icons.bloodtype,
       ),
