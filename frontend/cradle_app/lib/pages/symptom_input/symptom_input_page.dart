@@ -45,9 +45,8 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
   final Set<String> _selectedIds = {};
   bool _isLoading = false;
 
-  // Controllers for all 8 parameters in the XGBoost dataset
+  // Controllers for parameters in the XGBoost dataset (excluding age, which is fetched from profile)
   final Map<String, TextEditingController> _paramControllers = {
-    'age': TextEditingController(),
     'body_temp': TextEditingController(),
     'heart_rate': TextEditingController(),
     'systolic_bp': TextEditingController(),
@@ -61,16 +60,6 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
   void initState() {
     super.initState();
     _revealNextBatch();
-    
-    // Prefill Age from the Mother Profile if available
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final auth = context.read<AuthProvider>();
-      final profile = auth.profile;
-      final ageVal = profile['age'] ?? profile['Age'];
-      if (ageVal != null) {
-        _paramControllers['age']!.text = ageVal.toString();
-      }
-    });
   }
 
   @override
@@ -98,12 +87,14 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
     });
   }
 
-  // Find the list of features needed based on union of selected symptoms
+  // Find the list of features needed based on union of selected symptoms (filtering out age)
   List<String> get _requiredFeatures {
     final selectedSymptoms = _selectedIds
         .map((id) => kAllSymptoms.firstWhere((s) => s.id == id))
         .toList();
-    return selectedSymptoms.expand((s) => s.requiredFeatures).toSet().toList();
+    final features = selectedSymptoms.expand((s) => s.requiredFeatures).toSet().toList();
+    features.remove('age');
+    return features;
   }
 
   Future<void> _onDone() async {
@@ -112,8 +103,12 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
     final isBangla = context.read<LanguageProvider>().isBangla;
     final auth = context.read<AuthProvider>();
 
-    // 1. Read input values and assign standard defaults for empty fields
-    final double age = double.tryParse(_paramControllers['age']!.text) ?? 25.0;
+    // 1. Fetch age from mother profile if available, default to 25.0
+    final profile = auth.profile;
+    final ageVal = profile['age'] ?? profile['Age'];
+    final double age = ageVal != null ? (double.tryParse(ageVal.toString()) ?? 25.0) : 25.0;
+
+    // 2. Read input values and assign standard defaults for empty fields
     final double temp = double.tryParse(_paramControllers['body_temp']!.text) ?? 98.6;
     final double hr = double.tryParse(_paramControllers['heart_rate']!.text) ?? 75.0;
     final double sys = double.tryParse(_paramControllers['systolic_bp']!.text) ?? 120.0;
@@ -340,12 +335,11 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
             if (_selectedIds.isNotEmpty) ...[
               Container(
                 margin: const EdgeInsets.only(bottom: 24),
-                padding: const EdgeInsets.all(18),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  // Primary colour - FFFFFF 52% opacity
-                  color: Colors.white.withOpacity(0.52),
-                  borderRadius: BorderRadius.circular(AppRadii.largeCard),
-                  border: Border.all(color: const Color(0xFFAB0A65).withOpacity(0.2), width: 1.5),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppRadii.card),
+                  border: Border.all(color: const Color(0xFFFFD6E2), width: 1.5),
                   boxShadow: appCardShadow,
                 ),
                 child: Column(
@@ -353,16 +347,12 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.analytics_outlined, color: Color(0xFFAB0A65), size: 24),
+                        const Icon(Icons.analytics_outlined, color: AppColors.roseDark, size: 24),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             isBangla ? 'প্রয়োজনীয় স্বাস্থ্য ভাইটাল' : 'Required Health Vitals',
-                            style: GoogleFonts.gentiumBookPlus(
-                              fontSize: 18.5,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFFAB0A65),
-                            ),
+                            style: AppText.sectionHeading,
                           ),
                         ),
                       ],
@@ -372,7 +362,7 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
                       isBangla
                           ? 'সঠিক ঝুঁকি স্তর পেতে অনুগ্রহ করে নিচের প্রয়োজনীয় প্যারামিটারগুলো প্রদান করুন।'
                           : 'Please fill out these parameters to help the AI model evaluate your risk level accurately.',
-                      style: AppText.subtext.copyWith(fontSize: 13, color: const Color(0xFFAB0A65).withOpacity(0.7)),
+                      style: AppText.subtext,
                     ),
                     const SizedBox(height: 16),
                     _buildParameterFields(reqFeatures, isBangla),
@@ -385,20 +375,21 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
                 margin: const EdgeInsets.only(bottom: 24),
                 padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.4),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(AppRadii.card),
-                  border: Border.all(color: const Color(0xFFAB0A65).withOpacity(0.1), width: 1.5),
+                  border: Border.all(color: const Color(0xFFFFD6E2).withOpacity(0.5), width: 1.5),
+                  boxShadow: appCardShadow,
                 ),
                 child: Column(
                   children: [
-                    Icon(Icons.check_box_outlined, color: const Color(0xFFAB0A65).withOpacity(0.5), size: 36),
+                    Icon(Icons.check_box_outlined, color: AppColors.muted.withOpacity(0.5), size: 36),
                     const SizedBox(height: 8),
                     Text(
                       isBangla
                           ? 'শুরু করতে উপরে আপনার শারীরিক সমস্যা নির্বাচন করুন।'
                           : 'Select your difficulties above to begin.',
                       textAlign: TextAlign.center,
-                      style: AppText.subtext.copyWith(color: const Color(0xFFAB0A65).withOpacity(0.6)),
+                      style: AppText.subtext,
                     ),
                   ],
                 ),
@@ -421,7 +412,7 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
                   child: _isLoading 
                       ? const Center(
                           child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFAB0A65)),
+                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.roseDark),
                           ),
                         )
                       : AppButton(
@@ -543,41 +534,41 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
       children: [
         Text(
           meta.label,
-          style: GoogleFonts.gentiumBookPlus(
-            fontSize: 13.5,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFFAB0A65),
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: AppColors.roseDark,
           ),
         ),
         const SizedBox(height: 5),
         TextFormField(
           controller: _paramControllers[key],
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          style: GoogleFonts.gentiumBookPlus(
+          style: const TextStyle(
             fontSize: 15,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFFAB0A65),
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF4A3540),
           ),
           decoration: InputDecoration(
             hintText: meta.hint,
-            hintStyle: TextStyle(color: const Color(0xFFAB0A65).withOpacity(0.4), fontWeight: FontWeight.w600),
+            hintStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600),
             filled: true,
-            fillColor: Colors.white.withOpacity(0.7),
+            fillColor: const Color(0xFFFBF2F5),
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            prefixIcon: Icon(meta.icon, size: 18, color: const Color(0xFFAB0A65)),
+            prefixIcon: Icon(meta.icon, size: 18, color: AppColors.roseDark),
             suffixText: meta.unit,
-            suffixStyle: const TextStyle(color: Color(0xFFAB0A65), fontWeight: FontWeight.w800, fontSize: 12),
+            suffixStyle: const TextStyle(color: AppColors.roseDark, fontWeight: FontWeight.w800, fontSize: 12),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: const Color(0xFFAB0A65).withOpacity(0.3)),
+              borderSide: const BorderSide(color: Color(0xFFF3D6E0)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: const Color(0xFFAB0A65).withOpacity(0.2)),
+              borderSide: const BorderSide(color: Color(0xFFF3D6E0)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFAB0A65), width: 1.5),
+              borderSide: const BorderSide(color: AppColors.rose, width: 1.5),
             ),
           ),
         ),
@@ -619,7 +610,7 @@ class _Header extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: appCardShadow,
               ),
-              child: const Icon(Icons.history, size: 24, color: Color(0xFFAB0A65)),
+              child: const Icon(Icons.history, size: 24, color: AppColors.roseDark),
             ),
           ),
         ),
