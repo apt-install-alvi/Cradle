@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/models/diagnosis_result.dart';
 import '../../core/models/symptom.dart';
 import '../../core/theme/app_theme.dart';
@@ -191,22 +192,23 @@ class _SearchField extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.52),
         borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFAB0A65).withOpacity(0.2), width: 1.5),
         boxShadow: appCardShadow,
       ),
       child: TextField(
         controller: controller,
         onChanged: onChanged,
-        style: const TextStyle(fontSize: 13, color: AppColors.ink),
+        style: GoogleFonts.gentiumBookPlus(fontSize: 14, color: const Color(0xFFAB0A65), fontWeight: FontWeight.w800),
         decoration: InputDecoration(
           border: InputBorder.none,
           isDense: true,
-          contentPadding: EdgeInsets.symmetric(vertical: 11),
+          contentPadding: const EdgeInsets.symmetric(vertical: 11),
           hintText: isBangla ? 'পূর্বের রেকর্ড খুঁজুন' : 'Search past check-ins',
-          hintStyle: TextStyle(fontSize: 13, color: AppColors.muted),
-          prefixIcon: Icon(Icons.search, size: 18, color: AppColors.muted),
-          prefixIconConstraints: BoxConstraints(minWidth: 30, minHeight: 0),
+          hintStyle: GoogleFonts.gentiumBookPlus(fontSize: 14, color: AppColors.muted, fontWeight: FontWeight.w600),
+          prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFFAB0A65)),
+          prefixIconConstraints: const BoxConstraints(minWidth: 30, minHeight: 0),
         ),
       ),
     );

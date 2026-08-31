@@ -2,8 +2,8 @@ const supabase = require('../../config/supabase');
 const AiClient = require('./aiClient');
 
 class AiPredictionService {
-  static async assessRisk(userId, session_id, symptomsList) {
-    const aiResult = await AiClient.predictRisk(symptomsList);
+  static async assessRisk(userId, session_id, symptomsList, features) {
+    const aiResult = await AiClient.predictRisk(symptomsList, features);
 
     const { data: prediction, error } = await supabase
       .from('ai_predictions')

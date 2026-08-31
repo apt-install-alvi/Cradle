@@ -5,14 +5,15 @@ const httpStatusCodes = require('../../common/constants/httpStatusCodes');
 class AiPredictionController {
   static async assess(req, res, next) {
     try {
-      const { symptomLogId, symptoms } = req.body;
+      const { symptomLogId, symptoms, features } = req.body;
       if (!symptoms || !Array.isArray(symptoms)) {
         return ApiResponse.error(res, 'Symptoms list is required.', httpStatusCodes.BAD_REQUEST);
       }
       const assessment = await AiPredictionService.assessRisk(
         req.user.id || req.user._id, 
         symptomLogId, 
-        symptoms
+        symptoms,
+        features
       );
       return ApiResponse.success(res, 'AI assessment calculated successfully.', assessment);
     } catch (error) {

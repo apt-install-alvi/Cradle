@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/models/symptom.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../providers/language_provider.dart';
 import 'package:provider/provider.dart';
 
-/// A single selectable symptom card in the input screen's grid.
+/// A single selectable symptom/sickness card in the input screen's grid.
 class SymptomCard extends StatelessWidget {
   final Symptom symptom;
   final bool selected;
@@ -30,10 +31,13 @@ class SymptomCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
           decoration: BoxDecoration(
-            color: selected ? const Color(0xFFFFF5F8) : Colors.white,
+            // Primary colour - FFFFFF 52% opacity when unselected
+            color: selected 
+                ? const Color(0xFFAB0A65).withOpacity(0.12)
+                : Colors.white.withOpacity(0.52),
             borderRadius: BorderRadius.circular(AppRadii.card),
             border: Border.all(
-              color: selected ? AppColors.rose : Colors.transparent,
+              color: selected ? AppColors.rose : const Color(0xFFAB0A65).withOpacity(0.1),
               width: 1.5,
             ),
             boxShadow: appCardShadow,
@@ -55,7 +59,11 @@ class SymptomCard extends StatelessWidget {
                   Text(
                     symptom.displayLabel(isBangla),
                     textAlign: TextAlign.center,
-                    style: AppText.cardLabel,
+                    style: GoogleFonts.gentiumBookPlus(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFFAB0A65),
+                    ),
                   ),
                 ],
               ),
@@ -66,9 +74,9 @@ class SymptomCard extends StatelessWidget {
                   child: Text(
                     '✓',
                     style: TextStyle(
-                      color: AppColors.roseDark,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
+                      color: Color(0xFFAB0A65),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ),

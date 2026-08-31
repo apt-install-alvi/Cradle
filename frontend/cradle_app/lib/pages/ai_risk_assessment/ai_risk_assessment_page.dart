@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/models/diagnosis_result.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_button.dart';
@@ -7,9 +8,8 @@ import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
 import 'package:provider/provider.dart';
 
-
 /// Shows the AI-generated pregnancy risk assessment based on
-/// the user's reported symptoms.
+/// the user's reported symptoms and physiological parameters.
 class AiRiskAssessmentPage extends StatelessWidget {
   final DiagnosisResult result;
 
@@ -102,8 +102,10 @@ class _RiskHero extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        // Primary colour - FFFFFF 52% opacity
+        color: Colors.white.withOpacity(0.52),
         borderRadius: BorderRadius.circular(AppRadii.largeCard),
+        border: Border.all(color: const Color(0xFFAB0A65).withOpacity(0.15), width: 1.5),
         boxShadow: appCardShadow,
       ),
       child: Column(
@@ -111,9 +113,9 @@ class _RiskHero extends StatelessWidget {
           Text(
             result.riskLevel.displayLabel(isBangla),
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 34,              // <-- Change this to any size you want
-              fontWeight: FontWeight.w800,
+            style: GoogleFonts.gentiumBookPlus(
+              fontSize: 36,
+              fontWeight: FontWeight.w900,
               color: result.riskLevel.color,
               height: 1.1,
             ),
@@ -121,10 +123,10 @@ class _RiskHero extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             isBangla
-                ? 'আপনার প্রদত্ত উপসর্গের ভিত্তিতে এই ঝুঁকির মাত্রা নির্ধারণ করা হয়েছে।'
-                : 'Based on your reported symptoms, your pregnancy risk level is shown above.',
+                ? 'আপনার প্রদত্ত স্বাস্থ্যের প্যারামিটার ও উপসর্গের ভিত্তিতে এই ঝুঁকির মাত্রা নির্ধারণ করা হয়েছে।'
+                : 'Based on your reported health parameters and symptoms, your pregnancy risk level is shown above.',
             textAlign: TextAlign.center,
-            style: AppText.subtext.copyWith(fontSize: 14),
+            style: AppText.subtext.copyWith(fontSize: 14, color: const Color(0xFFAB0A65)),
           ),
         ],
       ),
@@ -144,20 +146,22 @@ class _SymptomsSection extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        // Primary colour - FFFFFF 52% opacity
+        color: Colors.white.withOpacity(0.52),
         borderRadius: BorderRadius.circular(AppRadii.card),
+        border: Border.all(color: const Color(0xFFAB0A65).withOpacity(0.15), width: 1.5),
         boxShadow: appCardShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            isBangla ? 'উপসর্গসমূহ' : 'REPORTED SYMPTOMS',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
+            isBangla ? 'মূল্যায়িত উপসর্গ ও বিবরণ' : 'EVALUATED SYMPTOMS & DETAILS',
+            style: GoogleFonts.gentiumBookPlus(
+              fontSize: 17,
+              fontWeight: FontWeight.w900,
               letterSpacing: 0.5,
-              color: AppColors.roseDark,
+              color: const Color(0xFFAB0A65),
             ),
           ),
           const SizedBox(height: 10),
@@ -168,15 +172,16 @@ class _SymptomsSection extends StatelessWidget {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFBF2F5),
+                  color: const Color(0xFFAB0A65).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: const Color(0xFFAB0A65).withOpacity(0.2), width: 1),
                 ),
                 child: Text(
                   entry.displayLabel(isBangla),
-                  style: const TextStyle(
+                  style: GoogleFonts.gentiumBookPlus(
                     fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF8A4A5F),
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFAB0A65),
                   ),
                 ),
               );
@@ -201,9 +206,9 @@ class _WarningBanner extends StatelessWidget {
         color: riskLevel.backgroundColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.high,
-          width: 0.5
-        )
+          color: riskLevel.color,
+          width: 1.5,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,11 +218,11 @@ class _WarningBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+              style: GoogleFonts.gentiumBookPlus(
+                fontSize: 15.5,
+                fontWeight: FontWeight.w800,
                 color: riskLevel.color,
-                height: 1.5,
+                height: 1.45,
               ),
             ),
           ),
