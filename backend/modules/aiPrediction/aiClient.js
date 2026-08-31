@@ -110,6 +110,7 @@ class AiClient {
         success: true,
         riskLevel,
         confidenceScore,
+        isRealModel: false,
         recommendations
       };
     }
@@ -155,6 +156,7 @@ class AiClient {
       success: true,
       riskLevel,
       confidenceScore,
+      isRealModel: false,
       recommendations
     };
   }

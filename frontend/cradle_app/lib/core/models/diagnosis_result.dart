@@ -131,12 +131,20 @@ class DiagnosisResult {
 
   final DateTime timestamp;
 
+  /// Whether the result came from the real local XGBoost model.
+  final bool isRealModel;
+
+  /// The raw label returned from the local XGBoost model.
+  final String? modelLabel;
+
   const DiagnosisResult({
     required this.riskLevel,
     required this.reportedSymptoms,
     required this.warningMessage,
     required this.warningMessageBn,
     required this.timestamp,
+    this.isRealModel = false,
+    this.modelLabel,
   });
 
   String localizedWarningMessage(bool isBangla) {

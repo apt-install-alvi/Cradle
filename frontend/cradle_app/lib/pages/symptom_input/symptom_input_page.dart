@@ -38,10 +38,6 @@ class SymptomInputPage extends StatefulWidget {
 }
 
 class _SymptomInputPageState extends State<SymptomInputPage> {
-  static const int _batchSize = 4;
-
-  final List<Symptom> _remainingPool = List.of(kAllSymptoms);
-  final List<List<Symptom>> _batches = [];
   final Set<String> _selectedIds = {};
   bool _isLoading = false;
 
@@ -59,7 +55,6 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
   @override
   void initState() {
     super.initState();
-    _revealNextBatch();
   }
 
   @override
@@ -68,13 +63,6 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
       controller.dispose();
     }
     super.dispose();
-  }
-
-  void _revealNextBatch() {
-    if (_remainingPool.isEmpty) return;
-    final take = _remainingPool.take(_batchSize).toList();
-    _remainingPool.removeRange(0, take.length);
-    setState(() => _batches.add(take));
   }
 
   void _toggleSymptom(Symptom symptom) {
@@ -197,7 +185,11 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
           parsedRisk = RiskLevel.medium;
         }
 
-        final List recommendations = assessmentData['prediction_data']?['recommendations'] ?? [];
+        final predictionData = assessmentData['prediction_data'];
+        final bool isRealModel = predictionData?['isRealModel'] ?? false;
+        final String? modelLabel = predictionData?['modelLabel'];
+
+        final List recommendations = predictionData?['recommendations'] ?? [];
         final String warningEng = recommendations.isNotEmpty 
             ? recommendations.join('\n') 
             : 'Maternal health risk is evaluated.';
@@ -212,6 +204,8 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
           warningMessage: warningEng,
           warningMessageBn: warningBn,
           timestamp: DateTime.now(),
+          isRealModel: isRealModel,
+          modelLabel: modelLabel,
         );
       } catch (e) {
         debugPrint('[API Error] Failed to fetch prediction from backend: $e. Running local fallback.');
@@ -295,7 +289,6 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
   @override
   Widget build(BuildContext context) {
     final isBangla = context.watch<LanguageProvider>().isBangla;
-    final hasMore = _remainingPool.isNotEmpty;
     final reqFeatures = _requiredFeatures;
 
     return GradientScaffold(
@@ -317,18 +310,11 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
               style: AppText.subtext.copyWith(fontSize: 16),
             ),
             const SizedBox(height: 16),
-            for (var i = 0; i < _batches.length; i++) ...[
-              if (i > 0) ...[
-                const SizedBox(height: 4),
-                Text(isBangla ? 'আর কিছু?' : 'What else?', style: AppText.sectionHeading),
-                const SizedBox(height: 12),
-              ],
-              _SymptomGrid(
-                symptoms: _batches[i],
-                selectedIds: _selectedIds,
-                onTap: _toggleSymptom,
-              ),
-            ],
+            _SymptomGrid(
+              symptoms: kAllSymptoms,
+              selectedIds: _selectedIds,
+              onTap: _toggleSymptom,
+            ),
             const SizedBox(height: 6),
             
             // Dynamic parameter input section
@@ -396,32 +382,16 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
               ),
             ],
             
-            Row(
-              children: [
-                if (hasMore) ...[
-                  Expanded(
-                    child: AppButton(
-                      label: isBangla ? 'পরবর্তী' : 'Next',
-                      variant: AppButtonVariant.outlined,
-                      onPressed: _isLoading ? null : _revealNextBatch,
+            _isLoading 
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.roseDark),
                     ),
+                  )
+                : AppButton(
+                    label: isBangla ? 'সম্পন্ন' : 'Done',
+                    onPressed: _selectedIds.isEmpty ? null : _onDone,
                   ),
-                  const SizedBox(width: 12),
-                ],
-                Expanded(
-                  child: _isLoading 
-                      ? const Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.roseDark),
-                          ),
-                        )
-                      : AppButton(
-                          label: isBangla ? 'সম্পন্ন' : 'Done',
-                          onPressed: _selectedIds.isEmpty ? null : _onDone,
-                        ),
-                ),
-              ],
-            ),
           ],
         ),
       ),

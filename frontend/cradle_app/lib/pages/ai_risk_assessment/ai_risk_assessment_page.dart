@@ -118,6 +118,60 @@ class _RiskHero extends StatelessWidget {
               height: 1.1,
             ),
           ),
+          const SizedBox(height: 12),
+          if (result.isRealModel) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE6F6EC),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFF3FA66B), width: 1),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.verified, color: Color(0xFF3FA66B), size: 16),
+                  const SizedBox(width: 6),
+                  Text(
+                    isBangla 
+                        ? 'লোকাল XGBoost এআই মডেল যাচাইকৃত (${result.modelLabel})' 
+                        : 'Local XGBoost AI Model Verified (${result.modelLabel})',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF3FA66B),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ] else ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFDF0D8),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFE8960F), width: 1),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.info_outline, color: Color(0xFFE8960F), size: 16),
+                  const SizedBox(width: 6),
+                  Text(
+                    isBangla 
+                        ? 'নিয়ম-ভিত্তিক ইঞ্জিন ব্যাকআপ সক্রিয়' 
+                        : 'Rule-Based Engine Backup Active',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFFE8960F),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
           Text(
             isBangla
