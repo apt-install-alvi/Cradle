@@ -88,6 +88,226 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
   Future<void> _onDone() async {
     setState(() => _isLoading = true);
 
+    // Identify which parameters of the 7 user-input fields were not selected by the symptoms
+    final allParams = ['body_temp', 'heart_rate', 'systolic_bp', 'diastolic_bp', 'bmi', 'hba1c', 'fasting_glucose'];
+    final reqFeatures = _requiredFeatures;
+    final unselectedFeatures = allParams.where((param) => !reqFeatures.contains(param)).toList();
+
+    if (unselectedFeatures.isNotEmpty) {
+      await _showUnselectedParamsDialog(unselectedFeatures);
+    } else {
+      await _executePrediction();
+    }
+  }
+
+  Future<void> _showUnselectedParamsDialog(List<String> unselectedFeatures) async {
+    final isBangla = context.read<LanguageProvider>().isBangla;
+
+    // Prepopulate dialog input controllers with healthy defaults
+    final Map<String, TextEditingController> dialogControllers = {};
+    final defaults = {
+      'body_temp': '98.6',
+      'heart_rate': '75',
+      'systolic_bp': '120',
+      'diastolic_bp': '80',
+      'bmi': '22.0',
+      'hba1c': '5.4',
+      'fasting_glucose': '85',
+    };
+
+    for (var feature in unselectedFeatures) {
+      final parentText = _paramControllers[feature]!.text;
+      dialogControllers[feature] = TextEditingController(
+        text: parentText.isNotEmpty ? parentText : (defaults[feature] ?? ''),
+      );
+    }
+
+    final metadata = {
+      'body_temp': _FieldMeta(
+        label: isBangla ? 'শরীরের তাপমাত্রা (Temp)' : 'Body Temperature',
+        hint: 'e.g. 98.6',
+        unit: '°F',
+        icon: Icons.thermostat,
+      ),
+      'heart_rate': _FieldMeta(
+        label: isBangla ? 'হার্ট রেট (Heart Rate)' : 'Heart Rate',
+        hint: 'e.g. 80',
+        unit: 'bpm',
+        icon: Icons.favorite,
+      ),
+      'systolic_bp': _FieldMeta(
+        label: isBangla ? 'সিস্টোলিক রক্তচাপ' : 'Systolic BP',
+        hint: 'e.g. 120',
+        unit: 'mmHg',
+        icon: Icons.compress,
+      ),
+      'diastolic_bp': _FieldMeta(
+        label: isBangla ? 'ডায়াস্টোলিক রক্তচাপ' : 'Diastolic BP',
+        hint: 'e.g. 80',
+        unit: 'mmHg',
+        icon: Icons.expand,
+      ),
+      'bmi': _FieldMeta(
+        label: isBangla ? 'বিএমআই (BMI)' : 'BMI (kg/m²)',
+        hint: 'e.g. 23.5',
+        unit: 'kg/m²',
+        icon: Icons.accessibility_new,
+      ),
+      'hba1c': _FieldMeta(
+        label: isBangla ? 'এইচবিএ১সি (HbA1c)' : 'Blood Glucose (HbA1c)',
+        hint: 'e.g. 5.7',
+        unit: '%',
+        icon: Icons.water_drop_outlined,
+      ),
+      'fasting_glucose': _FieldMeta(
+        label: isBangla ? 'খালি পেটে সুগার' : 'Fasting Glucose',
+        hint: 'e.g. 90',
+        unit: 'mg/dL',
+        icon: Icons.bloodtype,
+      ),
+    };
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadii.card),
+            side: const BorderSide(color: Color(0xFFFFD6E2), width: 1.5),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.info_outline, color: AppColors.roseDark, size: 24),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  isBangla ? 'অতিরিক্ত স্বাস্থ্য তথ্য' : 'Unselected Health Vitals',
+                  style: AppText.sectionHeading,
+                ),
+              ),
+            ],
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isBangla
+                        ? 'নিচের প্যারামিটারগুলো আপনার উপসর্গের সাথে সরাসরি সম্পর্কিত নয়। সঠিক এআই মূল্যায়নের জন্য এগুলো স্বাভাবিক (Default) মান হিসেবে পাঠানো হবে। আপনি চাইলে মানগুলো পরিবর্তন করতে পারেন:'
+                        : 'The following vitals are not relevant to your selected symptoms. To ensure accurate prediction, they will submit with healthy defaults. You can modify them below if desired:',
+                    style: const TextStyle(
+                      fontSize: 13.5,
+                      color: Color(0xFF4A3540),
+                      height: 1.35,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...unselectedFeatures.map((feature) {
+                    final meta = metadata[feature]!;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            meta.label,
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.roseDark,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          TextFormField(
+                            controller: dialogControllers[feature],
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            style: const TextStyle(
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF4A3540),
+                            ),
+                            decoration: InputDecoration(
+                              hintText: meta.hint,
+                              hintStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600),
+                              filled: true,
+                              fillColor: const Color(0xFFFBF2F5),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              prefixIcon: Icon(meta.icon, size: 18, color: AppColors.roseDark),
+                              suffixText: meta.unit,
+                              suffixStyle: const TextStyle(color: AppColors.roseDark, fontWeight: FontWeight.w800, fontSize: 11),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: Color(0xFFF3D6E0)),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: Color(0xFFF3D6E0)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: AppColors.rose, width: 1.5),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(
+                isBangla ? 'বাতিল' : 'Cancel',
+                style: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w700),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Save updated controllers back to main list
+                for (var feature in unselectedFeatures) {
+                  _paramControllers[feature]!.text = dialogControllers[feature]!.text;
+                }
+                Navigator.of(dialogContext).pop(true);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.roseDark,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              ),
+              child: Text(
+                isBangla ? 'নিশ্চিত করুন' : 'Confirm & Proceed',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Clean up local dialog controllers
+    for (var controller in dialogControllers.values) {
+      controller.dispose();
+    }
+
+    if (confirmed == true) {
+      await _executePrediction();
+    } else {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _executePrediction() async {
     final isBangla = context.read<LanguageProvider>().isBangla;
     final auth = context.read<AuthProvider>();
 
