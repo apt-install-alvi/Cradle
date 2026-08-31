@@ -7,20 +7,20 @@ enum MeasurementType {
   bloodPressure,
 }
 
-/// A selectable symptom/sickness shown as a card on the input screen.
+/// A selectable sickness/difficulty shown as a card on the input screen.
 class Symptom {
   final String id;
   final String label;
   final String icon;
 
-  /// Whether this symptom should show a follow-up input card (for backward compatibility).
+  /// Whether this sickness supports a numeric reading (for backward compatibility).
   final bool isMeasurable;
 
   /// Only set when [isMeasurable] is true (for backward compatibility).
   final MeasurementType? measurementType;
 
   /// List of physiological feature names required for predicting the risk
-  /// of this symptom/sickness.
+  /// of this sickness.
   final List<String> requiredFeatures;
 
   const Symptom({
@@ -38,60 +38,39 @@ extension SymptomLocalization on Symptom {
     if (!isBangla) return label;
 
     switch (id) {
-      case 'fever':
-        return 'জ্বর ও ইনফেকশন';
-      case 'high_bp':
-        return 'উচ্চ রক্তচাপ';
-      case 'loose_motion':
-        return 'পাতলা পায়খানা';
-      case 'nausea':
-        return 'বমি বমি ভাব';
-      case 'headache':
-        return 'মাথা-ব্যথা';
-      case 'swelling':
-        return 'শরীরে ফোলা ভাব';
-      case 'blurred_vision':
-        return 'চোখে ঝাপসা দেখা';
-      case 'shortness_of_breath':
-        return 'দম বন্ধ অনুভূতি';
-      case 'spotting':
-        return 'রক্তের দাগ বা রক্তক্ষরণ';
       case 'gestational_diabetes':
         return 'গর্ভকালীন ডায়াবেটিস';
-      case 'heart_palpitations':
-        return 'বুক ধড়ফড়ানি';
-      case 'extreme_fatigue':
-        return 'তীব্র অবসাদ ও ক্লান্তি';
-      case 'anemia':
-        return 'রক্তস্বল্পতা ও দুর্বলতা';
-      case 'breathing_difficulty':
-        return 'শ্বাসকষ্ট';
-      case 'muscle_cramps':
-        return 'পেশীর টান বা ব্যথা';
+      case 'preeclampsia':
+        return 'প্রিক্ল্যাম্পসিয়া (উচ্চ রক্তচাপ)';
+      case 'hyperemesis_gravidarum':
+        return 'অতিরিক্ত বমি ও পানিশূন্যতা';
+      case 'maternal_infection':
+        return 'মায়ের ইনফেকশন ও জ্বর';
+      case 'chronic_hypertension':
+        return 'উচ্চ রক্তচাপ (Hypertension)';
+      case 'maternal_tachycardia':
+        return 'বুক ধড়ফড়ানি ও দ্রুত হৃদস্পন্দন';
+      case 'gestational_obesity':
+        return 'অতিরিক্ত ওজন ও উচ্চ বিএমআই';
+      case 'hypoglycemia':
+        return 'রক্তে শর্করা কমে যাওয়া (লো সুগার)';
+      case 'cardiovascular_stress':
+        return 'রক্তচাপজনিত তীব্র শ্বাসকষ্ট';
+      case 'placental_abruption':
+        return 'রক্তক্ষরণ ও শারীরিক শক';
+      case 'gastroenteritis':
+        return 'ডায়রিয়া ও ফুড পয়জনিং';
+      case 'hypertensive_encephalopathy':
+        return 'উচ্চ রক্তচাপজনিত তীব্র মাথাব্যথা';
       default:
         return label;
     }
   }
 }
 
-/// The full symptom/sickness pool containing 15 items.
+/// Dynamic list of 12 clinical pregnancy complications and difficulties
+/// mapping to the XGBoost model's feature set.
 const List<Symptom> kAllSymptoms = [
-  Symptom(
-    id: 'fever',
-    label: 'Fever / Infection',
-    icon: 'assets/icons/fever2.png',
-    isMeasurable: true,
-    measurementType: MeasurementType.temperature,
-    requiredFeatures: ['body_temp', 'heart_rate', 'age'],
-  ),
-  Symptom(
-    id: 'high_bp',
-    label: 'High BP / Hypertension',
-    icon: 'assets/icons/high_bp.png',
-    isMeasurable: true,
-    measurementType: MeasurementType.bloodPressure,
-    requiredFeatures: ['systolic_bp', 'diastolic_bp', 'bmi', 'heart_rate', 'age'],
-  ),
   Symptom(
     id: 'gestational_diabetes',
     label: 'Gestational Diabetes',
@@ -99,75 +78,73 @@ const List<Symptom> kAllSymptoms = [
     requiredFeatures: ['hba1c', 'fasting_glucose', 'bmi', 'age'],
   ),
   Symptom(
-    id: 'nausea',
-    label: 'Nausea / Vomiting',
+    id: 'preeclampsia',
+    label: 'Preeclampsia',
+    icon: 'assets/icons/high_bp.png',
+    isMeasurable: true,
+    measurementType: MeasurementType.bloodPressure,
+    requiredFeatures: ['systolic_bp', 'diastolic_bp', 'bmi', 'heart_rate', 'age'],
+  ),
+  Symptom(
+    id: 'hyperemesis_gravidarum',
+    label: 'Hyperemesis Gravidarum',
     icon: 'assets/icons/nausea.png',
-    requiredFeatures: ['fasting_glucose', 'body_temp', 'heart_rate', 'age'],
+    requiredFeatures: ['fasting_glucose', 'heart_rate', 'body_temp', 'age'],
   ),
   Symptom(
-    id: 'headache',
-    label: 'Severe Headache',
-    icon: 'assets/icons/headache.png',
-    requiredFeatures: ['systolic_bp', 'diastolic_bp', 'heart_rate', 'age'],
-  ),
-  Symptom(
-    id: 'swelling',
-    label: 'Excessive Swelling',
-    icon: 'assets/icons/swelling.png',
-    requiredFeatures: ['systolic_bp', 'diastolic_bp', 'bmi', 'age'],
-  ),
-  Symptom(
-    id: 'blurred_vision',
-    label: 'Blurred Vision',
-    icon: 'assets/icons/blurred_vision.png',
-    requiredFeatures: ['systolic_bp', 'diastolic_bp', 'hba1c', 'fasting_glucose', 'age'],
-  ),
-  Symptom(
-    id: 'shortness_of_breath',
-    label: 'Shortness of Breath',
-    icon: 'assets/icons/breathing_problem.png',
-    requiredFeatures: ['heart_rate', 'systolic_bp', 'diastolic_bp', 'bmi', 'age'],
-  ),
-  Symptom(
-    id: 'spotting',
-    label: 'Spotting / Bleeding',
-    icon: 'assets/icons/spotting.png',
-    requiredFeatures: ['body_temp', 'heart_rate', 'systolic_bp', 'diastolic_bp', 'age'],
-  ),
-  Symptom(
-    id: 'loose_motion',
-    label: 'Loose Motion / Diarrhea',
-    icon: 'assets/icons/loose_motion.png',
+    id: 'maternal_infection',
+    label: 'Maternal Infection / Sepsis',
+    icon: 'assets/icons/fever2.png',
+    isMeasurable: true,
+    measurementType: MeasurementType.temperature,
     requiredFeatures: ['body_temp', 'heart_rate', 'age'],
   ),
   Symptom(
-    id: 'heart_palpitations',
-    label: 'Heart Palpitations',
+    id: 'chronic_hypertension',
+    label: 'Chronic Hypertension',
+    icon: 'assets/icons/high_bp.png',
+    requiredFeatures: ['systolic_bp', 'diastolic_bp', 'bmi', 'age'],
+  ),
+  Symptom(
+    id: 'maternal_tachycardia',
+    label: 'Maternal Tachycardia',
     icon: 'assets/icons/heartbeat.png',
     requiredFeatures: ['heart_rate', 'systolic_bp', 'diastolic_bp', 'age'],
   ),
   Symptom(
-    id: 'extreme_fatigue',
-    label: 'Extreme Fatigue',
-    icon: 'assets/icons/headache.png',
-    requiredFeatures: ['hba1c', 'fasting_glucose', 'heart_rate', 'age'],
-  ),
-  Symptom(
-    id: 'anemia',
-    label: 'Anemia / Weakness',
-    icon: 'assets/icons/oxygen.png',
-    requiredFeatures: ['heart_rate', 'age'],
-  ),
-  Symptom(
-    id: 'breathing_difficulty',
-    label: 'Breathing Difficulty',
-    icon: 'assets/icons/breathing_problem.png',
-    requiredFeatures: ['heart_rate', 'bmi', 'age'],
-  ),
-  Symptom(
-    id: 'muscle_cramps',
-    label: 'Muscle Cramps',
+    id: 'gestational_obesity',
+    label: 'Gestational Obesity',
     icon: 'assets/icons/swelling.png',
-    requiredFeatures: ['age', 'body_temp'],
+    requiredFeatures: ['bmi', 'systolic_bp', 'diastolic_bp', 'age'],
+  ),
+  Symptom(
+    id: 'hypoglycemia',
+    label: 'Hypoglycemia',
+    icon: 'assets/icons/oxygen.png',
+    requiredFeatures: ['fasting_glucose', 'heart_rate', 'age'],
+  ),
+  Symptom(
+    id: 'cardiovascular_stress',
+    label: 'Cardiovascular Stress',
+    icon: 'assets/icons/breathing_problem.png',
+    requiredFeatures: ['heart_rate', 'systolic_bp', 'diastolic_bp', 'bmi', 'age'],
+  ),
+  Symptom(
+    id: 'placental_abruption',
+    label: 'Placental Shock (Bleeding)',
+    icon: 'assets/icons/spotting.png',
+    requiredFeatures: ['systolic_bp', 'diastolic_bp', 'heart_rate', 'age'],
+  ),
+  Symptom(
+    id: 'gastroenteritis',
+    label: 'Gastroenteritis (Diarrhea)',
+    icon: 'assets/icons/loose_motion.png',
+    requiredFeatures: ['body_temp', 'heart_rate', 'age'],
+  ),
+  Symptom(
+    id: 'hypertensive_encephalopathy',
+    label: 'Hypertensive Encephalopathy',
+    icon: 'assets/icons/headache.png',
+    requiredFeatures: ['systolic_bp', 'diastolic_bp', 'hba1c', 'age'],
   ),
 ];
