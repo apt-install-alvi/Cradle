@@ -13,9 +13,12 @@ import 'providers/medication_provider.dart';
 import 'providers/notification_provider.dart';
 import 'providers/settings_provider.dart';
 import 'repositories/medication_repository.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  timeago.setLocaleMessages('bn', timeago.BnMessages());
 
   // Enable edge-to-edge display
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
