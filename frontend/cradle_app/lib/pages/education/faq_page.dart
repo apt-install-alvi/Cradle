@@ -57,13 +57,6 @@ class FaqPage extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                Image.asset(
-                  'assets/icons/faq.png',
-                  width: 34,
-                  height: 34,
-                  fit: BoxFit.contain,
-                ),
               ],
             ),
           ),
