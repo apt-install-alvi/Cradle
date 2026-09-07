@@ -7,7 +7,6 @@ import '../../core/models/symptom.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_button.dart';
 import '../../core/widgets/gradient_scaffold.dart';
-import '../../core/widgets/language_toggle.dart';
 import './widgets/symptom_card.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
@@ -784,7 +783,6 @@ class _Header extends StatelessWidget {
             style: AppText.headerTitle,
           ),
         ),
-        const LanguageToggle(),
         const SizedBox(width: 12),
         Material(
           color: Colors.white,
