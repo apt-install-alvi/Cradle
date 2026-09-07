@@ -89,7 +89,7 @@ class _EducationListPageState extends State<EducationListPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: Text(
@@ -110,7 +110,7 @@ class _EducationListPageState extends State<EducationListPage> {
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
 
               // ============================================================
               // SEARCH BAR
@@ -159,7 +159,7 @@ class _EducationListPageState extends State<EducationListPage> {
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
               // ============================================================
               // CATEGORY CHIPS
@@ -399,22 +399,22 @@ class _EducationListPageState extends State<EducationListPage> {
             horizontal: 14,
             vertical: 8,
           ),
-          child: Column(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Image.asset(
                 'assets/icons/faq.png',
-                width: 30,
-                height: 30,
+                width: 24,
+                height: 24,
                 fit: BoxFit.contain,
               ),
 
-              const SizedBox(height: 3),
+              const SizedBox(width: 10),
 
               const Text(
                 'FAQ',
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: _accent,
                 ),
