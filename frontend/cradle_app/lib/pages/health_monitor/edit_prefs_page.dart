@@ -28,6 +28,7 @@ class EditPrefsPage extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.only(bottom: 40),
         children: [
+          const SizedBox(height: 20,),
           HealthTopBar(
             title: def.name(isBangla),
             subtitle: isBangla ? 'আপনার ট্র্যাকিং সময়সূচী সমন্বয় করুন' : 'Adjust your tracking schedule',
@@ -64,7 +65,7 @@ class EditPrefsPage extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: _brand,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 13),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 elevation: 0,
               ),
@@ -82,7 +83,7 @@ class EditPrefsPage extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: _dangerBg,
                 foregroundColor: _danger,
-                padding: const EdgeInsets.symmetric(vertical: 13),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 elevation: 0,
               ),

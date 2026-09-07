@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cradle_app/core/theme/app_theme.dart';
-import '../../../core/widgets/language_toggle.dart';
 
 class HealthTopBar extends StatelessWidget {
   const HealthTopBar({
@@ -8,13 +7,11 @@ class HealthTopBar extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.onBack,
-    this.showLanguageToggle = true,
   });
 
   final String title;
   final String? subtitle;
   final VoidCallback? onBack;
-  final bool showLanguageToggle;
 
   static const Color _muted = Color(0xFF8A7680);
 
@@ -45,8 +42,6 @@ class HealthTopBar extends StatelessWidget {
                   style: AppText.headerTitle.copyWith(fontSize: 24),
                 ),
               ),
-              if (showLanguageToggle)
-                const LanguageToggle(),
             ],
           ),
           if (subtitle != null && subtitle!.isNotEmpty)
