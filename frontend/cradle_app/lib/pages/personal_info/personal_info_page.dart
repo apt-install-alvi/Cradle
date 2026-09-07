@@ -29,7 +29,9 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
-  final TextEditingController _emergencyContactController = TextEditingController();
+  final List<TextEditingController> _emergencyContactControllers = [
+    TextEditingController(),
+  ];
   final TextEditingController _allergiesController = TextEditingController();
   final TextEditingController _longTermDiseasesController = TextEditingController();
 
@@ -60,10 +62,27 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     _ageController.dispose();
     _weightController.dispose();
     _heightController.dispose();
-    _emergencyContactController.dispose();
+    for (final controller in _emergencyContactControllers) {
+      controller.dispose();
+    }
     _allergiesController.dispose();
     _longTermDiseasesController.dispose();
     super.dispose();
+  }
+
+  void _addEmergencyContact() {
+    setState(() {
+      _emergencyContactControllers.add(TextEditingController());
+    });
+  }
+
+  void _removeEmergencyContact(int index) {
+    if (_emergencyContactControllers.length <= 1) return;
+
+    final controller = _emergencyContactControllers.removeAt(index);
+    controller.dispose();
+
+    setState(() {});
   }
 
   Future<void> _pickImage() async {
@@ -93,7 +112,29 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       _ageController.text = data['age']?.toString() ?? '';
       _weightController.text = data['weight']?.toString() ?? '';
       _heightController.text = data['height']?.toString() ?? '';
-      _emergencyContactController.text = data['emergency_contact'] ?? '';
+      _emergencyContactControllers.forEach((controller) {
+        controller.dispose();
+      });
+
+      _emergencyContactControllers.clear();
+
+      final emergencyContacts = data['emergency_contact'];
+
+      if (emergencyContacts is List) {
+        for (final contact in emergencyContacts) {
+          _emergencyContactControllers.add(
+            TextEditingController(text: contact.toString()),
+          );
+        }
+      } else if (emergencyContacts != null &&
+          emergencyContacts.toString().trim().isNotEmpty) {
+        // Keeps compatibility with your existing single-contact backend data.
+        _emergencyContactControllers.add(
+          TextEditingController(text: emergencyContacts.toString()),
+        );
+      } else {
+        _emergencyContactControllers.add(TextEditingController());
+      }
       _allergiesController.text = data['allergies'] ?? '';
       _longTermDiseasesController.text = data['long_term_diseases'] ?? '';
       _selectedBloodGroup = data['blood_group'];
@@ -170,7 +211,10 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         'age': int.tryParse(_ageController.text.trim()),
         'weight': double.tryParse(_weightController.text.trim()),
         'height': double.tryParse(_heightController.text.trim()),
-        'emergency_contact': _emergencyContactController.text.trim(),
+        'emergency_contact': _emergencyContactControllers
+            .map((controller) => controller.text.trim())
+            .where((contact) => contact.isNotEmpty)
+            .toList(),
         'conception_date': _lmpDate?.toIso8601String(),
         'expected_due_date': _estimatedDueDate?.toIso8601String(),
         'pregnancy_week': _pregnancyWeek,
@@ -475,15 +519,101 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           keyboardType: TextInputType.number,
         ),
         const SizedBox(height: 16),
-        _buildTextField(
-          controller: _emergencyContactController,
-          label: isBangla ? 'জরুরী যোগাযোগ' : 'Emergency Contact',
-          icon: Icons.phone_outlined,
-          keyboardType: TextInputType.phone,
-        ),
+        _buildEmergencyContacts(isBangla),
       ],
     );
   }
+
+ Widget _buildEmergencyContacts(bool isBangla) {
+  if (_emergencyContactControllers.isEmpty) {
+    _emergencyContactControllers.add(TextEditingController());
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          const Icon(
+            Icons.contact_phone_outlined,
+            color: _accent,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              isBangla ? 'জরুরী যোগাযোগ' : 'Emergency Contacts',
+              style: GoogleFonts.gentiumBookPlus(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: _accent,
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: _addEmergencyContact,
+            tooltip: isBangla ? 'যোগ করুন' : 'Add Contact',
+            icon: const Icon(
+              Icons.add_circle_outline,
+              color: _accent,
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 8),
+
+      ..._emergencyContactControllers.asMap().entries.map((entry) {
+        final int index = entry.key;
+        final TextEditingController controller = entry.value;
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _buildTextField(
+                  controller: controller,
+                  label: isBangla
+                      ? 'জরুরী যোগাযোগ ${index + 1}'
+                      : 'Emergency Contact ${index + 1}',
+                  icon: Icons.phone_outlined,
+                  keyboardType: TextInputType.phone,
+                ),
+              ),
+              if (_emergencyContactControllers.length > 1)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: IconButton(
+                    onPressed: () => _removeEmergencyContact(index),
+                    tooltip: isBangla ? 'মুছে ফেলুন' : 'Remove',
+                    icon: Icon(
+                      Icons.remove_circle_outline,
+                      color: Colors.red.shade700,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      }),
+
+      TextButton.icon(
+        onPressed: _addEmergencyContact,
+        icon: const Icon(
+          Icons.add,
+          color: _accent,
+        ),
+        label: Text(
+          isBangla ? 'আরও যোগাযোগ যোগ করুন' : 'Add another contact',
+          style: GoogleFonts.gentiumBookPlus(
+            color: _accent,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ],
+  );
+}
 
   Widget _buildMedicalHistoryCard(bool isBangla) {
     return _sectionCard(
