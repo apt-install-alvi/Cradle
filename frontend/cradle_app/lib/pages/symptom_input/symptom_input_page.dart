@@ -505,117 +505,151 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final isBangla = context.watch<LanguageProvider>().isBangla;
-    final reqFeatures = _requiredFeatures;
+@override
+Widget build(BuildContext context) {
+  final isBangla = context.watch<LanguageProvider>().isBangla;
 
-    return GradientScaffold(
-      bottomNavigationBar: const DashboardBottomNav(
-        selectedIndex: 2,
-      ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 180),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 32),
-            _Header(onHistoryTap: _openHistory),
-            const SizedBox(height: 4),
-            Text(
-              isBangla
-                  ? 'আপনার কী ধরণের শারীরিক সমস্যা বা অসুবিধা হচ্ছে তা নির্বাচন করুন:'
-                  : 'Select what difficulties or sicknesses you are facing:',
-              style: AppText.subtext.copyWith(fontSize: 16),
-            ),
-            const SizedBox(height: 16),
-            _SymptomGrid(
-              symptoms: kAllSymptoms,
-              selectedIds: _selectedIds,
-              onTap: _toggleSymptom,
-            ),
-            const SizedBox(height: 6),
-            
-            // Dynamic parameter input section
-            if (_selectedIds.isNotEmpty) ...[
-              Container(
-                margin: const EdgeInsets.only(bottom: 24),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppRadii.card),
-                  border: Border.all(color: const Color(0xFFFFD6E2), width: 1.5),
-                  boxShadow: appCardShadow,
+  return GradientScaffold(
+    bottomNavigationBar: _isLoading
+        ? null
+        : const DashboardBottomNav(
+            selectedIndex: 2,
+          ),
+    child: _isLoading
+        ? _LoadingScreen(isBangla: isBangla)
+        : SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 180),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 32),
+                _Header(onHistoryTap: _openHistory),
+                const SizedBox(height: 4),
+
+                Text(
+                  isBangla
+                      ? 'আপনার কী ধরণের শারীরিক সমস্যা বা অসুবিধা হচ্ছে তা নির্বাচন করুন:'
+                      : 'Select what difficulties or sicknesses you are facing:',
+                  style: AppText.subtext.copyWith(fontSize: 16),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+
+                const SizedBox(height: 16),
+
+                _SymptomGrid(
+                  symptoms: kAllSymptoms,
+                  selectedIds: _selectedIds,
+                  onTap: _toggleSymptom,
+                ),
+
+                const SizedBox(height: 6),
+
+                // Dynamic parameter input section
+                if (_selectedIds.isNotEmpty) ...[
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 24),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.circular(AppRadii.card),
+                      border: Border.all(
+                        color: const Color(0xFFFFD6E2),
+                        width: 1.5,
+                      ),
+                      boxShadow: appCardShadow,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.analytics_outlined, color: AppColors.roseDark, size: 24),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            isBangla ? 'প্রয়োজনীয় স্বাস্থ্য ভাইটাল' : 'Required Health Vitals',
-                            style: AppText.sectionHeading,
-                          ),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.analytics_outlined,
+                              color: AppColors.roseDark,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                isBangla
+                                    ? 'প্রয়োজনীয় স্বাস্থ্য ভাইটাল'
+                                    : 'Required Health Vitals',
+                                style: AppText.sectionHeading,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        Text(
+                          isBangla
+                              ? 'সঠিক ঝুঁকি স্তর পেতে অনুগ্রহ করে নিচের প্রয়োজনীয় প্যারামিটারগুলো প্রদান করুন।'
+                              : 'Please fill out these parameters to help the AI model evaluate your risk level accurately.',
+                          style: AppText.subtext,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        _buildParameterFields(
+                          _requiredFeatures,
+                          isBangla,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      isBangla
-                          ? 'সঠিক ঝুঁকি স্তর পেতে অনুগ্রহ করে নিচের প্রয়োজনীয় প্যারামিটারগুলো প্রদান করুন।'
-                          : 'Please fill out these parameters to help the AI model evaluate your risk level accurately.',
-                      style: AppText.subtext,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildParameterFields(reqFeatures, isBangla),
-                  ],
-                ),
-              ),
-            ] else ...[
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(bottom: 24),
-                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppRadii.card),
-                  border: Border.all(color: const Color(0xFFFFD6E2).withOpacity(0.5), width: 1.5),
-                  boxShadow: appCardShadow,
-                ),
-                child: Column(
-                  children: [
-                    Icon(Icons.check_box_outlined, color: AppColors.muted.withOpacity(0.5), size: 36),
-                    const SizedBox(height: 8),
-                    Text(
-                      isBangla
-                          ? 'শুরু করতে উপরে আপনার শারীরিক সমস্যা নির্বাচন করুন।'
-                          : 'Select your difficulties above to begin.',
-                      textAlign: TextAlign.center,
-                      style: AppText.subtext,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            
-            _isLoading 
-                ? const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.roseDark),
-                    ),
-                  )
-                : AppButton(
-                    label: isBangla ? 'সম্পন্ন' : 'Done',
-                    onPressed: _selectedIds.isEmpty ? null : _onDone,
                   ),
-          ],
-        ),
-      ),
-    );
-  }
+                ] else ...[
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.only(bottom: 24),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 24,
+                      horizontal: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.circular(AppRadii.card),
+                      border: Border.all(
+                        color:
+                            const Color(0xFFFFD6E2).withOpacity(0.5),
+                        width: 1.5,
+                      ),
+                      boxShadow: appCardShadow,
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.check_box_outlined,
+                          color:
+                              AppColors.muted.withOpacity(0.5),
+                          size: 36,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          isBangla
+                              ? 'শুরু করতে উপরে আপনার শারীরিক সমস্যা নির্বাচন করুন।'
+                              : 'Select your difficulties above to begin.',
+                          textAlign: TextAlign.center,
+                          style: AppText.subtext,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
+                AppButton(
+                  label: isBangla ? 'সম্পন্ন' : 'Done',
+                  onPressed:
+                      _selectedIds.isEmpty ? null : _onDone,
+                ),
+              ],
+            ),
+          ),
+  );
+}
+
+
 
   Widget _buildParameterFields(List<String> requiredFeatures, bool isBangla) {
     final metadata = {
@@ -762,6 +796,47 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _LoadingScreen extends StatelessWidget {
+  final bool isBangla;
+
+  const _LoadingScreen({
+    required this.isBangla,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(
+            width: 42,
+            height: 42,
+            child: CircularProgressIndicator(
+              strokeWidth: 3.5,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                AppColors.roseDark,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            isBangla
+                ? 'আপনার ফলাফল সংগ্রহ করা হচ্ছে'
+                : 'Fetching your results',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF4A3540),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -65,6 +65,38 @@ extension SymptomLocalization on Symptom {
       default:
         return label;
     }
+
+    //TODO : Change the symptoms to be more user-friendly and adjust the required features accordingly
+    //     switch (id) {
+    //   case 'high_blood_pressure':
+    //     return 'উচ্চ রক্তচাপ';
+    //   case 'low_blood_pressure':
+    //     return 'নিম্ন রক্তচাপ';
+    //   case 'elevated_heart_rate':
+    //     return 'হৃদস্পন্দন বৃদ্ধি';
+    //   case 'vomiting':
+    //     return 'বমি';
+    //   case 'fever':
+    //     return 'জ্বর';
+    //   case 'dehydration':
+    //     return 'পানিশূন্যতা';
+    //   case 'high_blood_glucose':
+    //     return 'রক্তে শর্করা বেড়ে যাওয়া (হাই সুগার)';
+    //   case 'low_blood_glucose':
+    //     return 'রক্তে শর্করা কমে যাওয়া (লো সুগার)';
+    //   case 'stress':
+    //     return 'মানসিক চাপ';
+    //   case 'difficulty_breathing':
+    //     return 'তীব্র শ্বাসকষ্ট';
+    //   case 'spotting/bleeding':
+    //     return 'রক্তপাত/স্পটিং';
+    //   case 'diarrhoea':
+    //     return 'ডায়রিয়া/ফুড পয়জনিং';
+    //   case 'headache':
+    //     return 'তীব্র মাথাব্যথা';
+    //   default:
+    //     return label;
+    // }
   }
 }
 
