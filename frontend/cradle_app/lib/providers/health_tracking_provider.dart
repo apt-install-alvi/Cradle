@@ -6,12 +6,12 @@ import '../pages/health_monitor/models/vital_log.dart';
 import '../pages/health_monitor/models/vital_tracking_state.dart';
 
 class MissedVitalReading {
-  final String key;
-  final String scheduledTime;
+  final String vitalKey;
+  final VitalLog? log;
 
   const MissedVitalReading({
-    required this.key,
-    required this.scheduledTime,
+    required this.vitalKey,
+    this.log,
   });
 }
 
@@ -38,6 +38,11 @@ class HealthTrackingProvider extends ChangeNotifier {
     }
     return latest;
   }
+  
+/// Returns true if at least one vital is currently being tracked.
+  bool get hasHealthTracking {
+  return _states.values.any((state) => state.tracking);
+}
 
   String? getLatestVitalKey(VitalLog log) {
     for (var entry in _states.entries) {
@@ -313,116 +318,72 @@ String _genId(Random rnd) =>
     notifyListeners();
   }
 
-  /// Returns true if at least one vital is currently being tracked.
-bool get hasHealthTracking {
-  return _states.values.any((state) => state.tracking);
-}
+  
 
 /// Returns all health readings that should have been logged today
 /// but have not been logged.
-List<MissedVitalReading> get missedReadingsToday {
-  final now = DateTime.now();
+  List<MissedVitalReading> get missedReadingsToday {
+    final now = DateTime.now();
+    final currentMinutes = now.hour * 60 + now.minute;
 
-  final dayIndex = now.weekday % 7;
+    final missed = <MissedVitalReading>[];
 
-  final missed = <MissedVitalReading>[];
+    for (final entry in _states.entries) {
+      final key = entry.key;
+      final state = entry.value;
 
-  for (final entry in _states.entries) {
-    final key = entry.key;
-    final state = entry.value;
+      if (!state.tracking) continue;
 
-    if (!state.tracking) {
-      continue;
-    }
+      final todayLogs = state.logs.where((log) {
+        return log.date.year == now.year &&
+            log.date.month == now.month &&
+            log.date.day == now.day;
+      }).toList();
 
-    // Check if this vital is scheduled today.
-    if (state.days.length > dayIndex &&
-        !state.days[dayIndex]) {
-      continue;
-    }
+      final scheduledTimes = List<String>.from(state.times)..sort();
 
-    // Sort today's logs.
-    final todayLogs = state.logs
-        .where((log) {
-          return log.date.year == now.year &&
-              log.date.month == now.month &&
-              log.date.day == now.day;
-        })
-        .toList()
-      ..sort((a, b) => a.date.compareTo(b.date));
+      var logIndex = 0;
 
-    // Sort scheduled times.
-    final scheduledTimes = <DateTime>[];
+      for (final timeString in scheduledTimes) {
+        final parts = timeString.split(':');
+        if (parts.length != 2) continue;
 
-    for (final timeString in state.times) {
-      final parts = timeString.split(':');
+        final hour = int.tryParse(parts[0]);
+        final minute = int.tryParse(parts[1]);
 
-      if (parts.length != 2) {
-        continue;
-      }
+        if (hour == null || minute == null) continue;
 
-      final hour = int.tryParse(parts[0]);
-      final minute = int.tryParse(parts[1]);
+        final scheduledMinutes = hour * 60 + minute;
 
-      if (hour == null || minute == null) {
-        continue;
-      }
-
-      final scheduled = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        hour,
-        minute,
-      );
-
-      // Only times that have passed can be missed.
-      if (!scheduled.isAfter(now)) {
-        scheduledTimes.add(scheduled);
-      }
-    }
-
-    scheduledTimes.sort();
-
-    // Each log can satisfy one scheduled reading.
-    var logIndex = 0;
-
-    for (final scheduledTime in scheduledTimes) {
-      bool foundMatchingLog = false;
-
-      while (logIndex < todayLogs.length) {
-        final log = todayLogs[logIndex];
-
-        // A log before this scheduled time does not
-        // satisfy this reminder.
-        if (log.date.isBefore(scheduledTime)) {
-          logIndex++;
+        // Future readings aren't missed yet.
+        if (scheduledMinutes >= currentMinutes) {
           continue;
         }
 
-        // This log satisfies this scheduled reading.
-        foundMatchingLog = true;
-        logIndex++;
-        break;
-      }
+        // Find the next available reading that occurred after this
+        // scheduled time.
+        while (logIndex < todayLogs.length &&
+            _minutesSinceMidnight(todayLogs[logIndex].date) <
+                scheduledMinutes) {
+          logIndex++;
+        }
 
-      if (!foundMatchingLog) {
-        final hh =
-            scheduledTime.hour.toString().padLeft(2, '0');
-
-        final mm =
-            scheduledTime.minute.toString().padLeft(2, '0');
-
-        missed.add(
-          MissedVitalReading(
-            key: key,
-            scheduledTime: '$hh:$mm',
-          ),
-        );
+        if (logIndex < todayLogs.length) {
+          logIndex++;
+        } else {
+          missed.add(
+            MissedVitalReading(
+              vitalKey: key,
+            ),
+          );
+        }
       }
     }
+
+    return missed;
   }
 
-  return missed;
-}
+  int _minutesSinceMidnight(DateTime date) {
+    return date.hour * 60 + date.minute;
+  }
 }

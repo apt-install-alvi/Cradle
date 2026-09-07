@@ -10,12 +10,14 @@ class QuickStatusCard extends StatelessWidget {
     required this.sub,
     this.iconPath = 'assets/icons/placeholder.png',
     this.onTap,
+    this.valueMaxLines = 1
   });
 
   final String label;
   final String value;
   final String sub;
   final String iconPath;
+  final int valueMaxLines;
   final VoidCallback? onTap;
 
   static const Color _brand = DashboardBottomNav.primaryPink;
@@ -89,7 +91,7 @@ class QuickStatusCard extends StatelessWidget {
 
               Text(
                 value,
-                maxLines: 1,
+                maxLines: valueMaxLines,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 16,

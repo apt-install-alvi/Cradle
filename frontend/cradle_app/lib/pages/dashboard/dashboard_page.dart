@@ -62,12 +62,11 @@ class DashboardScreen extends StatelessWidget {
     final missedReadings =
         healthProvider.missedReadingsToday;
         // Calculate next dose for QuickStatusRow
-        ScheduledDose? nextDose;
-        if (medicationProvider != null && medicationProvider.todayDoses.isNotEmpty) {
-          final now = TimeOfDay.now();
-          final nowMinutes = now.hour * 60 + now.minute;
+          ScheduledDose? nextDose;
 
-          try {
+          if (medicationProvider != null &&
+              medicationProvider.todayDoses.isNotEmpty) {
+            try {
             nextDose = medicationProvider.todayDoses.firstWhere(
               (d) => !d.taken && (d.time.hour * 60 + d.time.minute) > nowMinutes
             );
@@ -134,10 +133,10 @@ class DashboardScreen extends StatelessWidget {
       final readingNames = missedReadings
           .map((reading) {
             final definition =
-                kVitalDefinitions[reading.key];
+              kVitalDefinitions[reading.vitalKey];
 
             if (definition == null) {
-              return reading.key;
+              return reading.vitalKey;
             }
 
             return isBangla
