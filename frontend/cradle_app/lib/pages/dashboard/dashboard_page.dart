@@ -19,6 +19,7 @@ import './widgets/pregnancy_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 import './widgets/greeting_header.dart';
 import './widgets/quick_status_row.dart';
+import './widgets/missed_status_row.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -32,27 +33,124 @@ class DashboardScreen extends StatelessWidget {
     final authProvider = context.watch<AuthProvider>();
     final medicationProvider = context.watch<MedicationProvider?>();
     final healthProvider = context.watch<HealthTrackingProvider>();
+    final now = TimeOfDay.now();
+    final nowMinutes = now.hour * 60 + now.minute;
 
-    // Calculate next dose for QuickStatusRow
-    ScheduledDose? nextDose;
-    if (medicationProvider != null && medicationProvider.todayDoses.isNotEmpty) {
-      final now = TimeOfDay.now();
-      final nowMinutes = now.hour * 60 + now.minute;
+    // --------------------------------------------------
+    // MISSED MEDICATION DOSES
+    // --------------------------------------------------
 
-      try {
-        nextDose = medicationProvider.todayDoses.firstWhere(
-          (d) => !d.taken && (d.time.hour * 60 + d.time.minute) > nowMinutes
-        );
-      } catch (_) {
-        // If all doses taken or none after current time, show first untaken or first
-        try {
-          nextDose = medicationProvider.todayDoses.firstWhere((d) => !d.taken);
-        } catch (_) {
-          nextDose = medicationProvider.todayDoses.first;
+    final bool hasMedicationSetup =
+        medicationProvider != null &&
+        medicationProvider.medications.isNotEmpty;
+
+    final missedDoses = medicationProvider?.todayDoses.where((dose) {
+          final doseMinutes =
+              dose.time.hour * 60 + dose.time.minute;
+
+          return !dose.taken && doseMinutes < nowMinutes;
+        }).toList() ??
+        [];
+
+    // --------------------------------------------------
+    // MISSED HEALTH READINGS
+    // --------------------------------------------------
+
+    final bool hasHealthSetup =
+        healthProvider.hasHealthTracking;
+
+    final missedReadings =
+        healthProvider.missedReadingsToday;
+        // Calculate next dose for QuickStatusRow
+        ScheduledDose? nextDose;
+        if (medicationProvider != null && medicationProvider.todayDoses.isNotEmpty) {
+          final now = TimeOfDay.now();
+          final nowMinutes = now.hour * 60 + now.minute;
+
+          try {
+            nextDose = medicationProvider.todayDoses.firstWhere(
+              (d) => !d.taken && (d.time.hour * 60 + d.time.minute) > nowMinutes
+            );
+          } catch (_) {
+            // If all doses taken or none after current time, show first untaken or first
+            try {
+              nextDose = medicationProvider.todayDoses.firstWhere((d) => !d.taken);
+            } catch (_) {
+              nextDose = medicationProvider.todayDoses.first;
+            }
+          }
         }
-      }
+    // --------------------------------------------------
+    // MEDICATION MISSED STATUS TEXT
+    // --------------------------------------------------
+
+    String medicationMissedTitle;
+    String medicationMissedSubtitle;
+
+    if (missedDoses.isEmpty) {
+      medicationMissedTitle = isBangla
+          ? "দারুণ!"
+          : "Good job!";
+
+      medicationMissedSubtitle = isBangla
+          ? "আজ কোনো ডোজ মিস হয়নি।"
+          : "No doses missed today.";
+    } else {
+      medicationMissedTitle = isBangla
+          ? "মিস করা ডোজ"
+          : "Missed doses";
+
+      final doseNames = missedDoses
+          .map((dose) => dose.medication.name)
+          .toSet()
+          .join(', ');
+
+      medicationMissedSubtitle = isBangla
+          ? "$doseNames (${toBanglaDigits(missedDoses.length)})"
+          : "$doseNames (${missedDoses.length})";
     }
 
+
+    // --------------------------------------------------
+    // HEALTH MISSED STATUS TEXT
+    // --------------------------------------------------
+
+    String healthMissedTitle;
+    String healthMissedSubtitle;
+
+    if (missedReadings.isEmpty) {
+      healthMissedTitle = isBangla
+          ? "দারুণ!"
+          : "Good job!";
+
+      healthMissedSubtitle = isBangla
+          ? "আজ কোনো স্বাস্থ্য রিডিং মিস হয়নি।"
+          : "No health reading missed today.";
+    } else {
+      healthMissedTitle = isBangla
+          ? "মিস করা রিডিং"
+          : "Missed readings";
+
+      final readingNames = missedReadings
+          .map((reading) {
+            final definition =
+                kVitalDefinitions[reading.key];
+
+            if (definition == null) {
+              return reading.key;
+            }
+
+            return isBangla
+                ? definition.nameBn
+                : definition.nameEn;
+          })
+          .toSet()
+          .join(', ');
+
+      healthMissedSubtitle = isBangla
+          ? "$readingNames (${toBanglaDigits(missedReadings.length)})"
+          : "$readingNames (${missedReadings.length})";
+    }
     // Health monitor latest reading
     final latestLog = healthProvider.latestAnyVitalLog;
     String lastVitalLabel = "None";
@@ -210,18 +308,63 @@ class DashboardScreen extends StatelessWidget {
                   //--------------------------------------------------
 
                   QuickStatusRow(
-                    nextDoseName: nextDose?.medication.name ?? (isBangla ? "কোনোটি নেই" : "None"),
-                    nextDoseNameBn: nextDose?.medication.name ?? "কোনোটি নেই",
-                    nextDoseTime: nextDose?.time.format(context) ?? "--:--",
-                    nextDoseEta: nextDose != null ? (isBangla ? "পরবর্তী ডোজ" : "Next dose") : (isBangla ? "সব শেষ" : "All set"),
-                    nextDoseEtaBn: nextDose != null ? "পরবর্তী ডোজ" : "সব শেষ",
+                    nextDoseName: nextDose?.medication.name ??
+                        (isBangla ? "কোনোটি নেই" : "None"),
+                    nextDoseNameBn:
+                        nextDose?.medication.name ?? "কোনোটি নেই",
+                    nextDoseTime:
+                        nextDose?.time.format(context) ?? "--:--",
+                    nextDoseEta: nextDose != null
+                        ? (isBangla ? "পরবর্তী ডোজ" : "Next dose")
+                        : (isBangla ? "সব শেষ" : "All set"),
+                    nextDoseEtaBn:
+                        nextDose != null ? "পরবর্তী ডোজ" : "সব শেষ",
                     lastVitalLabel: lastVitalLabel,
                     lastVitalLabelBn: lastVitalLabelBn,
                     lastVitalSub: lastVitalSub,
                     lastVitalSubBn: lastVitalSubBn,
-                    onMedicineTap: () => Navigator.pushNamed(context, AppRoutes.medicationTracker),
-                    onHealthTap: () => Navigator.pushNamed(context, AppRoutes.healthMonitor),
+                    onMedicineTap: () => Navigator.pushNamed(
+                      context,
+                      AppRoutes.medicationTracker,
+                    ),
+                    onHealthTap: () => Navigator.pushNamed(
+                      context,
+                      AppRoutes.healthMonitor,
+                    ),
                   ),
+
+                  // --------------------------------------------------
+                  // MISSED DOSES / MISSED HEALTH READINGS
+                  // --------------------------------------------------
+
+                  if (hasMedicationSetup || hasHealthSetup) ...[
+                    const SizedBox(height: 16),
+
+                    MissedStatusRow(
+                      showMedication: hasMedicationSetup,
+                      showHealth: hasHealthSetup,
+
+                      medicationTitle: medicationMissedTitle,
+                      medicationSubtitle: medicationMissedSubtitle,
+
+                      healthTitle: healthMissedTitle,
+                      healthSubtitle: healthMissedSubtitle,
+
+                      onMedicationTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.medicationTracker,
+                        );
+                      },
+
+                      onHealthTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.healthMonitor,
+                        );
+                      },
+                    ),
+                  ],
 
                   const SizedBox(height: 20),
 
