@@ -15,6 +15,7 @@ import '../../pages/emergency/emergency_alerts_page.dart';
 import '../../pages/education/education_list_page.dart';
 import '../../pages/notifications/notifications_page.dart';
 import '../../pages/settings/settings_page.dart';
+import '../../pages/education/faq_page.dart';
 import 'app_routes.dart';
 
 class RouteGenerator {
@@ -68,6 +69,8 @@ switch (routeName) {
         return MaterialPageRoute(builder: (_) => const EmergencyAlertsPage());
       case AppRoutes.education:
         return MaterialPageRoute(builder: (_) => const EducationListPage());
+      case AppRoutes.faq:
+        return MaterialPageRoute(builder: (_) => const FaqPage());
       case AppRoutes.notifications:
         return MaterialPageRoute(builder: (_) => const NotificationsPage());
       case AppRoutes.settings:

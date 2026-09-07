@@ -11,6 +11,7 @@ class AppRoutes {
   static const String appointments = '/appointments';
   static const String emergency = '/emergency';
   static const String education = '/education';
+  static const String faq = '/faq';
   static const String notifications = '/notifications';
   static const String settings = '/settings';
   static const String medicationTracker = '/medication-tracker';
