@@ -1,37 +1,26 @@
-# Walkthrough - Mother Profile Persistence & Sync
+# Walkthrough - Connected Diagnosis History UI
 
-I have implemented the complete data flow for the mother's profile, ensuring that health details and images are stored in MongoDB and synchronized with the user account.
+I have successfully connected the **Diagnosis History** screen (`HealthHistoryPage`) to the live backend API and redesigned the history cards to match the app's maternal theme.
 
 ## Changes Made
 
-### 1. Backend Data Persistence
-- **Model Update**: Added `profile_image` to the [MotherProfile](file:///D:/code/Cradle/backend/modules/motherProfile/motherProfile.model.js) model to store images as Base64 strings.
-- **Service Refactor**: The [MotherProfileService](file:///D:/code/Cradle/backend/modules/motherProfile/motherProfile.service.js) now:
-    - Removes all mock/dummy logic.
-    - Synchronizes the `full_name` between the profile and the main `User` account.
-    - Automatically handles "new" vs "existing" profiles during retrieval.
-- **Auth Middleware**: Removed mock bypass from [authMiddleware.js](file:///D:/code/Cradle/backend/common/middlewares/authMiddleware.js) to ensure real database users are always used.
+### 1. Backend Prediction History Enhancement
+- Updated `AiPredictionService.getHistory` in [aiPrediction.service.js](file:///D:/code/Cradle/backend/modules/aiPrediction/aiPrediction.service.js) to fetch and bundle:
+  - AI risk assessment results (`risk_level`, `prediction_data`, `created_at`)
+  - Associated `symptoms` from the session
+  - Required health vitals from the `diagnosis_vitals` table
 
-### 2. Frontend Connectivity
-- **Auth Provider**: Updated [auth_provider.dart](file:///D:/code/Cradle/frontend/cradle_app/lib/providers/auth_provider.dart) with `fetchProfile` and `updateProfile` methods to communicate with the `/api/profile` endpoints.
-- **Dynamic Loading**: The profile is now fetched automatically after a successful login or OTP verification.
+### 2. Frontend API Connection & Redesigned Cards
+- Updated [HealthHistoryPage](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/health_history/health_history_page.dart) to fetch live check-in history from `/api/predictions/history` using `ApiService.get`.
+- Redesigned [HistoryCard](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/health_history/widgets/history_card.dart) featuring:
+  - **Timestamp & Date**: Formatted neatly (e.g., `08 Sep 2026, 11:15 AM`).
+  - **Color-Coded Risk Tags**:
+    - 🔴 **High Risk**: Red tag (`AppColors.high` / `AppColors.highBg`)
+    - 🟡 **Medium Risk**: Yellow/Orange tag (`AppColors.medium` / `AppColors.mediumBg`)
+    - 🟢 **Low Risk**: Green tag (`AppColors.low` / `AppColors.lowBg`)
+  - **Reported Symptoms**: Displayed as clean tags within each card.
+  - **Required Health Vitals**: Displays required physiological measurements (e.g., `systolic_bp: 120 mmHg`, `body_temp: 99.1°F`) stored during diagnosis.
 
-### 3. Personal Info Page Enhancements
-- **Auto-Fill**: The [PersonalInfoPage](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/personal_info/personal_info_page.dart) now fetches existing data from MongoDB as soon as it opens.
-- **Image Handling**: Implemented image selection with automatic conversion to Base64 and basic compression (512x512) for efficient database storage.
-- **Real Saving**: The "Save" button now persists all data (Age, Weight, Height, LMP, Allergies, Diseases, Emergency Contact, and Image) to the backend.
-
-## Verification Instructions
-
-1. **Start Backend**: Ensure your backend server is running (`npm run dev`).
-2. **Onboarding**:
-    - Register a new user with a specific name (e.g., "Sarah").
-    - Complete the OTP verification.
-3. **Profile Sync**:
-    - Go to **Personal Info**.
-    - Verify that the name "Sarah" is already filled in.
-    - Add a photo, update the name to "Sarah Johnson", and fill in health details.
-    - Click **Save**.
-4. **Persistence Test**:
-    - Restart the app and go back to the Personal Info page.
-    - Verify that all your data and the photo are still there, fetched correctly from MongoDB Atlas.
+## Verification Results
+- The Diagnosis History page successfully fetches records from Supabase via the backend gateway.
+- The UI properly distinguishes risk levels with color-coded tags and displays all associated symptoms and required vitals for each session.

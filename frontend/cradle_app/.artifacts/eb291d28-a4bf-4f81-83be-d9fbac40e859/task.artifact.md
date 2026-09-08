@@ -1,13 +1,9 @@
-- [x] Update Backend `MotherProfile` Model & Service
-    - [x] Add `profile_image` to `motherProfile.model.js`
-    - [x] Refactor `motherProfile.service.js` (remove mock, add sync logic)
-    - [x] Update `motherProfile.validation.js`
-    - [x] Clean up `authMiddleware.js`
-- [x] Update Frontend `AuthProvider`
-    - [x] Implement `fetchProfile` and `updateProfile` methods
-    - [x] Add loading and error states for profile fetching
-- [x] Update Frontend `PersonalInfoPage`
-    - [x] Fetch profile on `initState`
-    - [x] Implement Image to Base64 conversion
-    - [x] Connect form submission to `AuthProvider.updateProfile`
-- [ ] Verify full synchronization (Login -> Profile Update -> Persistence)
+- [x] Check backend prediction history route & ensure it returns symptoms and diagnosis vitals
+- [x] Implement frontend API call to fetch diagnosis history
+- [x] Redesign `HistoryCard` widget in `HealthHistoryPage` to show:
+    - Date and timestamp
+    - Color-coded risk tag (Red for High, Yellow/Orange for Medium, Green for Low)
+    - Reported symptoms
+    - Required health vitals
+- [x] Connect `HealthHistoryPage` to live backend data
+- [x] Verify UI and create walkthrough artifact

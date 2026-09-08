@@ -1,23 +1,49 @@
 import 'package:flutter/material.dart';
-import '../../../core/models/diagnosis_result.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../providers/language_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 /// One row in the risk assessment history list.
 class HistoryCard extends StatelessWidget {
-  final DiagnosisResult entry;
+  final Map<String, dynamic> item;
   final VoidCallback? onTap;
 
   const HistoryCard({
     super.key,
-    required this.entry,
+    required this.item,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final isBangla = context.watch<LanguageProvider>().isBangla;
+
+    final riskLevel = (item['risk_level'] ?? 'LOW').toString().toUpperCase();
+    final createdAt = item['created_at'] != null 
+        ? DateTime.tryParse(item['created_at'])?.toLocal() ?? DateTime.now() 
+        : DateTime.now();
+    
+    final symptoms = (item['symptoms'] as List<dynamic>?) ?? [];
+    final vitals = (item['diagnosis_vitals'] as List<dynamic>?) ?? [];
+
+    Color tagColor;
+    Color tagBgColor;
+    String tagLabel;
+
+    if (riskLevel == 'HIGH') {
+      tagColor = AppColors.high;
+      tagBgColor = AppColors.highBg;
+      tagLabel = isBangla ? 'উচ্চ ঝুঁকি' : 'High Risk';
+    } else if (riskLevel == 'MEDIUM') {
+      tagColor = AppColors.medium;
+      tagBgColor = AppColors.mediumBg;
+      tagLabel = isBangla ? 'মাঝারি ঝুঁকি' : 'Medium Risk';
+    } else {
+      tagColor = AppColors.low;
+      tagBgColor = AppColors.lowBg;
+      tagLabel = isBangla ? 'নিম্ন ঝুঁকি' : 'Low Risk';
+    }
 
     return Material(
       color: Colors.transparent,
@@ -27,104 +53,109 @@ class HistoryCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(bottom: 14),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(AppRadii.card),
             boxShadow: appCardShadow,
           ),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _formattedDate(isBangla),
-                      style: const TextStyle(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time_rounded, size: 14, color: AppColors.muted),
+                      const SizedBox(width: 4),
+                      Text(
+                        DateFormat('dd MMM yyyy, hh:mm a').format(createdAt),
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: tagBgColor,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      tagLabel,
+                      style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.muted,
-                        letterSpacing: 0.4,
+                        color: tagColor,
                       ),
                     ),
-                    const SizedBox(height: 2),
-
-                    Text(
-                      isBangla
-                          ? '${entry.riskLevel.displayLabel(true)} মূল্যায়ন'
-                          : '${entry.riskLevel.displayLabel(false)} Assessment',
-                      style: AppText.historyTitle,
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    Text(
-                      entry.reportedSymptoms
-                          .map((s) => s.displayLabel(isBangla))
-                          .join(' · '),
-                      style: const TextStyle(
-                        fontSize: 12.5,
-                        color: AppColors.muted,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(width: 10),
-
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: entry.riskLevel.backgroundColor,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  entry.riskLevel.shortDisplayLabel(isBangla),
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    color: entry.riskLevel.color,
                   ),
-                ),
+                ],
               ),
+              const SizedBox(height: 12),
+
+              // Symptoms
+              if (symptoms.isNotEmpty) ...[
+                Text(
+                  isBangla ? 'উপসর্গসমূহ:' : 'Symptoms:',
+                  style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: AppColors.ink),
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: symptoms.map((s) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFBF2F5),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${s['type'] ?? ''}',
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.roseDark),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 12),
+              ],
+
+              // Required Vitals
+              if (vitals.isNotEmpty) ...[
+                Text(
+                  isBangla ? 'প্রয়োজনীয় স্বাস্থ্য পরিমাপ (Vitals):' : 'Required Vitals:',
+                  style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: AppColors.ink),
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: vitals.map((v) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF7F5F7),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFEFE8EC), width: 1),
+                      ),
+                      child: Text(
+                        '${v['vital_name']}: ${v['value']} ${v['unit'] ?? ''}',
+                        style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.ink),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
             ],
           ),
         ),
       ),
     );
-  }
-
-  String _formattedDate(bool isBangla) {
-    final now = DateTime.now();
-    final diff = now.difference(entry.timestamp);
-
-    if (diff.inDays == 0) {
-      return isBangla ? 'আজ' : 'Today';
-    }
-
-    if (diff.inDays == 1) {
-      return isBangla ? 'গতকাল' : 'Yesterday';
-    }
-
-    if (diff.inDays < 7) {
-      return isBangla
-          ? '${diff.inDays} দিন আগে'
-          : '${diff.inDays} days ago';
-    }
-
-    if (diff.inDays < 14) {
-      return isBangla ? 'গত সপ্তাহে' : 'Last week';
-    }
-
-    return isBangla
-        ? '${(diff.inDays / 7).floor()} সপ্তাহ আগে'
-        : '${(diff.inDays / 7).floor()} weeks ago';
   }
 }

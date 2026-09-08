@@ -1,52 +1,35 @@
-# Implementation Plan - Mother Profile Persistence
+# Implementation Plan - Connected Diagnosis History UI
 
-This plan outlines the implementation of profile persistence for the mother's health data, including image support and synchronization with the User account.
+This plan implements a fully backend-connected Diagnosis History UI in `HealthHistoryPage`, displaying check-in date/timestamp, symptoms, required health vitals, and risk outputs with colored tags (Green for Low, Yellow for Medium, Red for High).
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Image Storage**: As requested to store everything in MongoDB, I will store the profile image as a **Base64 string**. For very large images, this might impact performance, so I will implement a basic compression/scaling on the Flutter side before upload.
-> - **Name Sync**: Changing the name in the Mother Profile will automatically update the `full_name` in the main User account.
-> - **LMP and Dates**: The backend will store `conception_date` (which corresponds to LMP in the UI) and `expected_due_date`.
+> - **Backend API**: We will connect `HealthHistoryPage` to the existing backend predictions & symptoms endpoints (fetching from Supabase `ai_predictions`, `symptom_sessions`, `symptoms`, and `diagnosis_vitals`).
+> - **UI & Tags**: Each history card will feature clean maternal-theme cards with color-coded risk tags (Low = Green, Medium = Yellow/Orange, High = Red), timestamps, reported symptoms, and required health vitals.
 
 ## Proposed Changes
 
-### 1. Backend Updates
+### Backend Updates
 
-#### [MODIFY] [motherProfile.model.js](file:///D:/code/Cradle/backend/modules/motherProfile/motherProfile.model.js)
-- Add `profile_image` field (String, for Base64 data).
+#### [MODIFY] [AiPrediction Controller & Service](file:///D:/code/Cradle/backend/modules/aiPrediction/aiPrediction.service.js)
+- Ensure `/api/predictions/history` (or similar history route) returns session details, symptoms, diagnosis vitals, and AI prediction results.
 
-#### [MODIFY] [motherProfile.service.js](file:///D:/code/Cradle/backend/modules/motherProfile/motherProfile.service.js)
-- Remove all mock database logic.
-- Implement `getProfileByUserId`: If no profile exists, return a skeleton object with the user's `full_name` from the `User` collection.
-- Implement `createOrUpdateProfile`: Save profile data. If `full_name` is changed, update the corresponding `User` document.
+### Frontend Updates
 
-#### [MODIFY] [motherProfile.validation.js](file:///D:/code/Cradle/backend/modules/motherProfile/motherProfile.validation.js)
-- Update validation to reflect the current schema fields.
+#### [NEW / MODIFY] [Health History Service / Provider](file:///D:/code/Cradle/frontend/cradle_app/lib/providers/)
+- Add methods to fetch diagnosis history from the backend API.
 
----
-
-### 2. Frontend Updates
-
-#### [MODIFY] [auth_provider.dart](file:///D:/code/Cradle/frontend/cradle_app/lib/providers/auth_provider.dart)
-- Add `fetchProfile()`: Retrieves the profile from `/api/profile`.
-- Add `updateProfile(Map<String, dynamic> data)`: Sends profile updates to `/api/profile`.
-- Automatically call `fetchProfile()` after a successful login/OTP verification.
-
-#### [MODIFY] [personal_info_page.dart](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/personal_info/personal_info_page.dart)
-- On `initState`, call `authProvider.fetchProfile()` and populate all controllers/state variables.
-- Update `_pickImage` to read the file bytes and convert to Base64.
-- Update `saveProfile` to call `authProvider.updateProfile()` with all field values.
+#### [MODIFY] [Health History Page & Cards](file:///D:/code/Cradle/frontend/cradle_app/lib/pages/health_history/)
+- Replace hardcoded mock entries with real backend data.
+- Design clean history cards displaying:
+    - Date & Timestamp
+    - Color-coded risk level tag (Green, Yellow, Red)
+    - Reported symptoms list
+    - Required health vitals logged during diagnosis
 
 ## Verification Plan
 
-### Automated Tests
-- Backend: Verify that updating the profile name correctly updates the `User` collection.
-- Backend: Verify that fetching a profile for a new user returns the name entered during registration.
-
 ### Manual Verification
-1. Register a new user with name "Jane".
-2. Go to Personal Info page; verify "Jane" is pre-filled.
-3. Change name to "Jane Smith", add a photo, and fill health details.
-4. Save and restart the app.
-5. Verify all data (including photo) persists and is displayed correctly.
+- Log a new symptom check-in with required vitals and get an AI risk prediction.
+- Navigate to the Health History page and verify that the check-in appears with the correct timestamp, symptoms, required vitals, and colored risk tag.

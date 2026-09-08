@@ -1,16 +1,26 @@
 const validateSymptomLog = (body) => {
-  const { symptomsList } = body;
-  if (!symptomsList || !Array.isArray(symptomsList) || symptomsList.length === 0) {
-    return { error: new Error('symptomsList must be a non-empty array') };
+  const { symptomsList, diagnosisVitals } = body;
+  if ((!symptomsList || !Array.isArray(symptomsList) || symptomsList.length === 0) &&
+      (!diagnosisVitals || !Array.isArray(diagnosisVitals))) {
+    return { error: new Error('symptomsList or diagnosisVitals is required') };
   }
-  for (const s of symptomsList) {
-    if (!s.name || typeof s.name !== 'string') {
-      return { error: new Error('Symptom name is required') };
-    }
-    if (s.severity === undefined || typeof s.severity !== 'number' || s.severity < 1 || s.severity > 10) {
-      return { error: new Error('Symptom severity must be a number between 1 and 10') };
+
+  if (symptomsList && Array.isArray(symptomsList)) {
+    for (const s of symptomsList) {
+      if (!s.name || typeof s.name !== 'string') {
+        return { error: new Error('Symptom name is required') };
+      }
     }
   }
+
+  if (diagnosisVitals && Array.isArray(diagnosisVitals)) {
+    for (const v of diagnosisVitals) {
+      if (!v.symptom_type || !v.vital_name || v.value === undefined) {
+        return { error: new Error('Each diagnosis vital must have symptom_type, vital_name, and value') };
+      }
+    }
+  }
+
   return { value: body };
 };
 
