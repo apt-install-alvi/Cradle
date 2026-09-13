@@ -112,10 +112,10 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
     if (key == 'bmi' && (val < 10 || val > 70)) {
       return isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
     }
-    if (key == 'hba1c' && (val < 1 || val > 150)) {
+    if (key == 'hba1c' && (val < 25.0 || val > 120.0)) {
       return isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
     }
-    if (key == 'fasting_glucose' && (val < 1 || val > 500)) {
+    if (key == 'fasting_glucose' && (val < 1.0 || val > 25.0)) {
       return isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
     }
 
