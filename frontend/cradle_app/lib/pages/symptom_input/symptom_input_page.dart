@@ -330,9 +330,9 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
       
       // Inject measurements into SymptomEntry so standard labels print details
       final Map<String, String> measurements = {};
-      if (id == 'maternal_infection' || id == 'gastroenteritis') {
+      if (id == 'fever' || id == 'diarrhoea') {
         measurements['value'] = temp.toStringAsFixed(1);
-      } else if (id == 'preeclampsia' || id == 'chronic_hypertension' || id == 'hypertensive_encephalopathy') {
+      } else if (id == 'high_blood_pressure' || id == 'low_blood_pressure' || id == 'headache') {
         measurements['systolic'] = sys.toStringAsFixed(0);
         measurements['diastolic'] = dia.toStringAsFixed(0);
       }
@@ -345,9 +345,9 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
       double severity = 5.0; // standard baseline severity for subjective ones
       
       // Scale severity dynamically for measurable vitals
-      if (id == 'maternal_infection' || id == 'gastroenteritis') {
+      if (id == 'fever' || id == 'diarrhoea') {
         severity = ((temp - 98.0) * 1.5).clamp(1.0, 10.0);
-      } else if (id == 'preeclampsia' || id == 'chronic_hypertension' || id == 'hypertensive_encephalopathy') {
+      } else if (id == 'high_blood_pressure' || id == 'low_blood_pressure' || id == 'headache') {
         severity = ((sys - 110.0) * 0.2).clamp(1.0, 10.0);
       }
       return {

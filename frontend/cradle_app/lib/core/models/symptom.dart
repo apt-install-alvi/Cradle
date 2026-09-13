@@ -38,65 +38,35 @@ extension SymptomLocalization on Symptom {
     if (!isBangla) return label;
 
     switch (id) {
-      case 'gestational_diabetes':
-        return 'গর্ভকালীন ডায়াবেটিস';
-      case 'preeclampsia':
-        return 'প্রিক্ল্যাম্পসিয়া (উচ্চ রক্তচাপ)';
-      case 'hyperemesis_gravidarum':
-        return 'অতিরিক্ত বমি ও পানিশূন্যতা';
-      case 'maternal_infection':
-        return 'মায়ের ইনফেকশন ও জ্বর';
-      case 'chronic_hypertension':
-        return 'উচ্চ রক্তচাপ (Hypertension)';
-      case 'maternal_tachycardia':
-        return 'বুক ধড়ফড়ানি ও দ্রুত হৃদস্পন্দন';
-      case 'gestational_obesity':
-        return 'অতিরিক্ত ওজন ও উচ্চ বিএমআই';
-      case 'hypoglycemia':
+      case 'high_blood_pressure':
+        return 'উচ্চ রক্তচাপ';
+      case 'low_blood_pressure':
+        return 'নিম্ন রক্তচাপ';
+      case 'elevated_heart_rate':
+        return 'হৃদস্পন্দন বৃদ্ধি';
+      case 'vomiting':
+        return 'বমি';
+      case 'fever':
+        return 'জ্বর';
+      case 'dehydration':
+        return 'পানিশূন্যতা';
+      case 'high_blood_glucose':
+        return 'রক্তে শর্করা বেড়ে যাওয়া (হাই সুগার)';
+      case 'low_blood_glucose':
         return 'রক্তে শর্করা কমে যাওয়া (লো সুগার)';
-      case 'cardiovascular_stress':
-        return 'রক্তচাপজনিত তীব্র শ্বাসকষ্ট';
-      case 'placental_abruption':
-        return 'রক্তক্ষরণ ও শারীরিক শক';
-      case 'gastroenteritis':
-        return 'ডায়রিয়া ও ফুড পয়জনিং';
-      case 'hypertensive_encephalopathy':
-        return 'উচ্চ রক্তচাপজনিত তীব্র মাথাব্যথা';
+      case 'stress':
+        return 'মানসিক চাপ';
+      case 'difficulty_breathing':
+        return 'তীব্র শ্বাসকষ্ট';
+      case 'spotting/bleeding':
+        return 'রক্তপাত/স্পটিং';
+      case 'diarrhoea':
+        return 'ডায়রিয়া/ফুড পয়জনিং';
+      case 'headache':
+        return 'তীব্র মাথাব্যথা';
       default:
         return label;
     }
-
-    //TODO : Change the symptoms to be more user-friendly and adjust the required features accordingly
-    //     switch (id) {
-    //   case 'high_blood_pressure':
-    //     return 'উচ্চ রক্তচাপ';
-    //   case 'low_blood_pressure':
-    //     return 'নিম্ন রক্তচাপ';
-    //   case 'elevated_heart_rate':
-    //     return 'হৃদস্পন্দন বৃদ্ধি';
-    //   case 'vomiting':
-    //     return 'বমি';
-    //   case 'fever':
-    //     return 'জ্বর';
-    //   case 'dehydration':
-    //     return 'পানিশূন্যতা';
-    //   case 'high_blood_glucose':
-    //     return 'রক্তে শর্করা বেড়ে যাওয়া (হাই সুগার)';
-    //   case 'low_blood_glucose':
-    //     return 'রক্তে শর্করা কমে যাওয়া (লো সুগার)';
-    //   case 'stress':
-    //     return 'মানসিক চাপ';
-    //   case 'difficulty_breathing':
-    //     return 'তীব্র শ্বাসকষ্ট';
-    //   case 'spotting/bleeding':
-    //     return 'রক্তপাত/স্পটিং';
-    //   case 'diarrhoea':
-    //     return 'ডায়রিয়া/ফুড পয়জনিং';
-    //   case 'headache':
-    //     return 'তীব্র মাথাব্যথা';
-    //   default:
-    //     return label;
-    // }
   }
 }
 
@@ -104,78 +74,78 @@ extension SymptomLocalization on Symptom {
 /// mapping to the XGBoost model's feature set.
 const List<Symptom> kAllSymptoms = [
   Symptom(
-    id: 'gestational_diabetes',
-    label: 'Gestational Diabetes',
+    id: 'high_blood_glucose',
+    label: 'High Blood Glucose',
     icon: 'assets/icons/bp.png',
     requiredFeatures: ['hba1c', 'fasting_glucose', 'bmi', 'age'],
   ),
   Symptom(
-    id: 'preeclampsia',
-    label: 'Preeclampsia',
+    id: 'high_blood_pressure',
+    label: 'High Blood Pressure',
     icon: 'assets/icons/high_bp.png',
     isMeasurable: true,
     measurementType: MeasurementType.bloodPressure,
     requiredFeatures: ['systolic_bp', 'diastolic_bp', 'bmi', 'heart_rate', 'age'],
   ),
   Symptom(
-    id: 'hyperemesis_gravidarum',
-    label: 'Hyperemesis Gravidarum',
+    id: 'vomiting',
+    label: 'Vomiting',
     icon: 'assets/icons/nausea.png',
     requiredFeatures: ['fasting_glucose', 'heart_rate', 'body_temp', 'age'],
   ),
   Symptom(
-    id: 'maternal_infection',
-    label: 'Maternal Infection / Sepsis',
+    id: 'fever',
+    label: 'Fever',
     icon: 'assets/icons/fever2.png',
     isMeasurable: true,
     measurementType: MeasurementType.temperature,
     requiredFeatures: ['body_temp', 'heart_rate', 'age'],
   ),
   Symptom(
-    id: 'chronic_hypertension',
-    label: 'Chronic Hypertension',
+    id: 'low_blood_pressure',
+    label: 'Low Blood Pressure',
     icon: 'assets/icons/high_bp.png',
     requiredFeatures: ['systolic_bp', 'diastolic_bp', 'bmi', 'age'],
   ),
   Symptom(
-    id: 'maternal_tachycardia',
-    label: 'Maternal Tachycardia',
+    id: 'elevated_heart_rate',
+    label: 'Elevated Heart Rate',
     icon: 'assets/icons/heartbeat.png',
     requiredFeatures: ['heart_rate', 'systolic_bp', 'diastolic_bp', 'age'],
   ),
   Symptom(
-    id: 'gestational_obesity',
-    label: 'Gestational Obesity',
+    id: 'dehydration',
+    label: 'Dehydration',
     icon: 'assets/icons/swelling.png',
     requiredFeatures: ['bmi', 'systolic_bp', 'diastolic_bp', 'age'],
   ),
   Symptom(
-    id: 'hypoglycemia',
-    label: 'Hypoglycemia',
+    id: 'low_blood_glucose',
+    label: 'Low Blood Glucose',
     icon: 'assets/icons/oxygen.png',
     requiredFeatures: ['fasting_glucose', 'heart_rate', 'age'],
   ),
   Symptom(
-    id: 'cardiovascular_stress',
-    label: 'Cardiovascular Stress',
+    id: 'difficulty_breathing',
+    label: 'Difficulty Breathing',
     icon: 'assets/icons/breathing_problem.png',
     requiredFeatures: ['heart_rate', 'systolic_bp', 'diastolic_bp', 'bmi', 'age'],
   ),
   Symptom(
-    id: 'placental_abruption',
-    label: 'Placental Shock (Bleeding)',
+    id: 'spotting/bleeding',
+    label: 'Spotting / Bleeding',
     icon: 'assets/icons/spotting.png',
     requiredFeatures: ['systolic_bp', 'diastolic_bp', 'heart_rate', 'age'],
   ),
   Symptom(
-    id: 'gastroenteritis',
-    label: 'Gastroenteritis (Diarrhea)',
+    id: 'diarrhoea',
+    label: 'Diarrhoea',
     icon: 'assets/icons/loose_motion.png',
     requiredFeatures: ['body_temp', 'heart_rate', 'age'],
   ),
   Symptom(
-    id: 'hypertensive_encephalopathy',
-    label: 'Hypertensive Encephalopathy',
+    id: 'headache',
+    label: 'Headache',
     icon: 'assets/icons/headache.png',
     requiredFeatures: ['systolic_bp', 'diastolic_bp', 'hba1c', 'age'],
   ),
