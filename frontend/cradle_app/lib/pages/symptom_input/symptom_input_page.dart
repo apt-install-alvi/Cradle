@@ -1,6 +1,7 @@
 import 'package:cradle_app/pages/ai_risk_assessment/ai_risk_assessment_page.dart';
 import 'package:cradle_app/pages/health_history/health_history_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/models/diagnosis_result.dart';
 import '../../core/models/symptom.dart';
@@ -84,12 +85,74 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
     return features;
   }
 
+  String? _validateParam(String key, String input, bool isBangla) {
+    final trimmed = input.trim();
+    if (trimmed.isEmpty) return null;
+
+    final val = double.tryParse(trimmed);
+    if (val == null) {
+      return isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+    }
+
+    if (key == 'age' && (val < 10 || val > 120)) {
+      return isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+    }
+    if (key == 'body_temp' && (val < 70 || val > 115)) {
+      return isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+    }
+    if (key == 'heart_rate' && (val < 30 || val > 220)) {
+      return isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+    }
+    if (key == 'systolic_bp' && (val < 40 || val > 250)) {
+      return isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+    }
+    if (key == 'diastolic_bp' && (val < 30 || val > 150)) {
+      return isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+    }
+    if (key == 'bmi' && (val < 10 || val > 70)) {
+      return isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+    }
+    if (key == 'hba1c' && (val < 2 || val > 25)) {
+      return isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+    }
+    if (key == 'fasting_glucose' && (val < 20 || val > 500)) {
+      return isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+    }
+
+    return null;
+  }
+
   Future<void> _onDone() async {
+    final isBangla = context.read<LanguageProvider>().isBangla;
+    final reqFeatures = _requiredFeatures;
+
+    bool hasInvalid = false;
+    for (var feature in reqFeatures) {
+      final err = _validateParam(feature, _paramControllers[feature]!.text, isBangla);
+      if (err != null) {
+        hasInvalid = true;
+        break;
+      }
+    }
+
+    if (hasInvalid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isBangla
+                ? 'অনুগ্রহ করে সঠিক ইনপুট মান প্রদান করুন।'
+                : 'Please enter valid vitals before proceeding.',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     // Identify which parameters of the 7 user-input fields were not selected by the symptoms
     final allParams = ['body_temp', 'heart_rate', 'systolic_bp', 'diastolic_bp', 'bmi', 'hba1c', 'fasting_glucose'];
-    final reqFeatures = _requiredFeatures;
     final unselectedFeatures = allParams.where((param) => !reqFeatures.contains(param)).toList();
 
     if (unselectedFeatures.isNotEmpty) {
@@ -124,43 +187,43 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
     final metadata = {
       'body_temp': _FieldMeta(
         label: isBangla ? 'শরীরের তাপমাত্রা (Temp)' : 'Body Temperature',
-        hint: 'e.g. 98.6',
+        hint: '98.6',
         unit: '°F',
         icon: Icons.thermostat,
       ),
       'heart_rate': _FieldMeta(
         label: isBangla ? 'হার্ট রেট (Heart Rate)' : 'Heart Rate',
-        hint: 'e.g. 80',
+        hint: '80',
         unit: 'bpm',
         icon: Icons.favorite,
       ),
       'systolic_bp': _FieldMeta(
         label: isBangla ? 'সিস্টোলিক রক্তচাপ' : 'Systolic BP',
-        hint: 'e.g. 120',
+        hint: '120',
         unit: 'mmHg',
         icon: Icons.compress,
       ),
       'diastolic_bp': _FieldMeta(
         label: isBangla ? 'ডায়াস্টোলিক রক্তচাপ' : 'Diastolic BP',
-        hint: 'e.g. 80',
+        hint: '80',
         unit: 'mmHg',
         icon: Icons.expand,
       ),
       'bmi': _FieldMeta(
         label: isBangla ? 'বিএমআই (BMI)' : 'BMI (kg/m²)',
-        hint: 'e.g. 23.5',
+        hint: '23.5',
         unit: 'kg/m²',
         icon: Icons.accessibility_new,
       ),
       'hba1c': _FieldMeta(
         label: isBangla ? 'এইচবিএ১সি (HbA1c)' : 'Blood Glucose (HbA1c)',
-        hint: 'e.g. 5.7',
+        hint: '5.7',
         unit: '%',
         icon: Icons.water_drop_outlined,
       ),
       'fasting_glucose': _FieldMeta(
         label: isBangla ? 'খালি পেটে সুগার' : 'Fasting Glucose',
-        hint: 'e.g. 90',
+        hint: '90',
         unit: 'mg/dL',
         icon: Icons.bloodtype,
       ),
@@ -170,113 +233,156 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.card),
-            side: const BorderSide(color: Color(0xFFFFD6E2), width: 1.5),
-          ),
-          title: Row(
-            children: [
-              const Icon(Icons.info_outline, color: AppColors.roseDark, size: 24),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  isBangla ? 'অতিরিক্ত স্বাস্থ্য তথ্য' : 'Unselected Health Vitals',
-                  style: AppText.sectionHeading,
-                ),
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            bool hasInvalid = false;
+            for (var feature in unselectedFeatures) {
+              if (_validateParam(feature, dialogControllers[feature]!.text, isBangla) != null) {
+                hasInvalid = true;
+                break;
+              }
+            }
+
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadii.card),
+                side: const BorderSide(color: Color(0xFFFFD6E2), width: 1.5),
               ),
-            ],
-          ),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              title: Row(
                 children: [
-                  Text(
-                    isBangla
-                        ? 'নিচের প্যারামিটারগুলো আপনার উপসর্গের সাথে সরাসরি সম্পর্কিত নয়। সঠিক এআই মূল্যায়নের জন্য এগুলো স্বাভাবিক (Default) মান হিসেবে পাঠানো হবে। আপনি চাইলে মানগুলো পরিবর্তন করতে পারেন:'
-                        : 'The following vitals are not relevant to your selected symptoms. To ensure accurate prediction, they will submit with healthy defaults. You can modify them below if desired:',
-                    style: const TextStyle(
-                      fontSize: 13.5,
-                      color: Color(0xFF4A3540),
-                      height: 1.35,
+                  const Icon(Icons.info_outline, color: AppColors.roseDark, size: 24),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      isBangla ? 'অতিরিক্ত স্বাস্থ্য তথ্য' : 'Unselected Health Vitals',
+                      style: AppText.sectionHeading,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  ...unselectedFeatures.map((feature) {
-                    final meta = metadata[feature]!;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            meta.label,
-                            style: const TextStyle(
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.roseDark,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          TextFormField(
-                            controller: dialogControllers[feature],
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            style: const TextStyle(
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF4A3540),
-                            ),
-                            decoration: InputDecoration(
-                              hintText: meta.hint,
-                              hintStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600),
-                              filled: true,
-                              fillColor: const Color(0xFFFBF2F5),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                              prefixIcon: Icon(meta.icon, size: 18, color: AppColors.roseDark),
-                              suffixText: meta.unit,
-                              suffixStyle: const TextStyle(color: AppColors.roseDark, fontWeight: FontWeight.w800, fontSize: 11),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Color(0xFFF3D6E0)),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Color(0xFFF3D6E0)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppColors.rose, width: 1.5),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
                 ],
               ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: Text(
-                isBangla ? 'বাতিল' : 'Cancel',
-                style: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w700),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isBangla
+                            ? 'নিচের প্যারামিটারগুলো আপনার উপসর্গের সাথে সরাসরি সম্পর্কিত নয়। সঠিক এআই মূল্যায়নের জন্য এগুলো স্বাভাবিক (Default) মান হিসেবে পাঠানো হবে। আপনি চাইলে মানগুলো পরিবর্তন করতে পারেন:'
+                            : 'The following vitals are not relevant to your selected symptoms. To ensure accurate prediction, they will submit with healthy defaults. You can modify them below if desired:',
+                        style: const TextStyle(
+                          fontSize: 13.5,
+                          color: Color(0xFF4A3540),
+                          height: 1.35,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ...unselectedFeatures.map((feature) {
+                        final meta = metadata[feature]!;
+                        final errText = _validateParam(feature, dialogControllers[feature]!.text, isBangla);
+                        final isInvalid = errText != null;
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                meta.label,
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.roseDark,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              TextFormField(
+                                controller: dialogControllers[feature],
+                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                                ],
+                                onChanged: (_) => setDialogState(() {}),
+                                style: TextStyle(
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: isInvalid ? Colors.red.shade900 : const Color(0xFF4A3540),
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: meta.hint,
+                                  hintStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600),
+                                  filled: true,
+                                  fillColor: isInvalid ? const Color(0xFFFFF0F0) : const Color(0xFFFBF2F5),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                  prefixIcon: Icon(meta.icon, size: 18, color: isInvalid ? Colors.red : AppColors.roseDark),
+                                  suffixText: meta.unit,
+                                  suffixStyle: TextStyle(
+                                    color: isInvalid ? Colors.red : AppColors.roseDark,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 11,
+                                  ),
+                                  errorText: errText,
+                                  errorStyle: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: Color(0xFFF3D6E0)),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: isInvalid ? Colors.red : const Color(0xFFF3D6E0),
+                                      width: isInvalid ? 1.5 : 1.0,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: isInvalid ? Colors.red : AppColors.rose,
+                                      width: isInvalid ? 2.0 : 1.5,
+                                    ),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: Colors.red, width: 1.5),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: Colors.red, width: 2.0),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Save updated controllers back to main list
-                for (var feature in unselectedFeatures) {
-                  _paramControllers[feature]!.text = dialogControllers[feature]!.text;
-                }
-                Navigator.of(dialogContext).pop(true);
-              },
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  child: Text(
+                    isBangla ? 'বাতিল' : 'Cancel',
+                    style: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w700),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: hasInvalid
+                      ? null
+                      : () {
+                          // Save updated controllers back to main list
+                          for (var feature in unselectedFeatures) {
+                            _paramControllers[feature]!.text = dialogControllers[feature]!.text;
+                          }
+                          Navigator.of(dialogContext).pop(true);
+                        },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.roseDark,
                 shape: RoundedRectangleBorder(
@@ -293,6 +399,8 @@ class _SymptomInputPageState extends State<SymptomInputPage> {
         );
       },
     );
+  },
+);
 
     // Clean up local dialog controllers
     for (var controller in dialogControllers.values) {
@@ -655,49 +763,49 @@ Widget build(BuildContext context) {
     final metadata = {
       'age': _FieldMeta(
         label: isBangla ? 'বয়স (Age)' : 'Age (Years)',
-        hint: 'e.g. 24',
+        hint: '24',
         unit: isBangla ? 'বছর' : 'yrs',
         icon: Icons.calendar_today,
       ),
       'body_temp': _FieldMeta(
         label: isBangla ? 'শরীরের তাপমাত্রা (Temp)' : 'Body Temperature',
-        hint: 'e.g. 98.6',
+        hint: '98.6',
         unit: '°F',
         icon: Icons.thermostat,
       ),
       'heart_rate': _FieldMeta(
         label: isBangla ? 'হার্ট রেট (Heart Rate)' : 'Heart Rate',
-        hint: 'e.g. 80',
+        hint: '80',
         unit: 'bpm',
         icon: Icons.favorite,
       ),
       'systolic_bp': _FieldMeta(
         label: isBangla ? 'সিস্টোলিক রক্তচাপ' : 'Systolic BP',
-        hint: 'e.g. 120',
+        hint: '120',
         unit: 'mmHg',
         icon: Icons.compress,
       ),
       'diastolic_bp': _FieldMeta(
         label: isBangla ? 'ডায়াস্টোলিক রক্তচাপ' : 'Diastolic BP',
-        hint: 'e.g. 80',
+        hint: '80',
         unit: 'mmHg',
         icon: Icons.expand,
       ),
       'bmi': _FieldMeta(
         label: isBangla ? 'বিএমআই (BMI)' : 'BMI (kg/m²)',
-        hint: 'e.g. 23.5',
+        hint: '23.5',
         unit: 'kg/m²',
         icon: Icons.accessibility_new,
       ),
       'hba1c': _FieldMeta(
         label: isBangla ? 'এইচবিএ১সি (HbA1c)' : 'Blood Glucose (HbA1c)',
-        hint: 'e.g. 40',
+        hint: '40',
         unit: '%',
         icon: Icons.water_drop_outlined,
       ),
       'fasting_glucose': _FieldMeta(
         label: isBangla ? 'খালি পেটে সুগার' : 'Fasting Glucose',
-        hint: 'e.g. 5.8',
+        hint: '5.8',
         unit: 'mg/dL',
         icon: Icons.bloodtype,
       ),
@@ -752,6 +860,10 @@ Widget build(BuildContext context) {
   }
 
   Widget _buildSingleField(String key, _FieldMeta meta, bool isBangla) {
+    final controller = _paramControllers[key]!;
+    final errorText = _validateParam(key, controller.text, isBangla);
+    final isInvalid = errorText != null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -765,33 +877,61 @@ Widget build(BuildContext context) {
         ),
         const SizedBox(height: 5),
         TextFormField(
-          controller: _paramControllers[key],
+          controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          style: const TextStyle(
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+          ],
+          onChanged: (_) => setState(() {}),
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF4A3540),
+            color: isInvalid ? Colors.red.shade900 : const Color(0xFF4A3540),
           ),
           decoration: InputDecoration(
             hintText: meta.hint,
             hintStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600),
             filled: true,
-            fillColor: const Color(0xFFFBF2F5),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            prefixIcon: Icon(meta.icon, size: 18, color: AppColors.roseDark),
+            fillColor: isInvalid ? const Color(0xFFFFF0F0) : const Color(0xFFFBF2F5),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            prefixIcon: Icon(meta.icon, size: 18, color: isInvalid ? Colors.red : AppColors.roseDark),
             suffixText: meta.unit,
-            suffixStyle: const TextStyle(color: AppColors.roseDark, fontWeight: FontWeight.w800, fontSize: 12),
+            suffixStyle: TextStyle(
+              color: isInvalid ? Colors.red : AppColors.roseDark,
+              fontWeight: FontWeight.w800,
+              fontSize: 12,
+            ),
+            errorText: errorText,
+            errorStyle: const TextStyle(
+              color: Colors.red,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Color(0xFFF3D6E0)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFF3D6E0)),
+              borderSide: BorderSide(
+                color: isInvalid ? Colors.red : const Color(0xFFF3D6E0),
+                width: isInvalid ? 1.5 : 1.0,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.rose, width: 1.5),
+              borderSide: BorderSide(
+                color: isInvalid ? Colors.red : AppColors.rose,
+                width: isInvalid ? 2.0 : 1.5,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.red, width: 1.5),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.red, width: 2.0),
             ),
           ),
         ),

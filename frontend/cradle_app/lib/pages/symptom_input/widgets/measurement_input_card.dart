@@ -196,6 +196,13 @@ class _MeasurementFieldState extends State<_MeasurementField> {
     }
   }
 
+  String get _hintText {
+    if (widget.fieldType == 'temperature') return '98.6';
+    if (widget.fieldType == 'systolic') return '120';
+    if (widget.fieldType == 'diastolic') return '80';
+    return widget.isBangla ? 'এখানে লিখুন' : 'Type here';
+  }
+
   @override
   Widget build(BuildContext context) {
     final isInvalid = _errorText != null;
@@ -210,7 +217,7 @@ class _MeasurementFieldState extends State<_MeasurementField> {
         color: isInvalid ? Colors.red.shade900 : const Color(0xFF4A3540),
       ),
       decoration: InputDecoration(
-        hintText: widget.isBangla ? 'এখানে লিখুন' : 'Type here',
+        hintText: _hintText,
         hintStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600),
         filled: true,
         fillColor: isInvalid ? const Color(0xFFFFF0F0) : const Color(0xFFFBF2F5),
