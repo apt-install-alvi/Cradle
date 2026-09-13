@@ -65,30 +65,37 @@ class MeasurementInputCard extends StatelessWidget {
     switch (symptom.measurementType!) {
       case MeasurementType.temperature:
         return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: _MeasurementField(
                 initialValue: values['value'],
                 isBangla: isBangla,
+                fieldType: 'temperature',
                 onChanged: (v) => onChanged({...values, 'value': v}),
               ),
             ),
             const SizedBox(width: 10),
-            const _UnitLabel('°F'),
+            const Padding(
+              padding: EdgeInsets.only(top: 12),
+              child: _UnitLabel('°F'),
+            ),
           ],
         );
       case MeasurementType.bloodPressure:
         return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: _MeasurementField(
                 initialValue: values['systolic'],
                 isBangla: isBangla,
+                fieldType: 'systolic',
                 onChanged: (v) => onChanged({...values, 'systolic': v}),
               ),
             ),
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: EdgeInsets.only(top: 12, left: 8, right: 8),
               child: Text(
                 '/',
                 style: TextStyle(
@@ -102,56 +109,143 @@ class MeasurementInputCard extends StatelessWidget {
               child: _MeasurementField(
                 initialValue: values['diastolic'],
                 isBangla: isBangla,
+                fieldType: 'diastolic',
                 onChanged: (v) => onChanged({...values, 'diastolic': v}),
               ),
             ),
             const SizedBox(width: 10),
-            const _UnitLabel('mmHg'),
+            const Padding(
+              padding: EdgeInsets.only(top: 12),
+              child: _UnitLabel('mmHg'),
+            ),
           ],
         );
     }
   }
 }
 
-class _MeasurementField extends StatelessWidget {
+class _MeasurementField extends StatefulWidget {
   final String? initialValue;
   final bool isBangla;
+  final String fieldType;
   final ValueChanged<String> onChanged;
 
   const _MeasurementField({
     required this.initialValue,
     required this.isBangla,
+    required this.fieldType,
     required this.onChanged,
   });
 
   @override
+  State<_MeasurementField> createState() => _MeasurementFieldState();
+}
+
+class _MeasurementFieldState extends State<_MeasurementField> {
+  late TextEditingController _controller;
+  String? _errorText;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialValue ?? '');
+    _validate(_controller.text);
+  }
+
+  @override
+  void didUpdateWidget(covariant _MeasurementField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue &&
+        widget.initialValue != _controller.text) {
+      _controller.text = widget.initialValue ?? '';
+      _validate(_controller.text);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _validate(String input) {
+    final trimmed = input.trim();
+    String? err;
+
+    if (trimmed.isNotEmpty) {
+      final numVal = double.tryParse(trimmed);
+      if (numVal == null) {
+        err = widget.isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+      } else if (widget.fieldType == 'temperature' && (numVal < 70 || numVal > 115)) {
+        err = widget.isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+      } else if (widget.fieldType == 'systolic' && (numVal < 40 || numVal > 250)) {
+        err = widget.isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+      } else if (widget.fieldType == 'diastolic' && (numVal < 30 || numVal > 150)) {
+        err = widget.isBangla ? 'অকার্যকর ইনপুট' : 'Invalid input';
+      }
+    }
+
+    setState(() {
+      _errorText = err;
+    });
+
+    if (err == null) {
+      widget.onChanged(trimmed);
+    } else {
+      widget.onChanged('');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isInvalid = _errorText != null;
+
     return TextFormField(
-      initialValue: initialValue,
+      controller: _controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      onChanged: onChanged,
-      style: const TextStyle(
+      onChanged: _validate,
+      style: TextStyle(
         fontSize: 15,
         fontWeight: FontWeight.w700,
-        color: Color(0xFF4A3540),
+        color: isInvalid ? Colors.red.shade900 : const Color(0xFF4A3540),
       ),
       decoration: InputDecoration(
-        hintText: isBangla ? 'এখানে লিখুন' : 'Type here',
+        hintText: widget.isBangla ? 'এখানে লিখুন' : 'Type here',
         hintStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600),
         filled: true,
-        fillColor: const Color(0xFFFBF2F5),
+        fillColor: isInvalid ? const Color(0xFFFFF0F0) : const Color(0xFFFBF2F5),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        errorText: _errorText,
+        errorStyle: const TextStyle(
+          color: Colors.red,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFFF3D6E0)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFF3D6E0)),
+          borderSide: BorderSide(
+            color: isInvalid ? Colors.red : const Color(0xFFF3D6E0),
+            width: isInvalid ? 1.5 : 1.0,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.rose, width: 1.5),
+          borderSide: BorderSide(
+            color: isInvalid ? Colors.red : AppColors.rose,
+            width: isInvalid ? 2.0 : 1.5,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 1.5),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 2.0),
         ),
       ),
     );
