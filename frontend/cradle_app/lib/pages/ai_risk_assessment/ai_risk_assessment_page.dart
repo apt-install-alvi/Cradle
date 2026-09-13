@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/models/diagnosis_result.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_button.dart';
 import '../../core/widgets/gradient_scaffold.dart';
 import '../../core/widgets/bottom_nav.dart';
 import '../../providers/language_provider.dart';
+import '../../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-
 
 /// Shows the AI-generated pregnancy risk assessment based on
 /// the user's reported symptoms.
@@ -14,6 +15,116 @@ class AiRiskAssessmentPage extends StatelessWidget {
   final DiagnosisResult result;
 
   const AiRiskAssessmentPage({super.key, required this.result});
+
+  Future<void> _makePhoneCall(BuildContext context, String phoneNumber) async {
+    final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+    if (cleanNumber.isEmpty) return;
+
+    final Uri phoneUri = Uri(
+      scheme: 'tel',
+      path: cleanNumber,
+    );
+
+    try {
+      if (await canLaunchUrl(phoneUri)) {
+        await launchUrl(phoneUri, mode: LaunchMode.externalApplication);
+      } else {
+        await launchUrl(phoneUri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      debugPrint('Could not launch phone dialer: $e');
+    }
+  }
+
+  List<String> _extractEmergencyContacts(Map<String, dynamic>? profile) {
+    if (profile == null) return [];
+    final raw = profile['emergency_contact'] ?? profile['emergency_contacts'];
+    final List<String> list = [];
+
+    if (raw is List) {
+      for (final item in raw) {
+        final str = item.toString().trim();
+        if (str.isNotEmpty) list.add(str);
+      }
+    } else if (raw != null && raw.toString().trim().isNotEmpty) {
+      list.add(raw.toString().trim());
+    }
+
+    return list;
+  }
+
+  void _handleEmergencyContactsCall(BuildContext context, bool isBangla) {
+    final auth = context.read<AuthProvider>();
+    final contacts = _extractEmergencyContacts(auth.profile);
+
+    if (contacts.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isBangla
+                ? 'কোনো জরুরি যোগাযোগ নম্বর পাওয়া যায়নি। প্রোফাইলে নম্বর যোগ করুন।'
+                : 'No emergency contacts found. Please add contact numbers in your Profile.',
+          ),
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
+      return;
+    }
+
+    if (contacts.length == 1) {
+      _makePhoneCall(context, contacts.first);
+    } else {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (sheetContext) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isBangla ? 'জরুরি পরিচিতিতে কল করুন' : 'Call Emergency Contact',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.roseDark,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  ...contacts.map((phone) {
+                    return ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: Color(0xFFFBF2F5),
+                        child: Icon(Icons.phone, color: AppColors.roseDark),
+                      ),
+                      title: Text(
+                        phone,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      onTap: () {
+                        Navigator.of(sheetContext).pop();
+                        _makePhoneCall(context, phone);
+                      },
+                    );
+                  }),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +181,7 @@ class AiRiskAssessmentPage extends StatelessWidget {
                 icon: Icons.contact_phone_outlined,
                 variant: AppButtonVariant.outlined,
                 onPressed: () {
-                  // TODO: wire up to the user's saved emergency contacts.
+                  _handleEmergencyContactsCall(context, isBangla);
                 },
               ),
               const SizedBox(height: 12),
@@ -79,7 +190,7 @@ class AiRiskAssessmentPage extends StatelessWidget {
                 icon: Icons.local_hospital_outlined,
                 variant: AppButtonVariant.danger,
                 onPressed: () {
-                  // TODO: launch the dialer with the local emergency number.
+                  _makePhoneCall(context, '999');
                 },
               ),
             ],

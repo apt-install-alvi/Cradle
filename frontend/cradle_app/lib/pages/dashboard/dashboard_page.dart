@@ -395,7 +395,10 @@ class DashboardScreen extends StatelessWidget {
                     path: '999',
                   );
 
-                  launchUrl(phone);
+                  launchUrl(
+                    phone,
+                    mode: LaunchMode.externalApplication,
+                  );
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(

@@ -2,7 +2,6 @@ import 'package:cradle_app/pages/ai_risk_assessment/ai_risk_assessment_page.dart
 import 'package:cradle_app/pages/health_history/health_history_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../core/models/diagnosis_result.dart';
 import '../../core/models/symptom.dart';
 import '../../core/theme/app_theme.dart';
