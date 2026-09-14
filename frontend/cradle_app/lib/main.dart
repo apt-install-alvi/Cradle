@@ -13,10 +13,12 @@ import 'providers/medication_provider.dart';
 import 'providers/notification_provider.dart';
 import 'providers/settings_provider.dart';
 import 'repositories/medication_repository.dart';
+import 'core/services/local_notification_service.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await LocalNotificationService.init();
   
   timeago.setLocaleMessages('bn', timeago.BnMessages());
 

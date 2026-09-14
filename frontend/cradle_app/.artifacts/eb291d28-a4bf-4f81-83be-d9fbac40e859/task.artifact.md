@@ -1,9 +1,6 @@
-- [x] Check backend prediction history route & ensure it returns symptoms and diagnosis vitals
-- [x] Implement frontend API call to fetch diagnosis history
-- [x] Redesign `HistoryCard` widget in `HealthHistoryPage` to show:
-    - Date and timestamp
-    - Color-coded risk tag (Red for High, Yellow/Orange for Medium, Green for Low)
-    - Reported symptoms
-    - Required health vitals
-- [x] Connect `HealthHistoryPage` to live backend data
-- [x] Verify UI and create walkthrough artifact
+- [x] Add `flutter_local_notifications` dependency to `pubspec.yaml`
+- [x] Configure Android manifest permissions (`POST_NOTIFICATIONS`, `VIBRATE`)
+- [x] Create `LocalNotificationService` for local notification initialization and display
+- [x] Initialize `LocalNotificationService` in `main.dart`
+- [x] Integrate local notifications with `NotificationProvider` to trigger system notifications when in-app notifications are fetched
+- [x] Verify functionality and create walkthrough artifact

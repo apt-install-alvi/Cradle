@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/services/api_service.dart';
+import '../core/services/local_notification_service.dart';
 
 class NotificationModel {
   final String id;
@@ -34,6 +35,7 @@ class NotificationProvider extends ChangeNotifier {
   List<NotificationModel> _notifications = [];
   bool _isLoading = false;
   final String? token;
+  final Set<String> _notifiedIds = {};
 
   List<NotificationModel> get notifications => _notifications;
   bool get isLoading => _isLoading;
@@ -57,7 +59,20 @@ class NotificationProvider extends ChangeNotifier {
         token: token
       );
       final List data = response['data'] ?? [];
-      _notifications = data.map((n) => NotificationModel.fromJson(n)).toList();
+      final newNotifications = data.map((n) => NotificationModel.fromJson(n)).toList();
+
+      for (var n in newNotifications) {
+        if (!n.isRead && !_notifiedIds.contains(n.id)) {
+          _notifiedIds.add(n.id);
+          LocalNotificationService.showNotification(
+            id: n.id.hashCode,
+            title: n.title,
+            body: n.message,
+          );
+        }
+      }
+
+      _notifications = newNotifications;
     } catch (e) {
       debugPrint('Error fetching notifications: $e');
     } finally {
