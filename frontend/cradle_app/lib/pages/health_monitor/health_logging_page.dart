@@ -7,6 +7,8 @@ import '../../providers/language_provider.dart';
 import '../../providers/health_tracking_provider.dart';
 import './widgets/vital_card.dart';
 import './widgets/confirm_modal.dart';
+import 'package:printing/printing.dart';
+import '../../core/services/health_report_pdf_service.dart';
 
 const _brand = DashboardBottomNav.primaryPink;
 
@@ -35,7 +37,10 @@ class HealthLoggingPage extends StatelessWidget {
                   style: AppText.headerTitle
                 ),
               ),
-              _ExportButton(isBangla: isBangla),
+              _ExportButton(
+                isBangla: isBangla,
+                provider: provider,
+                ),
             ],
           ),
           const SizedBox(height: 6),
@@ -56,19 +61,63 @@ class HealthLoggingPage extends StatelessWidget {
 }
 
 class _ExportButton extends StatelessWidget {
-  const _ExportButton({required this.isBangla});
+  const _ExportButton({
+    required this.isBangla,
+    required this.provider,
+  });
+
   final bool isBangla;
+  final HealthTrackingProvider provider;
+
+  Future<void> _exportPdf(BuildContext context) async {
+    if (!provider.hasHealthTracking) {
+      showHealthToast(
+        context,
+        isBangla
+            ? 'কোনো স্বাস্থ্য ট্র্যাকিং রেকর্ড পাওয়া যায়নি।'
+            : 'There are no health tracking records to export.',
+      );
+      return;
+    }
+
+    try {
+      showHealthToast(
+        context,
+        isBangla
+            ? 'আপনার স্বাস্থ্য প্রতিবেদন প্রস্তুত করা হচ্ছে…'
+            : 'Preparing your health report…',
+      );
+
+      final pdfBytes = await HealthReportPdfService.generate(
+        provider: provider,
+        isBangla: isBangla,
+      );
+
+      await Printing.layoutPdf(
+        name: 'cradle_health_report.pdf',
+        onLayout: (_) async => pdfBytes,
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Health PDF export failed: $e');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!context.mounted) return;
+
+      showHealthToast(
+        context,
+        isBangla
+            ? 'PDF প্রতিবেদন তৈরি করা যায়নি।'
+            : 'Could not generate the PDF report.',
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 2),
       child: ElevatedButton.icon(
-        // TODO: wire up real PDF export once the reporting backend exists.
-        onPressed: () => showHealthToast(
-          context,
-          isBangla ? 'আপনার পিডিএফ স্বাস্থ্য প্রতিবেদন প্রস্তুত করা হচ্ছে…' : 'Preparing your PDF health report…',
-        ),
+        onPressed: () => _exportPdf(context),
         icon: Image.asset(
           "assets/icons/pdf.png",
           width: 24,
@@ -77,15 +126,23 @@ class _ExportButton extends StatelessWidget {
         ),
         label: Text(
           isBangla ? 'পিডিএফ এক্সপোর্ট করুন' : 'Export PDF',
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: _brand,
           elevation: 3,
           shadowColor: _brand.withValues(alpha: 0.14),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 9,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
       ),
     );

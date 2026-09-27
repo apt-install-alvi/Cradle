@@ -287,7 +287,7 @@ class _SignupPageState extends State<SignupPage> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         child: authProvider.isLoading
-            ? const CircularProgressIndicator(color: Colors.white)
+            ? const CircularProgressIndicator(color: Color(0xFFAB0A65))
             : Text(
                 submitBtn,
                 style: isBangla

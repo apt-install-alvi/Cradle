@@ -137,21 +137,21 @@ Widget build(BuildContext context) {
 
           const SizedBox(height: 14),
 
-          _buildToggleCard(
-            icon: Icons.calendar_month_rounded,
-            title: isBangla
-                ? 'অ্যাপয়েন্টমেন্ট রিমাইন্ডার'
-                : 'Appointment Reminders',
-            subtitle: isBangla
-                ? 'আসন্ন অ্যাপয়েন্টমেন্টের জন্য সতর্কতা'
-                : 'Alerts for upcoming appointments',
-            value: settingsProvider.appointmentRemindersEnabled,
-            onChanged: (v) {
-              settingsProvider.updateAppointmentReminders(v);
-            },
-          ),
+          // _buildToggleCard(
+          //   icon: Icons.calendar_month_rounded,
+          //   title: isBangla
+          //       ? 'অ্যাপয়েন্টমেন্ট রিমাইন্ডার'
+          //       : 'Appointment Reminders',
+          //   subtitle: isBangla
+          //       ? 'আসন্ন অ্যাপয়েন্টমেন্টের জন্য সতর্কতা'
+          //       : 'Alerts for upcoming appointments',
+          //   value: settingsProvider.appointmentRemindersEnabled,
+          //   onChanged: (v) {
+          //     settingsProvider.updateAppointmentReminders(v);
+          //   },
+          // ),
 
-          const SizedBox(height: 14),
+          // const SizedBox(height: 14),
 
           _buildToggleCard(
             icon: Icons.health_and_safety_rounded,
