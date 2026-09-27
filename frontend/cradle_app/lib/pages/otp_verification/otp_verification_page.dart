@@ -169,7 +169,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   Widget _buildLogo(Color secondaryColor, String subtitle, Color textColor, bool isBangla) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: 110,
           height: 110,
           child: SvgPicture.asset(

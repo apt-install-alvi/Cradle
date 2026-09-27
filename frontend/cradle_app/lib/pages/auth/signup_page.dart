@@ -175,7 +175,7 @@ class _SignupPageState extends State<SignupPage> {
   Widget _buildLogo(Color secondaryColor, String subtitle, Color textColor) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: 110,
           height: 110,
           child: SvgPicture.asset(

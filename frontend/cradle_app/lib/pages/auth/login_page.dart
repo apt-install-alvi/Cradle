@@ -117,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildLogo(Color secondaryColor, String subtitle, Color textColor) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: 110,
           height: 110,
           child: SvgPicture.asset(

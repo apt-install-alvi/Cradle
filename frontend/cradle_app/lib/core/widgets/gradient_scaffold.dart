@@ -5,12 +5,14 @@ class GradientScaffold extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
   final Widget? bottomNavigationBar;
+  final Widget? floatingActionButton;
 
   const GradientScaffold({
     super.key,
     required this.child,
     this.padding = const EdgeInsets.fromLTRB(18, 8, 18, 20),
     this.bottomNavigationBar,
+    this.floatingActionButton,
   });
 
   @override
@@ -19,6 +21,7 @@ class GradientScaffold extends StatelessWidget {
       backgroundColor: Colors.transparent,
       extendBody: true,
       bottomNavigationBar: bottomNavigationBar,
+      floatingActionButton: floatingActionButton,
       body: Container(
         width: double.infinity,
         height: double.infinity,

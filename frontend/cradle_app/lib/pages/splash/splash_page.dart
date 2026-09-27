@@ -118,7 +118,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                     opacity: _imageOpacity,
                     child: ScaleTransition(
                       scale: _imageScale,
-                      child: Container(
+                      child: SizedBox(
                         width: 140,
                         height: 140,
                         child: SvgPicture.asset(

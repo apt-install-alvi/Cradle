@@ -339,7 +339,7 @@ class _VitalIcon extends StatelessWidget {
         height: 30,
         color: _brand,
         colorBlendMode: BlendMode.srcIn,
-        errorBuilder: (_, __, ___) => const Icon(Icons.favorite, color: _brand, size: 24),
+        errorBuilder: (_, _, _) => const Icon(Icons.favorite, color: _brand, size: 24),
       ),
     );
   }
@@ -376,6 +376,19 @@ void _openCardMenu(BuildContext context, String vitalKey, String name, bool isBa
                 child: Text(name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _muted)),
               ),
               const SizedBox(height: 6),
+                _sheetOption(
+                context,
+                icon: Icons.add_circle_outline,
+                label: isBangla ? 'নতুন রিডিং লগ করুন' : 'Log new reading',
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => LogEntryPage(vitalKey: vitalKey, mode: LogEntryMode.newReading),
+                    ),
+                  );
+                },
+              ),
               _sheetOption(
                 context,
                 icon: Icons.list_alt,

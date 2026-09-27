@@ -16,7 +16,7 @@ const _brandSofter = Color(0xFFFCEEF5);
 const _ink = Color(0xFF3A2C33);
 const _muted = Color(0xFF8A7680);
 
-enum LogEntryMode { initial, edit }
+enum LogEntryMode { initial, edit, newReading }
 
 class LogEntryPage extends StatefulWidget {
   const LogEntryPage({
@@ -82,12 +82,14 @@ class _LogEntryPageState extends State<LogEntryPage> {
       _initialized = true;
     }
 
-    final title = widget.mode == LogEntryMode.initial
-        ? (isBangla ? '${def.nameBn} লগ করুন' : 'Log ${def.nameEn}')
-        : (isBangla ? '${def.nameBn} রিডিং সম্পাদনা করুন' : 'Edit ${def.nameEn} reading');
-    final subtitle = widget.mode == LogEntryMode.initial
-        ? (isBangla ? 'আসুন আপনার প্রথম রিডিং রেকর্ড করি' : "Let's capture your first reading")
-        : (isBangla ? 'এই রিডিংটি আপডেট করুন' : 'Update this reading');
+    final title = widget.mode == LogEntryMode.edit
+        ? (isBangla ? '${def.nameBn} রিডিং সম্পাদনা করুন' : 'Edit ${def.nameEn} reading')
+        : (isBangla ? '${def.nameBn} লগ করুন' : 'Log ${def.nameEn}');
+    final subtitle = widget.mode == LogEntryMode.edit
+        ? (isBangla ? 'এই রিডিংটি আপডেট করুন' : 'Update this reading')
+        : widget.mode == LogEntryMode.initial
+            ? (isBangla ? 'আসুন আপনার প্রথম রিডিং রেকর্ড করি' : "Let's capture your first reading")
+            : (isBangla ? 'একটি নতুন রিডিং রেকর্ড করুন' : 'Record a new reading');
 
     return GradientScaffold(
       child: ListView(
@@ -123,7 +125,7 @@ class _LogEntryPageState extends State<LogEntryPage> {
                     height: 26,
                     color: _brand,
                     colorBlendMode: BlendMode.srcIn,
-                    errorBuilder: (_, __, ___) => const Icon(Icons.favorite, color: _brand),
+                    errorBuilder: (_, _, _) => const Icon(Icons.favorite, color: _brand),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -238,7 +240,7 @@ class _LogEntryPageState extends State<LogEntryPage> {
                 elevation: 0,
               ),
               child: Text(
-                widget.mode == LogEntryMode.initial
+                widget.mode == LogEntryMode.edit
                     ? (isBangla ? 'রিডিং সংরক্ষণ করুন' : 'Save reading')
                     : (isBangla ? 'রিডিং আপডেট করুন' : 'Update reading'),
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
@@ -250,9 +252,14 @@ class _LogEntryPageState extends State<LogEntryPage> {
     );
   }
 
-  Future<void> _save(BuildContext context, VitalDefinition def, bool isBangla) async {
+   Future<void> _save(BuildContext context, VitalDefinition def, bool isBangla) async {
     final provider = context.read<HealthTrackingProvider>();
     final note = _noteCtrl.text;
+    final isEdit = widget.mode == LogEntryMode.edit;
+
+    Future<void> saveNew(VitalLog log) => widget.mode == LogEntryMode.initial
+        ? provider.addInitialLog(widget.vitalKey, log)
+        : provider.addLog(widget.vitalKey, log);
 
     if (def.type == VitalType.bp) {
       final sys = int.tryParse(_systolicCtrl.text);
@@ -264,21 +271,14 @@ class _LogEntryPageState extends State<LogEntryPage> {
         );
         return;
       }
-      if (widget.mode == LogEntryMode.initial) {
-        await provider.addInitialLog(
-          widget.vitalKey,
-          VitalLog(id: _tempId(), date: DateTime.now(), systolic: sys, diastolic: dia, note: note),
-        );
+      if (!isEdit) {
+        await saveNew(VitalLog(id: _tempId(), date: DateTime.now(), systolic: sys, diastolic: dia, note: note));
         if (context.mounted) {
           showHealthToast(context, isBangla ? '${def.nameBn} রিডিং সংরক্ষিত হয়েছে' : '${def.nameEn} reading saved');
           Navigator.of(context).pop();
         }
       } else {
-        await provider.updateLog(
-          widget.vitalKey,
-          widget.logId!,
-          _existing!.copyWith(systolic: sys, diastolic: dia, note: note),
-        );
+        await provider.updateLog(widget.vitalKey, widget.logId!, _existing!.copyWith(systolic: sys, diastolic: dia, note: note));
         if (context.mounted) {
           showHealthToast(context, isBangla ? 'রিডিং আপডেট হয়েছে' : 'Reading updated');
           Navigator.of(context).pop();
@@ -290,17 +290,14 @@ class _LogEntryPageState extends State<LogEntryPage> {
         showHealthToast(context, isBangla ? 'চালিয়ে যেতে একটি মান লিখুন' : 'Enter a value to continue');
         return;
       }
-      if (widget.mode == LogEntryMode.initial) {
-        await provider.addInitialLog(
-          widget.vitalKey,
-          VitalLog(
-            id: _tempId(),
-            date: DateTime.now(),
-            value: val,
-            context: def.hasContext ? _context : null,
-            note: note,
-          ),
-        );
+      if (!isEdit) {
+        await saveNew(VitalLog(
+          id: _tempId(),
+          date: DateTime.now(),
+          value: val,
+          context: def.hasContext ? _context : null,
+          note: note,
+        ));
         if (context.mounted) {
           showHealthToast(context, isBangla ? '${def.nameBn} রিডিং সংরক্ষিত হয়েছে' : '${def.nameEn} reading saved');
           Navigator.of(context).pop();

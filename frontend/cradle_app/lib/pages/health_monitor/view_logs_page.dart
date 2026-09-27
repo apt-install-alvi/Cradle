@@ -31,6 +31,20 @@ class ViewLogsPage extends StatelessWidget {
     final sorted = [...state.logs]..sort((a, b) => b.date.compareTo(a.date));
 
     return GradientScaffold(
+        floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: _brand,
+        foregroundColor: Colors.white,
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => LogEntryPage(vitalKey: vitalKey, mode: LogEntryMode.newReading),
+          ),
+        ),
+        icon: const Icon(Icons.add),
+        label: Text(
+          isBangla ? 'নতুন রিডিং' : 'New reading',
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

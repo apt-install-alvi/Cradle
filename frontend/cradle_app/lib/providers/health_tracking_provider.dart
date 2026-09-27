@@ -312,6 +312,39 @@ String _genId(Random rnd) =>
     }
   }
 
+    /// Saves an additional reading for a vital that's already tracked — used
+  /// any time after the initial reading, regardless of schedule. Unlike
+  /// addInitialLog, this never flips `tracking` (it's already on).
+  Future<void> addLog(String key, VitalLog log) async {
+    final s = state(key);
+    try {
+      final response = await ApiService.post('/vitals', {
+        'type': key,
+        'value': log.value,
+        'systolic': log.systolic,
+        'diastolic': log.diastolic,
+        'context': log.context,
+        'loggedAt': log.date.toIso8601String(),
+        'note': log.note,
+      }, token: token);
+
+      final newLog = VitalLog(
+        id: response['data']['id'].toString(),
+        date: DateTime.parse(response['data']['logged_at']),
+        value: response['data']['value']?.toDouble(),
+        systolic: response['data']['systolic'],
+        diastolic: response['data']['diastolic'],
+        context: response['data']['context'],
+        note: log.note,
+      );
+
+      s.logs = [...s.logs, newLog];
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error adding vital reading: $e');
+    }
+  }
+
   void stopTracking(String key) {
     state(key).tracking = false;
     _saveSettings(key);
@@ -338,7 +371,8 @@ String _genId(Random rnd) =>
         return log.date.year == now.year &&
             log.date.month == now.month &&
             log.date.day == now.day;
-      }).toList();
+      }).toList()
+        ..sort((a, b) => a.date.compareTo(b.date));
 
       final scheduledTimes = List<String>.from(state.times)..sort();
 

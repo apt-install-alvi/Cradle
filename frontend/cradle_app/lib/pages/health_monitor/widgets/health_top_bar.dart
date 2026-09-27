@@ -15,46 +15,42 @@ class HealthTopBar extends StatelessWidget {
 
   static const Color _muted = Color(0xFF8A7680);
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Color(0xFFAB0A65),
-                  size: 28,
-                ),
-                onPressed: onBack ?? () => Navigator.of(context).pop(),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Color(0xFFAB0A65),
+              size: 28,
+            ),
+            onPressed: onBack ?? () => Navigator.of(context).pop(),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
                   title,
                   style: AppText.headerTitle.copyWith(fontSize: 24),
                 ),
-              ),
-            ],
-          ),
-          if (subtitle != null && subtitle!.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(left: 36, top: 2),
-              child: Text(
-                subtitle!,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: _muted,
-                ),
-              ),
+                if (subtitle != null && subtitle!.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle!,
+                    style: const TextStyle(fontSize: 16, color: _muted),
+                  ),
+                ],
+              ],
             ),
+          ),
         ],
       ),
     );

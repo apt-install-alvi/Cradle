@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -44,11 +45,13 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   DateTime? _estimatedDueDate;
   int? _pregnancyWeek;
 
-  String _userEmail = '';
+  final String _userEmail = '';
   bool _isLoading = true;
   bool _isSaving = false;
 
   final List<String> _bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+
+
 
   @override
   void initState() {
@@ -85,6 +88,67 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     setState(() {});
   }
 
+  String? _validateEmergencyContact(String? value, bool isBangla) {
+    final contact = value?.trim() ?? '';
+
+    // Empty fields are allowed because the user may have
+    // no emergency contacts or may have an unused extra field.
+    if (contact.isEmpty) {
+      return null;
+    }
+
+    if (!RegExp(r'^01\d{9}$').hasMatch(contact)) {
+      return isBangla
+          ? '১১ সংখ্যার নম্বর লিখুন যা ০১ দিয়ে শুরু হবে'
+          : 'Enter exactly 11 digits starting with 01';
+    }
+
+    return null;
+  }
+
+  List<String> _normalizeEmergencyContacts(dynamic raw) {
+    if (raw == null) {
+      return [];
+    }
+
+    // Correct jsonb response from the backend.
+    if (raw is List) {
+      return raw
+          .map((contact) => contact.toString().trim())
+          .where((contact) => contact.isNotEmpty)
+          .toList();
+    }
+
+    if (raw is String) {
+      final value = raw.trim();
+
+      if (value.isEmpty || value == '[]' || value == '[""]') {
+        return [];
+      }
+
+      // Handle old records where a JSON array was stored as text.
+      try {
+        final decoded = jsonDecode(value);
+
+        if (decoded is List) {
+          return decoded
+              .map((contact) => contact.toString().trim())
+              .where((contact) => contact.isNotEmpty)
+              .toList();
+        }
+
+        if (decoded is String && decoded.trim().isNotEmpty) {
+          return [decoded.trim()];
+        }
+      } catch (_) {
+        // Legacy plain-text single contact.
+      }
+
+      return [value];
+    }
+
+    return [];
+  }
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
@@ -103,51 +167,69 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   Future<void> loadProfile() async {
     setState(() => _isLoading = true);
+
     try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final authProvider =
+          Provider.of<AuthProvider>(context, listen: false);
+
       await authProvider.fetchProfile();
+
       final data = authProvider.profile;
 
-      _fullNameController.text = data['full_name'] ?? '';
+      _fullNameController.text = data['full_name']?.toString() ?? '';
       _ageController.text = data['age']?.toString() ?? '';
       _weightController.text = data['weight']?.toString() ?? '';
       _heightController.text = data['height']?.toString() ?? '';
-      _emergencyContactControllers.forEach((controller) {
+
+      // Dispose old emergency contact controllers.
+      for (final controller in _emergencyContactControllers) {
         controller.dispose();
-      });
+      }
 
       _emergencyContactControllers.clear();
 
-      final emergencyContacts = data['emergency_contact'];
+      final emergencyContacts = _normalizeEmergencyContacts(
+        data['emergency_contact'],
+      );
 
-      if (emergencyContacts is List) {
-        for (final contact in emergencyContacts) {
-          _emergencyContactControllers.add(
-            TextEditingController(text: contact.toString()),
-          );
-        }
-      } else if (emergencyContacts != null &&
-          emergencyContacts.toString().trim().isNotEmpty) {
-        // Keeps compatibility with your existing single-contact backend data.
+      if (emergencyContacts.isEmpty) {
+        // Keep one empty field visible in the UI.
         _emergencyContactControllers.add(
-          TextEditingController(text: emergencyContacts.toString()),
+          TextEditingController(),
         );
       } else {
-        _emergencyContactControllers.add(TextEditingController());
+        for (final contact in emergencyContacts) {
+          _emergencyContactControllers.add(
+            TextEditingController(text: contact),
+          );
+        }
       }
-      _allergiesController.text = data['allergies'] ?? '';
-      _longTermDiseasesController.text = data['long_term_diseases'] ?? '';
-      _selectedBloodGroup = data['blood_group'];
-      _base64Image = data['profile_image'];
+
+      _allergiesController.text =
+          data['allergies']?.toString() ?? '';
+
+      _longTermDiseasesController.text =
+          data['long_term_diseases']?.toString() ?? '';
+
+      _selectedBloodGroup =
+          data['blood_group']?.toString();
+
+      _base64Image =
+          data['profile_image']?.toString();
 
       if (data['conception_date'] != null) {
-        _lmpDate = DateTime.parse(data['conception_date']);
+        _lmpDate = DateTime.parse(
+          data['conception_date'].toString(),
+        );
+
         calculatePregnancy();
       }
     } catch (e) {
       debugPrint('Error loading profile: $e');
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -198,23 +280,31 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   }
 
   Future<void> saveProfile() async {
-    final isBangla = Provider.of<LanguageProvider>(context, listen: false).isBangla;
+    final isBangla =
+        Provider.of<LanguageProvider>(context, listen: false).isBangla;
+
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isSaving = true);
+
     try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      
+      final authProvider =
+          Provider.of<AuthProvider>(context, listen: false);
+
+      final emergencyContacts = _emergencyContactControllers
+          .map((controller) => controller.text.trim())
+          .where((contact) => contact.isNotEmpty)
+          .toList();
+
       final Map<String, dynamic> profileData = {
         'full_name': _fullNameController.text.trim(),
         'blood_group': _selectedBloodGroup,
         'age': int.tryParse(_ageController.text.trim()),
         'weight': double.tryParse(_weightController.text.trim()),
         'height': double.tryParse(_heightController.text.trim()),
-        'emergency_contact': _emergencyContactControllers
-            .map((controller) => controller.text.trim())
-            .where((contact) => contact.isNotEmpty)
-            .toList(),
+
+        'emergency_contact': emergencyContacts,
+
         'conception_date': _lmpDate?.toIso8601String(),
         'expected_due_date': _estimatedDueDate?.toIso8601String(),
         'pregnancy_week': _pregnancyWeek,
@@ -224,19 +314,36 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       };
 
       await authProvider.updateProfile(profileData);
-      if (mounted) {
-        _showSnackBar(isBangla ? 'প্রোফাইল সফলভাবে সংরক্ষিত!' : 'Profile saved successfully!');
-        // Navigate to dashboard after saving
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoutes.dashboard,
-          (route) => false,
-        );
-      }
+
+      if (!mounted) return;
+
+      _showSnackBar(
+        isBangla
+            ? 'প্রোফাইল সফলভাবে সংরক্ষণ করা হয়েছে!'
+            : 'Profile saved successfully!',
+      );
+
+      Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoutes.personalInfo,
+      (route) => false,
+    );
+
+      // IMPORTANT:
+      // Do NOT navigate anywhere here.
+      //
+      // The user remains on this PersonalInfoPage.
     } catch (e) {
-      _showSnackBar(isBangla ? 'ব্যর্থ হয়েছে: $e' : 'Failed to save: $e', isError: true);
+      if (!mounted) return;
+
+      _showSnackBar(
+        isBangla ? 'ব্যর্থ হয়েছে: $e' : 'Failed to save: $e',
+        isError: true,
+      );
     } finally {
-      if (mounted) setState(() => _isSaving = false);
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 
@@ -415,16 +522,18 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-    int maxLines = 1,
-    String? hint,
-    String? Function(String?)? validator,
-  }) {
+Widget _buildTextField({
+  required TextEditingController controller,
+  required String label,
+  required IconData icon,
+  TextInputType keyboardType = TextInputType.text,
+  int maxLines = 1,
+  String? hint,
+  String? Function(String?)? validator,
+  List<TextInputFormatter>? inputFormatters,
+}) {
     return TextFormField(
+      inputFormatters: inputFormatters,
       controller: controller,
       keyboardType: keyboardType,
       maxLines: maxLines,
@@ -454,7 +563,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   Widget _buildBloodGroupDropdown(bool isBangla) {
     return DropdownButtonFormField<String>(
-      value: _selectedBloodGroup,
+      initialValue: _selectedBloodGroup,
       style: GoogleFonts.gentiumBookPlus(color: _accent, fontWeight: FontWeight.w600),
       decoration: InputDecoration(
         labelText: isBangla ? 'রক্তের গ্রুপ' : 'Blood Group',
@@ -578,6 +687,14 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                       : 'Emergency Contact ${index + 1}',
                   icon: Icons.phone_outlined,
                   keyboardType: TextInputType.phone,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(11),
+                  ],
+                  validator: (value) => _validateEmergencyContact(
+                    value,
+                    isBangla,
+                  ),
                 ),
               ),
               if (_emergencyContactControllers.length > 1)
