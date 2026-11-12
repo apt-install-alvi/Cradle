@@ -1,12 +1,23 @@
-const validateRegisterLogin = (body) => {
-  const { phone, password } = body;
+const validateRegister = (body) => {
+  const { phone, full_name, age } = body;
   if (!phone || typeof phone !== 'string' || phone.trim().length < 8) {
-    return { error: new Error('Valid phone number is required (at least 8 characters)') };
+    return { error: new Error('Valid phone number is required') };
   }
-  if (!password || typeof password !== 'string' || password.length < 6) {
-    return { error: new Error('Password must be at least 6 characters long') };
+  if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2) {
+    return { error: new Error('Full name is required') };
   }
-  return { value: { phone: phone.trim(), password } };
+  if (!age) {
+    return { error: new Error('Age is required') };
+  }
+  return { value: { phone: phone.trim(), full_name: full_name.trim(), age } };
+};
+
+const validateLogin = (body) => {
+  const { phone } = body;
+  if (!phone || typeof phone !== 'string' || phone.trim().length < 8) {
+    return { error: new Error('Valid phone number is required') };
+  }
+  return { value: { phone: phone.trim() } };
 };
 
 const validateVerifyOtp = (body) => {
@@ -29,7 +40,8 @@ const validateResendOtp = (body) => {
 };
 
 module.exports = {
-  validateRegisterLogin,
+  validateRegister,
+  validateLogin,
   validateVerifyOtp,
   validateResendOtp
 };

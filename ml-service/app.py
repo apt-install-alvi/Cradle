@@ -12,15 +12,17 @@ def health():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    data = request.get_json()
-    if not data or 'symptoms' not in data:
+    data = request.get_json() or {}
+    symptoms = data.get('symptoms')
+    features = data.get('features')
+    
+    if symptoms is None and features is None:
         return jsonify({
             'success': False,
-            'message': 'No symptoms list provided in request body.'
+            'message': 'No symptoms list or features map provided in request body.'
         }), 400
         
-    symptoms = data['symptoms']
-    result = predict_symptom_risk(symptoms)
+    result = predict_symptom_risk(symptoms_list=symptoms, features=features)
     return jsonify(result)
 
 if __name__ == '__main__':

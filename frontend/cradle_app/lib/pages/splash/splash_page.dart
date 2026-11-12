@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../core/routes/app_routes.dart';
+import '../../providers/auth_provider.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -12,17 +16,17 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   late AnimationController _controller;
   late Animation<double> _imageOpacity;
   late Animation<double> _imageScale;
-late Animation<double> _textOpacity;
-late Animation<Offset> _textSlide;
-late Animation<double> _textScale;
+  late Animation<double> _textOpacity;
+  late Animation<Offset> _textSlide;
+  late Animation<double> _textScale;
 
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 5500),
+      duration: const Duration(milliseconds: 3000),
     );
 
     // Initial scale and fade in for the central splash logo
@@ -40,48 +44,36 @@ late Animation<double> _textScale;
       ),
     );
 
-// Smooth text animation
-_textOpacity = Tween<double>(
-  begin: 0,
-  end: 1,
-).animate(
-  CurvedAnimation(
-    parent: _controller,
-    curve: const Interval(
-      0.25,
-      0.85,
-      curve: Curves.easeOutCubic,
-    ),
-  ),
-);
+    // Smooth text animation
+    _textOpacity = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.25, 0.85, curve: Curves.easeOutCubic),
+      ),
+    );
 
-_textSlide = Tween<Offset>(
-  begin: const Offset(0, 0.08),
-  end: Offset.zero,
-).animate(
-  CurvedAnimation(
-    parent: _controller,
-    curve: const Interval(
-      0.25,
-      0.85,
-      curve: Curves.easeOutCubic,
-    ),
-  ),
-);
+    _textSlide = Tween<Offset>(
+      begin: const Offset(0, 0.08),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.25, 0.85, curve: Curves.easeOutCubic),
+      ),
+    );
 
-_textScale = Tween<double>(
-  begin: 0.96,
-  end: 1.0,
-).animate(
-  CurvedAnimation(
-    parent: _controller,
-    curve: const Interval(
-      0.25,
-      0.85,
-      curve: Curves.easeOutCubic,
-    ),
-  ),
-);
+    _textScale = Tween<double>(
+      begin: 0.96,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.25, 0.85, curve: Curves.easeOutCubic),
+      ),
+    );
 
     _controller.forward().then((_) {
       _checkLoginState();
@@ -99,11 +91,8 @@ _textScale = Tween<double>(
     await Future.delayed(const Duration(milliseconds: 800));
     if (!mounted) return;
 
-    // Check login/session state
-    // Replace the boolean value below with actual auth check integration (e.g. FirebaseAuth status or SharedPreferences token check)
-    const bool isLoggedIn = false; 
-
-    if (isLoggedIn) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (authProvider.isLoggedIn) {
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     } else {
       Navigator.pushReplacementNamed(context, AppRoutes.login);
@@ -112,9 +101,8 @@ _textScale = Tween<double>(
 
   @override
   Widget build(BuildContext context) {
-    // Theme colors as requested by user
     const Color primaryColor = Color(0xFFF7F2F6); // Main background
-    const Color secondaryColor = Color(0xFFEE93B4); // Icons, texts, etc.
+    const Color secondaryColor = Color(0xFFAB0A65); // Icons, texts, etc.
 
     return Scaffold(
       backgroundColor: primaryColor,
@@ -125,73 +113,47 @@ _textScale = Tween<double>(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-// 1. Animated Logo
-FadeTransition(
-  opacity: _imageOpacity,
-  child: ScaleTransition(
-    scale: _imageScale,
-    child: Container(
-      width: 140,
-      height: 140,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: secondaryColor.withOpacity(0.2),
-            blurRadius: 30,
-            spreadRadius: 8,
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(70),
-        child: Image.asset(
-          'assets/images/splash.png',
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              color: secondaryColor.withOpacity(0.1),
-              child: const Icon(
-                Icons.child_care,
-                size: 70,
-                color: secondaryColor,
-              ),
-            );
-          },
-        ),
-      ),
-    ),
-  ),
-),
-                    
+                  // 1. Animated Logo
+                  FadeTransition(
+                    opacity: _imageOpacity,
+                    child: ScaleTransition(
+                      scale: _imageScale,
+                      child: SizedBox(
+                        width: 140,
+                        height: 140,
+                        child: SvgPicture.asset(
+                          'assets/images/Logo.svg',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
-                  
-// 2. Animated App Name "Cradle"
-FadeTransition(
-  opacity: _textOpacity,
-  child: SlideTransition(
-    position: _textSlide,
-    child: ScaleTransition(
-      scale: _textScale,
-      child: const Text(
-        'Cradle',
-        style: TextStyle(
-          fontSize: 38,
-          fontWeight: FontWeight.w800,
-          color: secondaryColor,
-          letterSpacing: 3,
-        ),
-      ),
-    ),
-  ),
-),
+                  // 2. Animated App Name "Cradle"
+                  FadeTransition(
+                    opacity: _textOpacity,
+                    child: SlideTransition(
+                      position: _textSlide,
+                      child: ScaleTransition(
+                        scale: _textScale,
+                        child: Text(
+                          'Cradle',
+                          style: GoogleFonts.geom(
+                            fontSize: 38,
+                            fontWeight: FontWeight.w800,
+                            color: secondaryColor,
+                            letterSpacing: 3,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            
             // 3. Subtle Animated Progress indicator at the bottom
             Positioned(
-              bottom: 48,
+              bottom: 100,
               left: 0,
               right: 0,
               child: Center(
@@ -219,5 +181,3 @@ FadeTransition(
     );
   }
 }
-
-

@@ -1,61 +1,116 @@
-const MotherProfile = require('./motherProfile.model');
-const User = require('../auth/user.model');
-const mongoose = require('mongoose');
-
-// In-memory fallback database
-const mockProfiles = new Map();
+const supabase = require('../../config/supabase');
 
 class MotherProfileService {
+  /**
+   * Retrieves a mother's profile.
+   * If it doesn't exist, returns a skeleton containing
+   * the name from the main User document.
+   */
   static async getProfileByUserId(userId) {
-    if (mongoose.connection.readyState !== 1) {
-      const profile = mockProfiles.get(userId.toString());
-      if (!profile) {
-        // Return a default mock profile if requested but not initialized
-        return {
-          userId: userId.toString(),
-          fullName: 'Jane Doe',
-          age: 28,
-          dueDate: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000), // 6 months from now
-          bloodGroup: 'O+',
-          medicalHistory: ['No known allergies'],
-          emergencyContacts: [{ name: 'John Doe', relation: 'Husband', phone: '+1234567890' }]
-        };
-      }
-      return profile;
+    const { data: profile, error: profileError } = await supabase
+      .from('mother_profiles')
+      .select('*, users(full_name, phone, is_profile_completed)')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (profileError) {
+      throw profileError;
     }
-    const profile = await MotherProfile.findOne({ userId });
-    if (!profile) throw new Error('Profile not found');
-    return profile;
+
+    if (!profile) {
+      const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('full_name, phone, is_profile_completed')
+        .eq('id', userId)
+        .single();
+
+      if (userError) {
+        throw userError;
+      }
+
+      return {
+        user_id: userId,
+        full_name: user?.full_name || '',
+        phone: user?.phone || '',
+        is_profile_completed:
+          user?.is_profile_completed || false,
+        emergency_contact: [],
+        isNew: true,
+      };
+    }
+
+    const result = {
+      ...profile,
+      full_name: profile.users?.full_name || '',
+      phone: profile.users?.phone || '',
+      is_profile_completed:
+        profile.users?.is_profile_completed || false,
+
+      // Always return an array.
+      emergency_contact: Array.isArray(profile.emergency_contact)
+        ? profile.emergency_contact
+        : [],
+    };
+
+    delete result.users;
+
+    return result;
   }
 
+  /**
+   * Creates or updates a mother's profile and synchronizes
+   * the user's full name.
+   */
   static async createOrUpdateProfile(userId, profileData) {
-    if (mongoose.connection.readyState !== 1) {
-      const profile = {
-        _id: 'mock-pid-' + Math.random().toString(36).substring(2, 11),
-        userId: userId.toString(),
-        fullName: profileData.fullName,
-        age: profileData.age,
-        dueDate: new Date(profileData.dueDate),
-        bloodGroup: profileData.bloodGroup || '',
-        medicalHistory: profileData.medicalHistory || [],
-        emergencyContacts: profileData.emergencyContacts || [],
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      mockProfiles.set(userId.toString(), profile);
-      console.log(`[MOCK DB] Mother profile created/updated for user: ${userId}`);
-      return profile;
+    const { full_name, ...otherData } = profileData;
+
+    // Normalize emergency contacts on the backend too.
+    if (otherData.emergency_contact !== undefined) {
+      if (!Array.isArray(otherData.emergency_contact)) {
+        throw new Error(
+          'Emergency contacts must be an array'
+        );
+      }
+
+      otherData.emergency_contact = otherData.emergency_contact
+        .map((contact) => String(contact).trim())
+        .filter((contact) => contact.length > 0);
     }
 
-    let profile = await MotherProfile.findOne({ userId });
-    if (profile) {
-      Object.assign(profile, profileData);
-      await profile.save();
-    } else {
-      profile = new MotherProfile({ userId, ...profileData });
-      await profile.save();
-      await User.findByIdAndUpdate(userId, { isProfileCompleted: true });
+    // Sync name with User document.
+    if (full_name !== undefined) {
+      const { error: userError } = await supabase
+        .from('users')
+        .update({
+          full_name: full_name,
+          is_profile_completed: true,
+        })
+        .eq('id', userId);
+
+      if (userError) {
+        throw userError;
+      }
     }
+
+    // Create/update MotherProfile.
+    const { data: profile, error: upsertError } = await supabase
+      .from('mother_profiles')
+      .upsert(
+        {
+          user_id: userId,
+          ...otherData,
+        },
+        {
+          onConflict: 'user_id',
+        }
+      )
+      .select()
+      .single();
+
+    if (upsertError) {
+      throw upsertError;
+    }
+
     return profile;
   }
 }

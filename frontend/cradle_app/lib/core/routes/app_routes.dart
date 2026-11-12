@@ -1,6 +1,7 @@
 class AppRoutes {
   static const String splash = '/';
   static const String login = '/login';
+  static const String signup = '/signup';
   static const String otp = '/otp';
   static const String personalInfo = '/personal-info';
   static const String dashboard = '/dashboard';
@@ -10,6 +11,9 @@ class AppRoutes {
   static const String appointments = '/appointments';
   static const String emergency = '/emergency';
   static const String education = '/education';
+  static const String faq = '/faq';
   static const String notifications = '/notifications';
   static const String settings = '/settings';
+  static const String medicationTracker = '/medication-tracker';
+  static const String healthMonitor = '/health-monitor';
 }

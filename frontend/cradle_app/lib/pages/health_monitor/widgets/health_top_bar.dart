@@ -1,0 +1,58 @@
+import 'package:flutter/material.dart';
+import 'package:cradle_app/core/theme/app_theme.dart';
+
+class HealthTopBar extends StatelessWidget {
+  const HealthTopBar({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.onBack,
+  });
+
+  final String title;
+  final String? subtitle;
+  final VoidCallback? onBack;
+
+  static const Color _muted = Color(0xFF8A7680);
+
+ @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Color(0xFFAB0A65),
+              size: 28,
+            ),
+            onPressed: onBack ?? () => Navigator.of(context).pop(),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppText.headerTitle.copyWith(fontSize: 24),
+                ),
+                if (subtitle != null && subtitle!.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle!,
+                    style: const TextStyle(fontSize: 16, color: _muted),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

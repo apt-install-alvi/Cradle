@@ -1,60 +1,62 @@
-const AiPrediction = require('./aiPrediction.model');
+const supabase = require('../../config/supabase');
 const AiClient = require('./aiClient');
-const mongoose = require('mongoose');
-
-// In-memory store fallback
-const mockPredictions = [];
 
 class AiPredictionService {
-  static async assessRisk(userId, symptomLogId, symptomsList) {
-    const aiResult = await AiClient.predictRisk(symptomsList);
+  static async assessRisk(userId, session_id, symptomsList, features) {
+    const aiResult = await AiClient.predictRisk(symptomsList, features);
 
-    if (mongoose.connection.readyState !== 1) {
-      const assessment = {
-        _id: 'mock-pred-' + Math.random().toString(36).substring(2, 11),
-        userId: userId.toString(),
-        symptomLogId: symptomLogId ? symptomLogId.toString() : null,
-        riskLevel: aiResult.riskLevel,
-        confidenceScore: aiResult.confidenceScore,
-        recommendations: aiResult.recommendations,
-        assessedAt: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      mockPredictions.push(assessment);
-      return assessment;
-    }
+    const { data: prediction, error } = await supabase
+      .from('ai_predictions')
+      .insert([
+        {
+          user_id: userId,
+          session_id: session_id,
+          prediction_data: aiResult,
+          risk_level: aiResult.riskLevel
+        }
+      ])
+      .select()
+      .single();
 
-    const prediction = new AiPrediction({
-      userId,
-      symptomLogId,
-      riskLevel: aiResult.riskLevel,
-      confidenceScore: aiResult.confidenceScore,
-      recommendations: aiResult.recommendations
-    });
-
-    await prediction.save();
+    if (error) throw error;
     return prediction;
   }
 
   static async getHistory(userId) {
-    if (mongoose.connection.readyState !== 1) {
-      const history = mockPredictions.filter(p => p.userId === userId.toString());
-      if (history.length === 0) {
-        return [
-          {
-            _id: 'mock-pred-seed-1',
-            userId: userId.toString(),
-            riskLevel: 'LOW',
-            confidenceScore: 0.95,
-            recommendations: ['Continue drinking water and tracking your daily symptoms.'],
-            assessedAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
-          }
-        ];
+    const { data: predictions, error } = await supabase
+      .from('ai_predictions')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const historyWithDetails = await Promise.all((predictions || []).map(async (pred) => {
+      let symptoms = [];
+      let diagnosisVitals = [];
+
+      if (pred.session_id) {
+        const { data: syms } = await supabase
+          .from('symptoms')
+          .select('*')
+          .eq('session_id', pred.session_id);
+        symptoms = syms || [];
+
+        const { data: vitals } = await supabase
+          .from('diagnosis_vitals')
+          .select('*')
+          .eq('session_id', pred.session_id);
+        diagnosisVitals = vitals || [];
       }
-      return history.sort((a, b) => b.assessedAt - a.assessedAt);
-    }
-    return await AiPrediction.find({ userId }).sort({ assessedAt: -1 });
+
+      return {
+        ...pred,
+        symptoms,
+        diagnosis_vitals: diagnosisVitals
+      };
+    }));
+
+    return historyWithDetails;
   }
 }
 

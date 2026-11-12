@@ -1,35 +1,48 @@
 const mongoose = require('mongoose');
 
 const motherProfileSchema = new mongoose.Schema({
-  userId: {
+  user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
     unique: true
   },
-  fullName: {
+  blood_group: {
     type: String,
-    required: true,
     trim: true
   },
   age: {
-    type: Number,
-    required: true
+    type: Number
   },
-  dueDate: {
-    type: Date,
-    required: true
+  weight: {
+    type: Number
   },
-  bloodGroup: {
-    type: String,
-    trim: true
+  height: {
+    type: Number
   },
-  medicalHistory: [String],
-  emergencyContacts: [{
-    name: String,
-    relation: String,
-    phone: String
-  }]
-}, { timestamps: true });
+  conception_date: {
+    type: Date
+  },
+  expected_due_date: {
+    type: Date
+  },
+  pregnancy_week: {
+    type: Number
+  },
+  allergies: {
+    type: String
+  },
+  long_term_diseases: {
+    type: String
+  },
+  emergency_contact: {
+    type: String
+  },
+  profile_image: {
+    type: String // Base64 encoded image
+  }
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
+});
 
 module.exports = mongoose.model('MotherProfile', motherProfileSchema);

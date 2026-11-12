@@ -1,0 +1,6 @@
+- [x] Add `flutter_local_notifications` dependency to `pubspec.yaml`
+- [x] Configure Android manifest permissions (`POST_NOTIFICATIONS`, `VIBRATE`)
+- [x] Create `LocalNotificationService` for local notification initialization and display
+- [x] Initialize `LocalNotificationService` in `main.dart`
+- [x] Integrate local notifications with `NotificationProvider` to trigger system notifications when in-app notifications are fetched
+- [x] Verify functionality and create walkthrough artifact

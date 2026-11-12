@@ -1,16 +1,15 @@
 const AuthService = require('./auth.service');
-const generateToken = require('../../common/utils/generateToken');
 const ApiResponse = require('../../common/utils/apiResponse');
 const httpStatusCodes = require('../../common/constants/httpStatusCodes');
+const generateToken = require('../../common/utils/generateToken');
 
 class AuthController {
   static async register(req, res, next) {
     try {
-      const { phone, password } = req.body;
-      const user = await AuthService.register(phone, password);
-      return ApiResponse.success(res, 'Registration successful, verification OTP code sent.', {
-        userId: user._id,
-        phone: user.phone
+      const { phone, full_name, age } = req.body;
+      await AuthService.register(phone, full_name, age);
+      return ApiResponse.success(res, 'Verification OTP code sent.', {
+        phone
       }, httpStatusCodes.CREATED);
     } catch (error) {
       next(error);
@@ -19,11 +18,10 @@ class AuthController {
 
   static async login(req, res, next) {
     try {
-      const { phone, password } = req.body;
-      const user = await AuthService.login(phone, password);
+      const { phone } = req.body;
+      await AuthService.login(phone);
       return ApiResponse.success(res, 'Verification OTP code sent.', {
-        userId: user._id,
-        phone: user.phone
+        phone
       });
     } catch (error) {
       next(error);
@@ -34,11 +32,18 @@ class AuthController {
     try {
       const { phone, code } = req.body;
       const user = await AuthService.verifyOtp(phone, code);
-      const token = generateToken(user._id);
+
+      // Generate our custom JWT token
+      const token = generateToken(user.id);
+
       return ApiResponse.success(res, 'OTP verification successful.', {
         token,
-        isProfileCompleted: user.isProfileCompleted,
-        userId: user._id
+        user: {
+          id: user.id,
+          phone: user.phone,
+          full_name: user.full_name,
+          isProfileCompleted: user.is_profile_completed
+        }
       });
     } catch (error) {
       next(error);
